@@ -1,0 +1,2 @@
+# coolscript
+Untyped scripting language
