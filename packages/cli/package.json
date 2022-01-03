@@ -1,6 +1,6 @@
 {
   "name": "@coolscript/cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Coolscript programming language commandline interface library.",
   "main": "lib/index.js",
   "publishConfig": {
@@ -28,8 +28,8 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "dependencies": {
-    "@coolscript/parser": "^0.0.2",
-    "@coolscript/syntax": "^0.0.2"
+    "@coolscript/parser": "^0.0.3",
+    "@coolscript/syntax": "^0.0.3"
   },
   "gitHead": "9b91bf0df0bb73d74440b9a1d191fd5c91c6af93"
 }

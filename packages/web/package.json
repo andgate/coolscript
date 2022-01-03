@@ -1,7 +1,7 @@
 {
   "name": "coolscript-web",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Website for coolscript",
   "source": "src/index.html",
   "scripts": {
@@ -23,8 +23,8 @@
     "parcel": "^2.0.1"
   },
   "dependencies": {
-    "@coolscript/parser": "^0.0.2",
-    "@coolscript/syntax": "^0.0.2",
+    "@coolscript/parser": "^0.0.3",
+    "@coolscript/syntax": "^0.0.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   }
