@@ -12,4 +12,4 @@ To initialize the project, run `pnpm install`.
 
 To build website and packages, run `pnpm build`.
 
-To publish packages, run `pnpx lerna publish`.
+To publish packages, run `lerna publish`.
