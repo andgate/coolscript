@@ -7,7 +7,6 @@
     "start": "lerna run start --parallel",
     "install": "lerna bootstrap",
     "prepublish": "pnpm build",
-    "publish": "lerna publish from-package",
     "check": "lerna run check",
     "verify": "lerna run verify --stream",
     "prettier": "lerna run prettier",
