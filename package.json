@@ -7,7 +7,6 @@
     "start": "lerna run start --parallel",
     "postinstall": "lerna bootstrap",
     "prepublish": "pnpm build",
-    "prepare": "husky install",
     "check": "lerna run check",
     "verify": "lerna run verify --stream",
     "prettier": "lerna run prettier",

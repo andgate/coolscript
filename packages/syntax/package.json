@@ -1,7 +1,7 @@
 {
-  "name": "language-coolscript",
+  "name": "@coolscript/syntax",
   "version": "0.0.1",
-  "description": "Core library for the coolscript programming language",
+  "description": "Coolscript programming language syntax library.",
   "main": "src/index.ts",
   "publishConfig": {
     "main": "lib/index.js",

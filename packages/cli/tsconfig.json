@@ -1,19 +1,8 @@
 {
-  "extends": "../../tsconfig.settings.json",
+  "extends": "./tsconfig.settings.json",
   "compilerOptions": {
     "noEmit": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "tests",
-    "node_modules",
-    "dist"
-  ],
-  "references": [
-    {
-      "path": "../core/tsconfig.json"
-    }
-  ]
+  "include": ["src"],
+  "exclude": ["tests", "node_modules", "dist"]
 }

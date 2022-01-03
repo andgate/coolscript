@@ -1,11 +1,5 @@
 {
   "extends": "../../tsconfig.settings.json",
-  "compilerOptions": {
-    "noEmit": true,
-    "target": "es6",
-    "jsx": "react-jsx",
-    "lib": ["ES6", "DOM"]
-  },
   "references": [
     {
       "path": "../syntax/tsconfig.json"

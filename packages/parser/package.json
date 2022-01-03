@@ -1,14 +1,15 @@
 {
-  "name": "@coolscript/cli",
+  "name": "@coolscript/parser",
   "version": "0.0.1",
-  "description": "Coolscript programming language commandline interface.",
+  "description": "Coolscript programming language parser.",
   "main": "src/index.ts",
-  "bin": {
-    "coolscript": "./dist/index.js"
+  "publishConfig": {
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts"
   },
   "scripts": {
-    "start": "",
-    "build": "esbuild src/index.ts --bundle --platform=node --target=node10.4 --outfile=dist/index.js",
+    "start": "tsc --build --watch",
+    "build": "tsc --build",
     "check": "tsc --noEmit",
     "prettier": "prettier --check src/ tests/",
     "prettier:fix": "prettier --write src/ tests/",
@@ -17,12 +18,11 @@
     "verify": "pnpm prettier && pnpm lint",
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
     "test": "jest",
-    "clean": "rimraf coverage node_modules .pnpm-debug.log"
+    "clean": "rimraf coverage lib .pnpm-debug.log tsconfig.tsbuildinfo"
   },
   "author": "Gabriel Anderson",
   "license": "MIT",
   "dependencies": {
-    "@coolscript/syntax": "0.0.1",
-    "@coolscript/parser": "0.0.1"
+    "@coolscript/syntax": "0.0.1"
   }
 }

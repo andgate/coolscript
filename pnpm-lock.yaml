@@ -14,7 +14,6 @@ importers:
       eslint-plugin-html: ^6.2.0
       eslint-plugin-prettier: ^4.0.0
       eslint-plugin-react: ^7.28.0
-      husky: ^7.0.4
       jest: ^27.4.5
       lerna: ^4.0.0
       prettier: 2.5.1
@@ -34,7 +33,6 @@ importers:
       eslint-plugin-html: 6.2.0
       eslint-plugin-prettier: 4.0.0_1c588f61426b1faf18812943f1678311
       eslint-plugin-react: 7.28.0_eslint@8.6.0
-      husky: 7.0.4
       jest: 27.4.5
       lerna: 4.0.0
       prettier: 2.5.1
@@ -46,21 +44,31 @@ importers:
 
   packages/cli:
     specifiers:
-      language-coolscript: ^0.0.1
+      '@coolscript/parser': 0.0.1
+      '@coolscript/syntax': 0.0.1
     dependencies:
-      language-coolscript: link:../core
+      '@coolscript/parser': link:../parser
+      '@coolscript/syntax': link:../syntax
 
-  packages/core:
+  packages/parser:
+    specifiers:
+      '@coolscript/syntax': 0.0.1
+    dependencies:
+      '@coolscript/syntax': link:../syntax
+
+  packages/syntax:
     specifiers: {}
 
   packages/web:
     specifiers:
-      language-coolscript: ^0.0.1
+      '@coolscript/parser': ^0.0.1
+      '@coolscript/syntax': ^0.0.1
       parcel: ^2.0.1
       react: ^17.0.2
       react-dom: ^17.0.2
     dependencies:
-      language-coolscript: link:../core
+      '@coolscript/parser': link:../parser
+      '@coolscript/syntax': link:../syntax
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
     devDependencies:
@@ -5274,12 +5282,6 @@ packages:
     resolution: {integrity: sha1-xG4xWaKT9riW2ikxbYtv6Lt5u+0=}
     dependencies:
       ms: 2.1.3
-    dev: true
-
-  /husky/7.0.4:
-    resolution: {integrity: sha512-vbaCKN2QLtP/vD4yvs6iz6hBEo6wkSzs8HpRah1Z6aGmF2KW5PdYuAd7uX5a+OyBZHBhd+TFLqgjUgytQr4RvQ==}
-    engines: {node: '>=12'}
-    hasBin: true
     dev: true
 
   /iconv-lite/0.4.24:
