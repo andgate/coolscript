@@ -1,5 +1,8 @@
 {
   "extends": "./tsconfig.settings.json",
+  "compilerOptions": {
+    "isolatedModules": true
+  },
   "include": [
     "src"
   ],

@@ -9,7 +9,7 @@
     "prepublish": "pnpm build",
     "build": "lerna run build && nodetouch ./docs/.nojekyll",
     "check": "lerna run check",
-    "test": "lerna run test --stream",
+    "test": "jest",
     "clean": "lerna run clean && rimraf docs .pnpm-debug.log lerna-debug.log .parcel-cache && lerna bootstrap"
   },
   "repository": {
