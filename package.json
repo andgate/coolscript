@@ -1,0 +1,39 @@
+{
+  "name": "coolscript-platform",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Monorepo for the coolscript language platform.",
+  "scripts": {
+    "start": "lerna run start --parallel",
+    "postinstall": "lerna bootstrap",
+    "prepublish": "pnpm build",
+    "build": "lerna run build",
+    "check": "lerna run check",
+    "test": "lerna run test --stream",
+    "clean": "lerna run clean && rimraf .pnpm-debug.log lerna-debug.log .parcel-cache && lerna bootstrap"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andgate/coolscript.git"
+  },
+  "author": "Gabriel Anderson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andgate/coolscript/issues"
+  },
+  "homepage": "https://andgate.github.io/coolscript",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/jest": "^27.4.0",
+    "@types/node": "^17.0.6",
+    "esbuild": "^0.14.10",
+    "eslint": "^8.6.0",
+    "jest": "^27.4.5",
+    "lerna": "^4.0.0",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.1.2",
+    "typescript": "^4.5.4"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "coolscript-web",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Website for coolscript",
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html --dist-dir ../../docs",
+    "check": "tsc --noEmit",
+    "test": "jest",
+    "clean": "rimraf coverage dist node_modules .pnpm-debug.log"
+  },
+  "author": "Gabriel Anderson",
+  "license": "MIT",
+  "devDependencies": {
+    "parcel": "^2.0.1"
+  },
+  "dependencies": {
+    "language-coolscript": "^0.0.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}

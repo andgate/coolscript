@@ -1,0 +1,19 @@
+{
+  "name": "language-coolscript",
+  "version": "0.0.1",
+  "description": "Core library for the coolscript programming language",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts"
+  },
+  "scripts": {
+    "start": "tsc --build --watch",
+    "build": "tsc --build",
+    "check": "tsc --noEmit",
+    "test": "jest",
+    "clean": "rimraf coverage lib .pnpm-debug.log tsconfig.tsbuildinfo"
+  },
+  "author": "Gabriel Anderson",
+  "license": "MIT"
+}
