@@ -1,6 +1,6 @@
 {
   "name": "@coolscript/parser",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Coolscript programming language parser.",
   "main": "lib/index.js",
   "publishConfig": {
@@ -27,6 +27,6 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "dependencies": {
-    "@coolscript/syntax": "^0.0.1"
+    "@coolscript/syntax": "^0.0.2"
   }
 }
