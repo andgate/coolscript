@@ -25,12 +25,6 @@
     "url": "https://github.com/andgate/coolscript/issues"
   },
   "homepage": "https://andgate.github.io/coolscript",
-  "husky": {
-    "hooks": {
-      "pre-commit": "pnpm prettier",
-      "pre-push": "pnpm verify"
-    }
-  },
   "workspaces": [
     "packages/*"
   ],
@@ -45,7 +39,6 @@
     "eslint-plugin-html": "^6.2.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.28.0",
-    "husky": "^7.0.4",
     "jest": "^27.4.5",
     "lerna": "^4.0.0",
     "prettier": "2.5.1",
