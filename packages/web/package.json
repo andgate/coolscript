@@ -6,7 +6,7 @@
   "source": "src/index.html",
   "scripts": {
     "start": "parcel -p 1234",
-    "build": "parcel build --dist-dir ../../docs --no-source-maps --no-cache --no-content-hash",
+    "build": "parcel build --dist-dir ../../docs --no-source-maps --no-cache --no-content-hash --public-url ./",
     "check": "tsc --noEmit",
     "test": "jest",
     "clean": "rimraf coverage dist node_modules .pnpm-debug.log"
