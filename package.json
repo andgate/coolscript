@@ -5,7 +5,8 @@
   "description": "Monorepo for the coolscript language platform.",
   "scripts": {
     "start": "lerna run start --parallel",
-    "install": "lerna bootstrap",
+    "bootstrap": "lerna bootstrap",
+    "postinstall": "pnpm bootstrap",
     "prepublish": "pnpm build",
     "check": "lerna run check",
     "verify": "lerna run verify --stream",
