@@ -11,6 +11,7 @@ importers:
       jest: ^27.4.5
       lerna: ^4.0.0
       rimraf: ^3.0.2
+      touch: ^3.1.0
       ts-jest: ^27.1.2
       typescript: ^4.5.4
     devDependencies:
@@ -21,6 +22,7 @@ importers:
       jest: 27.4.5
       lerna: 4.0.0
       rimraf: 3.0.2
+      touch: 3.1.0
       ts-jest: 27.1.2_477db848dbb854cf21c4475e8e877fdd
       typescript: 4.5.4
 
@@ -6844,6 +6846,13 @@ packages:
     resolution: {integrity: sha512-CqyzN6z7Q6aMeF/ktcMVTzhAHCEpf8SOarwpzpf8pNBY2k5/oM34UHldUwp8VKI7uxct2HxSRdJjBaZeESzcxA==}
     dev: true
 
+  /nopt/1.0.10:
+    resolution: {integrity: sha1-bd0hvSoxQXuScn3Vhfim83YI6+4=}
+    hasBin: true
+    dependencies:
+      abbrev: 1.1.1
+    dev: true
+
   /nopt/4.0.3:
     resolution: {integrity: sha512-CvaGwVMztSMJLOeXPrez7fyfObdZqNUK1cPAEzLHrTybIua9pMdmmPR5YwtfNftIOMv3DPUhFaxsZMNTQO20Kg==}
     hasBin: true
@@ -9047,6 +9056,13 @@ packages:
     engines: {node: '>=8.0'}
     dependencies:
       is-number: 7.0.0
+    dev: true
+
+  /touch/3.1.0:
+    resolution: {integrity: sha512-WBx8Uy5TLtOSRtIq+M03/sKDrXCLHxwDcquSP2c43Le03/9serjQBIztjRz6FkJez9D/hleyAXTBGLwwZUw9lA==}
+    hasBin: true
+    dependencies:
+      nopt: 1.0.10
     dev: true
 
   /tough-cookie/2.5.0:
