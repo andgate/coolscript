@@ -22,7 +22,7 @@
     "verify": "pnpm prettier && pnpm lint",
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
     "test": "jest",
-    "clean": "rimraf coverage lib .pnpm-debug.log tsconfig.tsbuildinfo"
+    "clean": "rimraf lib node_modules coverage .pnpm-debug.log tsconfig.tsbuildinfo"
   },
   "author": "Gabriel Anderson",
   "license": "MIT",

@@ -15,7 +15,7 @@
     "verify": "pnpm prettier && pnpm lint",
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
     "test": "jest",
-    "clean": "rimraf coverage dist node_modules .pnpm-debug.log"
+    "clean": "rimraf dist node_modules coverage .pnpm-debug.log"
   },
   "author": "Gabriel Anderson",
   "license": "MIT",
@@ -23,8 +23,8 @@
     "parcel": "^2.0.1"
   },
   "dependencies": {
-    "@coolscript/parser": "^0.0.1",
-    "@coolscript/syntax": "^0.0.1",
+    "@coolscript/parser": "^0.0.2",
+    "@coolscript/syntax": "^0.0.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   }
