@@ -1,0 +1,34 @@
+{
+  "name": "coolscript",
+  "version": "0.0.2",
+  "description": "Coolscript programming language.",
+  "main": "dist/index.js",
+  "publishConfig": {
+    "main": "dist/index.js",
+    "access": "public"
+  },
+  "bin": {
+    "coolscript": "./dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "",
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node10.4 --outfile=dist/index.js",
+    "check": "tsc --noEmit",
+    "prettier": "prettier --check src/",
+    "prettier:fix": "prettier --write src/",
+    "lint": "eslint src/** --ext .ts,.tsx",
+    "lint:fix": "pnpm lint --fix",
+    "verify": "pnpm prettier && pnpm lint",
+    "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
+    "clean": "rimraf dist/ node_modules/ .pnpm-debug.log"
+  },
+  "author": "Gabriel Anderson",
+  "license": "MIT",
+  "dependencies": {
+    "@coolscript/cli": "^0.0.2"
+  }
+}

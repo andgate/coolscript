@@ -1,22 +1,20 @@
 {
   "name": "@coolscript/cli",
   "version": "0.0.2",
-  "description": "Coolscript programming language commandline interface.",
-  "main": "dist/index.js",
+  "description": "Coolscript programming language commandline interface library.",
+  "main": "lib/index.js",
   "publishConfig": {
-    "main": "dist/index.js",
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts",
     "access": "public"
   },
-  "bin": {
-    "coolscript": "./dist/index.js"
-  },
   "files": [
-    "dist/",
+    "lib/",
     "LICENSE"
   ],
   "scripts": {
-    "start": "",
-    "build": "esbuild src/index.ts --bundle --platform=node --target=node10.4 --outfile=dist/index.js",
+    "start": "tsc --build --watch",
+    "build": "tsc --build",
     "check": "tsc --noEmit",
     "prettier": "prettier --check src/ tests/",
     "prettier:fix": "prettier --write src/ tests/",

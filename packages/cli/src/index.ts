@@ -1,3 +1,5 @@
 import { parse } from '@coolscript/parser'
 
-console.log(parse('hello world'))
+export function cli(args: string) {
+  console.log(parse(args))
+}
