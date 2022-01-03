@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.settings.json",
+  "compilerOptions": {
+    "target": "es5",
+    "noEmit": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": [
+      "DOM"
+    ]
+  },
+  "references": [
+    {
+      "path": "../core/tsconfig.json"
+    }
+  ]
+}

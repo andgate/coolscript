@@ -1,12 +1,5 @@
 {
-  "extends": "../../tsconfig.settings.json",
-  "compilerOptions": {
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "lib": [
-      "DOM"
-    ]
-  },
+  "extends": "./tsconfig.settings.json",
   "include": [
     "src",
     "tests"
@@ -14,10 +7,5 @@
   "exclude": [
     "dist",
     "node_modules"
-  ],
-  "references": [
-    {
-      "path": "../core/tsconfig.json"
-    }
   ]
 }
