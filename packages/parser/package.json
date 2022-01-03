@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "publishConfig": {
     "main": "lib/index.js",
-    "typings": "lib/index.d.ts"
+    "typings": "lib/index.d.ts",
+    "access": "public"
   },
   "files": [
     "lib/",
@@ -28,5 +29,6 @@
   "license": "MIT",
   "dependencies": {
     "@coolscript/syntax": "^0.0.2"
-  }
+  },
+  "gitHead": "9b91bf0df0bb73d74440b9a1d191fd5c91c6af93"
 }

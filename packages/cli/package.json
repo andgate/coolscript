@@ -3,6 +3,10 @@
   "version": "0.0.2",
   "description": "Coolscript programming language commandline interface.",
   "main": "dist/index.js",
+  "publishConfig": {
+    "main": "dist/index.js",
+    "access": "public"
+  },
   "bin": {
     "coolscript": "./dist/index.js"
   },
@@ -28,5 +32,6 @@
   "dependencies": {
     "@coolscript/parser": "^0.0.2",
     "@coolscript/syntax": "^0.0.2"
-  }
+  },
+  "gitHead": "9b91bf0df0bb73d74440b9a1d191fd5c91c6af93"
 }
