@@ -11,6 +11,12 @@
     "start": "tsc --build --watch",
     "build": "tsc --build",
     "check": "tsc --noEmit",
+    "prettier": "prettier --check src/ tests/",
+    "prettier:fix": "prettier --write src/ tests/",
+    "lint": "eslint src/** tests/** --ext .ts,.tsx",
+    "lint:fix": "pnpm lint --fix",
+    "verify": "pnpm prettier && pnpm lint",
+    "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
     "test": "jest",
     "clean": "rimraf coverage lib .pnpm-debug.log tsconfig.tsbuildinfo"
   },

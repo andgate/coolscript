@@ -7,8 +7,11 @@
     "start": "lerna run start --parallel",
     "postinstall": "lerna bootstrap",
     "prepublish": "pnpm build",
-    "build": "lerna run build && nodetouch ./docs/.nojekyll",
+    "prepare": "husky install",
     "check": "lerna run check",
+    "verify": "lerna run verify --stream",
+    "prettier": "lerna run prettier",
+    "build": "lerna run build && nodetouch ./docs/.nojekyll",
     "test": "jest",
     "clean": "lerna run clean && rimraf docs .pnpm-debug.log lerna-debug.log .parcel-cache && lerna bootstrap"
   },
@@ -22,16 +25,31 @@
     "url": "https://github.com/andgate/coolscript/issues"
   },
   "homepage": "https://andgate.github.io/coolscript",
+  "husky": {
+    "hooks": {
+      "pre-commit": "pnpm prettier",
+      "pre-push": "pnpm verify"
+    }
+  },
   "workspaces": [
     "packages/*"
   ],
   "devDependencies": {
     "@types/jest": "^27.4.0",
     "@types/node": "^17.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
     "esbuild": "^0.14.10",
     "eslint": "^8.6.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-html": "^6.2.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.28.0",
+    "husky": "^7.0.4",
     "jest": "^27.4.5",
     "lerna": "^4.0.0",
+    "prettier": "2.5.1",
+    "prettier-config-standard": "^4.0.0",
     "rimraf": "^3.0.2",
     "touch": "^3.1.0",
     "ts-jest": "^27.1.2",
