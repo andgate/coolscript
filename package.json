@@ -12,7 +12,7 @@
     "prettier": "lerna run prettier",
     "build": "lerna run build && nodetouch ./docs/.nojekyll",
     "test": "jest",
-    "clean": "lerna run clean && rimraf docs .pnpm-debug.log lerna-debug.log .parcel-cache && lerna bootstrap"
+    "clean": "lerna run clean && rimraf docs .pnpm-debug.log lerna-debug.log .parcel-cache"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,10 @@
   },
   "homepage": "https://andgate.github.io/coolscript",
   "workspaces": [
-    "packages/*"
+    "packages/syntax",
+    "packages/parser",
+    "packages/cli",
+    "packages/web"
   ],
   "devDependencies": {
     "@types/jest": "^27.4.0",

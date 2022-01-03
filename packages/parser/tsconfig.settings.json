@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.settings.json",
   "references": [
     {
-      "path": "../syntax/tsconfig.json"
+      "path": "../syntax"
     }
   ]
 }

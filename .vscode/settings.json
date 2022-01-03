@@ -10,8 +10,5 @@
   "javascript.format.semicolons": "remove",
   "typescript.format.semicolons": "remove",
   "javascript.preferences.importModuleSpecifier": "relative",
-  "typescript.preferences.importModuleSpecifier": "relative",
-  "files.exclude": {
-    "**/.git": false
-  }
+  "typescript.preferences.importModuleSpecifier": "relative"
 }

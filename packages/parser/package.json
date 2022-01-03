@@ -2,11 +2,15 @@
   "name": "@coolscript/parser",
   "version": "0.0.1",
   "description": "Coolscript programming language parser.",
-  "main": "src/index.ts",
+  "main": "lib/index.js",
   "publishConfig": {
     "main": "lib/index.js",
     "typings": "lib/index.d.ts"
   },
+  "files": [
+    "lib/",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "tsc --build --watch",
     "build": "tsc --build",
@@ -23,6 +27,6 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "dependencies": {
-    "@coolscript/syntax": "0.0.1"
+    "@coolscript/syntax": "^0.0.1"
   }
 }

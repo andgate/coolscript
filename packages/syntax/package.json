@@ -2,11 +2,15 @@
   "name": "@coolscript/syntax",
   "version": "0.0.1",
   "description": "Coolscript programming language syntax library.",
-  "main": "src/index.ts",
+  "main": "lib/index.js",
   "publishConfig": {
     "main": "lib/index.js",
     "typings": "lib/index.d.ts"
   },
+  "files": [
+    "lib/",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "tsc --build --watch",
     "build": "tsc --build",

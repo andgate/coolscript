@@ -2,10 +2,14 @@
   "name": "@coolscript/cli",
   "version": "0.0.1",
   "description": "Coolscript programming language commandline interface.",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "bin": {
     "coolscript": "./dist/index.js"
   },
+  "files": [
+    "dist/",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "",
     "build": "esbuild src/index.ts --bundle --platform=node --target=node10.4 --outfile=dist/index.js",
