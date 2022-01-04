@@ -1,5 +1,5 @@
-import { parse } from '@coolscript/parser'
+import { EditorPage } from './components/EditorPage'
 
 export function App() {
-  return <h1>{parse('hello world').tag}</h1>
+  return <EditorPage />
 }
