@@ -11,5 +11,6 @@ const consoleRoot = style(csstips.flex, {
 
 export function EditorConsole() {
   const { editorState } = useContext(EditorContext)
-  return <div className={consoleRoot}>{parse(editorState.textContent).tag}</div>
+  const consoleOutput = JSON.stringify(parse(editorState.textContent))
+  return <div className={consoleRoot}>{consoleOutput}</div>
 }

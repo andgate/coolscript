@@ -1,3 +1,1 @@
-import { Syntax } from './coolscript/syntax'
-
-export { Syntax }
+export * from './coolscript/syntax'
