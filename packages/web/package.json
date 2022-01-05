@@ -5,7 +5,7 @@
   "description": "Website for coolscript",
   "source": "src/index.html",
   "scripts": {
-    "start": "parcel -p 1234",
+    "start": "parcel",
     "build": "parcel build --dist-dir ../../docs --no-source-maps --no-cache --no-content-hash --public-url ./",
     "check": "tsc --noEmit",
     "prettier": "prettier --check src/ tests/",
@@ -15,15 +15,13 @@
     "verify": "pnpm prettier && pnpm lint",
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
     "test": "jest",
-    "clean": "rimraf dist node_modules coverage .pnpm-debug.log"
+    "clean": "pnpm clean:etc",
+    "clean:node_modules": "rimraf node_modules",
+    "clean:etc": "rimraf dist coverage .pnpm-debug.log"
   },
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
-    "parcel": "^2.0.1",
-    "@parcel/transformer-inline-string": "^2.0.1"
-  },
-  "dependencies": {
     "@coolscript/parser": "^0.0.3",
     "@coolscript/syntax": "^0.0.3",
     "csstips": "^1.2.0",

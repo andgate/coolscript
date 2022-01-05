@@ -2,9 +2,12 @@
   "name": "@coolscript/parser",
   "version": "0.0.3",
   "description": "Coolscript programming language parser.",
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
+  "module": "./lib/index.cjs",
+  "types": "./lib/index.d.ts",
   "publishConfig": {
-    "main": "lib/index.js",
+    "main": "./lib/index.js",
+    "module": "./lib/index.cjs",
     "typings": "lib/index.d.ts",
     "access": "public"
   },
@@ -13,8 +16,15 @@
     "LICENSE"
   ],
   "scripts": {
-    "start": "tsc --build --watch",
-    "build": "tsc --build",
+    "start": "pnpm watch",
+    "build": "pnpm build:lib",
+    "build:lib": "pnpm clean:lib && pnpm build:grammar && pnpm build:ts && pnpm build:js",
+    "build:js": "node build.js",
+    "build:ts": "tsc",
+    "build:grammar": "pnpm clean:grammar && nearleyc src/grammar.ne -o src/grammar.js",
+    "watch": "concurrently \"pnpm:watch:*\"",
+    "watch:js": "node build.js --watch",
+    "watch:ts": "tsc --watch",
     "check": "tsc --noEmit",
     "prettier": "prettier --check src/ tests/",
     "prettier:fix": "prettier --write src/ tests/",
@@ -23,13 +33,22 @@
     "verify": "pnpm prettier && pnpm lint",
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
     "test": "jest",
-    "clean": "rimraf lib node_modules coverage .pnpm-debug.log tsconfig.tsbuildinfo"
+    "clean": "pnpm clean:grammar && pnpm clean:lib && pnpm clean:etc",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:grammar": "rimraf src/grammar.js",
+    "clean:etc": "rimraf coverage .pnpm-debug.log tsconfig.tsbuildinfo",
+    "clean:node_modules": "rimraf node_modules"
   },
   "author": "Gabriel Anderson",
   "license": "MIT",
+  "devDependencies": {
+    "@types/moo": "^0.5.5",
+    "@types/nearley": "^2.11.2",
+    "moo": "^0.5.1",
+    "nearley": "^2.20.1"
+  },
   "dependencies": {
-    "@coolscript/syntax": "^0.0.3",
-    "parjs": "^0.12.7"
+    "@coolscript/syntax": "^0.0.3"
   },
   "gitHead": "9b91bf0df0bb73d74440b9a1d191fd5c91c6af93"
 }

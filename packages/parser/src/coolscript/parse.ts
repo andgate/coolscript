@@ -1,7 +1,14 @@
+import * as nearley from 'nearley'
+import * as grammar from '../grammar'
 import { Term } from '@coolscript/syntax'
-import { float, string, whitespace } from 'parjs'
-import { between, manySepBy } from 'parjs/combinators'
 
-export function parse(src: string): Term {
-  return { tag: 'TmValue', value: { tag: 'VString', str: src } }
+export function parse(src: string): Term | null {
+  const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar))
+  try {
+    parser.feed(src)
+  } catch (e) {
+    console.error(e)
+    return null
+  }
+  return parser.results[0]
 }

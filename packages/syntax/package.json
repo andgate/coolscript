@@ -2,10 +2,13 @@
   "name": "@coolscript/syntax",
   "version": "0.0.3",
   "description": "Coolscript programming language syntax library.",
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
+  "module": "./lib/index.cjs",
+  "types": "./lib/index.d.ts",
   "publishConfig": {
-    "main": "lib/index.js",
-    "typings": "lib/index.d.ts",
+    "main": "./lib/index.js",
+    "module": "./lib/index.cjs",
+    "typings": "./lib/index.d.ts",
     "access": "public"
   },
   "files": [
@@ -13,8 +16,14 @@
     "LICENSE"
   ],
   "scripts": {
-    "start": "tsc --build --watch",
-    "build": "tsc --build",
+    "start": "pnpm watch",
+    "build": "pnpm build:lib",
+    "build:lib": "pnpm clean:lib && pnpm build:ts && pnpm build:js",
+    "build:js": "node build.js",
+    "build:ts": "tsc --emitDeclarationOnly",
+    "watch": "concurrently \"pnpm:watch:*\"",
+    "watch:js": "node build.js --watch",
+    "watch:ts": "tsc --emitDeclarationOnly --watch",
     "check": "tsc --noEmit",
     "prettier": "prettier --check src/ tests/",
     "prettier:fix": "prettier --write src/ tests/",
@@ -23,7 +32,10 @@
     "verify": "pnpm prettier && pnpm lint",
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
     "test": "jest",
-    "clean": "rimraf lib node_modules coverage .pnpm-debug.log tsconfig.tsbuildinfo"
+    "clean": "pnpm clean:lib && pnpm clean:etc",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:etc": "rimraf coverage .pnpm-debug.log tsconfig.tsbuildinfo",
+    "clean:node_modules": "rimraf node_modules"
   },
   "author": "Gabriel Anderson",
   "license": "MIT",

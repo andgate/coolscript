@@ -24,11 +24,14 @@
     "lint:fix": "pnpm lint --fix",
     "verify": "pnpm prettier && pnpm lint",
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
-    "clean": "rimraf dist/ node_modules/ .pnpm-debug.log"
+    "clean": "pnpm clean:dist && pnpm clean:etc",
+    "clean:dist": "rimraf dist",
+    "clean:etc": "rimraf .pnpm-debug.log tsconfig.tsbuildinfo",
+    "clean:node_modules": "rimraf node_modules"
   },
   "author": "Gabriel Anderson",
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
     "@coolscript/cli": "^0.0.3"
   }
 }

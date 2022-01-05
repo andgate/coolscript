@@ -1,37 +1,62 @@
 lockfileVersion: 5.3
 
 specifiers:
-  parjs: ^0.12.7
+  '@types/moo': ^0.5.5
+  '@types/nearley': ^2.11.2
+  moo: ^0.5.1
+  nearley: ^2.20.1
 
-dependencies:
-  parjs: 0.12.7
+devDependencies:
+  '@types/moo': 0.5.5
+  '@types/nearley': 2.11.2
+  moo: 0.5.1
+  nearley: 2.20.1
 
 packages:
 
-  /char-info/0.3.2:
-    resolution: {integrity: sha512-6P6KW8crZx+N857wZalB4FreR+PhheSLmAk22c8zbQsFhsDxZP1aTDfmOjrzddgp1IBOl53b0Z8kDQrwh4B//A==}
+  /@types/moo/0.5.5:
+    resolution: {integrity: sha512-eXQpwnkI4Ntw5uJg6i2PINdRFWLr55dqjuYQaLHNjvqTzF14QdNWbCbml9sza0byyXNA0hZlHtcdN+VNDcgVHA==}
+    dev: true
+
+  /@types/nearley/2.11.2:
+    resolution: {integrity: sha512-jeyIDNBxxyWyEk6HemDC+t32b4fxthVsgWDxf88qD2WpX0QpOyY8JvA80AElPTBGRUsO0EKnr6OeVOjK3ZDdnA==}
+    dev: true
+
+  /commander/2.20.3:
+    resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
+    dev: true
+
+  /discontinuous-range/1.0.0:
+    resolution: {integrity: sha1-44Mx8IRLukm5qctxx3FYWqsbxlo=}
+    dev: true
+
+  /moo/0.5.1:
+    resolution: {integrity: sha512-I1mnb5xn4fO80BH9BLcF0yLypy2UKl+Cb01Fu0hJRkJjlCRtxZMWkTdAtDd5ZqCOxtCkhmRwyI57vWT+1iZ67w==}
+    dev: true
+
+  /nearley/2.20.1:
+    resolution: {integrity: sha512-+Mc8UaAebFzgV+KpI5n7DasuuQCHA89dmwm7JXw3TV43ukfNQ9DnBH3Mdb2g/I4Fdxc26pwimBWvjIw0UAILSQ==}
+    hasBin: true
     dependencies:
-      node-interval-tree: 1.3.3
-    dev: false
+      commander: 2.20.3
+      moo: 0.5.1
+      railroad-diagrams: 1.0.0
+      randexp: 0.4.6
+    dev: true
 
-  /lodash/4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-    dev: false
+  /railroad-diagrams/1.0.0:
+    resolution: {integrity: sha1-635iZ1SN3t+4mcG5Dlc3RVnN234=}
+    dev: true
 
-  /node-interval-tree/1.3.3:
-    resolution: {integrity: sha512-K9vk96HdTK5fEipJwxSvIIqwTqr4e3HRJeJrNxBSeVMNSC/JWARRaX7etOLOuTmrRMeOI/K5TCJu3aWIwZiNTw==}
-    engines: {node: '>= 7.6.0'}
+  /randexp/0.4.6:
+    resolution: {integrity: sha512-80WNmd9DA0tmZrw9qQa62GPPWfuXJknrmVmLcxvq4uZBdYqb1wYoKTmnlGUchvVWe0XiLupYkBoXVOxz3C8DYQ==}
+    engines: {node: '>=0.12'}
     dependencies:
-      shallowequal: 1.1.0
-    dev: false
+      discontinuous-range: 1.0.0
+      ret: 0.1.15
+    dev: true
 
-  /parjs/0.12.7:
-    resolution: {integrity: sha512-aKw+vsSMBdZNdxcetIwi5mnmFckuwxTz7dKu07wEzrNjKYtvhRlrlla3b4GAEmGMyAWhrocLrUcbSGvmMZMU3Q==}
-    dependencies:
-      char-info: 0.3.2
-      lodash: 4.17.21
-    dev: false
-
-  /shallowequal/1.1.0:
-    resolution: {integrity: sha512-y0m1JoUZSlPAjXVtPPW70aZWfIL/dSP7AFkRnniLCrK/8MDKog3TySTBmckD+RObVxH0v4Tox67+F14PdED2oQ==}
-    dev: false
+  /ret/0.1.15:
+    resolution: {integrity: sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==}
+    engines: {node: '>=0.12'}
+    dev: true
