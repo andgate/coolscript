@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import { evalcs } from '@coolscript/eval'
 import { parse } from '@coolscript/parser'
 import { style } from 'typestyle'
 import * as csstips from 'csstips'
@@ -11,6 +12,30 @@ const consoleRoot = style(csstips.flex, {
 
 export function EditorConsole() {
   const { editorState } = useContext(EditorContext)
-  const consoleOutput = JSON.stringify(parse(editorState.textContent))
-  return <div className={consoleRoot}>{consoleOutput}</div>
+  const parseResult = parse(editorState.textContent)
+  const evalResult = parseResult ? evalcs(parseResult) : null
+  return (
+    <div className={consoleRoot}>
+      <div>
+        {parseResult ? (
+          <div>
+            <h3>Parsed</h3>
+            <div>{JSON.stringify(parseResult)}</div>
+          </div>
+        ) : (
+          <h1>Parsing failed.</h1>
+        )}
+      </div>
+      <div>
+        {evalResult ? (
+          <div>
+            <h3>Evaluated</h3>
+            <div>{JSON.stringify(evalResult)}</div>
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
+    </div>
+  )
 }

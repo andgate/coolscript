@@ -1,10 +1,9 @@
 import * as nearley from 'nearley'
-// @ts-ignore
-import grammar from '../grammar.ne'
 import { Term } from '@coolscript/syntax'
+import { coolscriptGrammar } from './grammar'
 
 export function parse(src: string): Term | null {
-  const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar))
+  const parser = new nearley.Parser(coolscriptGrammar)
   try {
     parser.feed(src)
   } catch (e) {
