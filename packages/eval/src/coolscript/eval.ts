@@ -1,12 +1,10 @@
 import { Term, Value, VError } from '@coolscript/syntax'
 
-export function evalcs(tm: Term): Value {
+export function evalcs(tm: Term): Value | null {
   switch (tm.tag) {
-    case 'TmValue': {
+    case 'TmValue':
       return tm.value
-    }
-    default: {
+    default:
       return VError(`Unknown term tag encountered "${tm.tag}".`)
-    }
   }
 }

@@ -16,7 +16,7 @@ const lexer = moo.compile({
 # Pass your lexer object using the @lexer option:
 @lexer lexer
 
-main -> term
+main -> term {% id %}
 
 file ->
   _ term _ {% ([,t,]) => t %}
@@ -56,19 +56,19 @@ object_entry ->
     id _ ":" _ value {% ([k,,,,v]) => [k, v] %}
 
 # Values
-value -> vnumber | vbool | vobject | vstring
+value -> vnumber {% id %} | vbool {% id %} | vobject {% id %} | vstring {% id %}
 vnumber -> number {% ([n]) => VNumber(n) %}
 vstring -> string {% ([s]) => VString(s.slice(1,-1)) %}
 vbool -> bool {% ([b]) => VBool(b) %}
 vobject -> object {% ([o]) => VObject(o) %}
 
 # Terms
-term  -> cterm
-cterm -> tmlam | bterm
-bterm -> tmcall | aterm
+term  -> cterm {% id %}
+cterm -> tmlam {% id %} | bterm {% id %}
+bterm -> tmcall {% id %} | aterm {% id %}
 aterm -> 
-    tmvar 
-  | tmvalue
+    tmvar {% id %}
+  | tmvalue {% id %}
   | "(" _ term _ ")" {% ([,,t,,]) => t %}
 
 tmvar ->

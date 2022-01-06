@@ -12,6 +12,9 @@
     },
     {
       "path": "../parser/tsconfig.json"
+    },
+    {
+      "path": "../eval/tsconfig.json"
     }
   ]
 }

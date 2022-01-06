@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 import { evalcs } from '@coolscript/eval'
 import { parse } from '@coolscript/parser'
 import { style } from 'typestyle'
@@ -12,8 +12,14 @@ const consoleRoot = style(csstips.flex, {
 
 export function EditorConsole() {
   const { editorState } = useContext(EditorContext)
-  const parseResult = parse(editorState.textContent)
-  const evalResult = parseResult ? evalcs(parseResult) : null
+  const parseResult = useMemo(
+    () => parse(editorState.textContent),
+    [editorState]
+  )
+  const evalResult = useMemo(
+    () => (parseResult ? evalcs(parseResult) : null),
+    [parseResult]
+  )
   return (
     <div className={consoleRoot}>
       <div>
