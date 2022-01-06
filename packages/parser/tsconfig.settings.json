@@ -3,6 +3,9 @@
   "references": [
     {
       "path": "../syntax/tsconfig.json"
+    },
+    {
+      "path": "../esbuild-plugin-nearley/tsconfig.json"
     }
   ]
 }

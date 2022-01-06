@@ -63,6 +63,15 @@ export function TmVar(variable: Var): Term {
   return { tag: 'TmVar', variable }
 }
 
+export type TmValue = {
+  tag: 'TmValue'
+  value: Value
+}
+
+export function TmValue(value: Value): Term {
+  return { tag: 'TmValue', value }
+}
+
 // (x, y) => f(x, y)
 export type TmLam = {
   tag: 'TmLam'
@@ -81,15 +90,6 @@ export type TmCall = {
 
 export function TmCall(caller: Term, args: Term[]): Term {
   return { tag: 'TmCall', call: { caller, args } }
-}
-
-export type TmValue = {
-  tag: 'TmValue'
-  value: Value
-}
-
-export function TmValue(value: Value): Term {
-  return { tag: 'TmValue', value }
 }
 
 // v = x

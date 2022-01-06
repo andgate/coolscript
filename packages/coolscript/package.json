@@ -2,32 +2,29 @@
   "name": "coolscript",
   "version": "0.0.3",
   "description": "Coolscript programming language.",
-  "main": "dist/index.js",
+  "main": "./bin/coolscript.js",
   "publishConfig": {
-    "main": "dist/index.js",
+    "main": "./bin/coolscript.js",
     "access": "public"
   },
   "bin": {
-    "coolscript": "./dist/index.js"
+    "coolscript": "./bin/coolscript.js"
   },
   "files": [
-    "dist/",
+    "bin/",
     "LICENSE"
   ],
   "scripts": {
-    "start": "",
-    "build": "esbuild src/index.ts --bundle --platform=node --target=node10.4 --outfile=dist/index.js",
-    "check": "tsc --noEmit",
+    "start": "pnpm watch",
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node10.4 --outfile=bin/coolscript.js",
+    "watch": "esbuild src/index.ts --bundle --platform=node --target=node10.4 --outfile=bin/coolscript.js --watch",
+    "check": "tsc",
     "prettier": "prettier --check src/",
     "prettier:fix": "prettier --write src/",
     "lint": "eslint src/** --ext .ts,.tsx",
     "lint:fix": "pnpm lint --fix",
     "verify": "pnpm prettier && pnpm lint",
-    "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
-    "clean": "pnpm clean:dist && pnpm clean:etc",
-    "clean:dist": "rimraf dist",
-    "clean:etc": "rimraf .pnpm-debug.log tsconfig.tsbuildinfo",
-    "clean:node_modules": "rimraf node_modules"
+    "verify:fix": "pnpm prettier:fix && pnpm lint:fix"
   },
   "author": "Gabriel Anderson",
   "license": "MIT",

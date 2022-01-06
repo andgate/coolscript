@@ -18,10 +18,10 @@
   "scripts": {
     "start": "pnpm watch",
     "build": "pnpm build:lib",
-    "build:lib": "pnpm clean:lib && pnpm build:grammar && pnpm build:ts && pnpm build:js",
+    "build:lib": "pnpm clean && pnpm build:ts && pnpm build:js",
     "build:js": "node build.js",
     "build:ts": "tsc",
-    "build:grammar": "pnpm clean:grammar && nearleyc src/grammar.ne -o src/grammar.js",
+    "clean": "rimraf lib/ tsconfig.tsbuildinfo",
     "watch": "concurrently \"pnpm:watch:*\"",
     "watch:js": "node build.js --watch",
     "watch:ts": "tsc --watch",
@@ -32,18 +32,14 @@
     "lint:fix": "pnpm lint --fix",
     "verify": "pnpm prettier && pnpm lint",
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
-    "test": "jest",
-    "clean": "pnpm clean:grammar && pnpm clean:lib && pnpm clean:etc",
-    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
-    "clean:grammar": "rimraf src/grammar.js",
-    "clean:etc": "rimraf coverage .pnpm-debug.log tsconfig.tsbuildinfo",
-    "clean:node_modules": "rimraf node_modules"
+    "test": "jest"
   },
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
     "@types/moo": "^0.5.5",
     "@types/nearley": "^2.11.2",
+    "esbuild-plugin-nearley": "^1.0.0",
     "moo": "^0.5.1",
     "nearley": "^2.20.1"
   },

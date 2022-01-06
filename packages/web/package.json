@@ -14,10 +14,7 @@
     "lint:fix": "pnpm lint --fix",
     "verify": "pnpm prettier && pnpm lint",
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
-    "test": "jest",
-    "clean": "pnpm clean:etc",
-    "clean:node_modules": "rimraf node_modules",
-    "clean:etc": "rimraf dist coverage .pnpm-debug.log"
+    "test": "jest"
   },
   "author": "Gabriel Anderson",
   "license": "MIT",

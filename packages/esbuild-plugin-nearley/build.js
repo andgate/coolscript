@@ -1,10 +1,10 @@
 const process = require('process')
 const esbuild = require('esbuild')
-const NearleyPlugin = require('esbuild-plugin-nearley')
 const { dependencies } = require('./package.json')
 const external = Object.keys(dependencies)
 
 let watch = process.argv.some((arg) => arg == '--watch')
+
 if (watch) {
   watch = {
     onRebuild(error, result) {
@@ -14,29 +14,15 @@ if (watch) {
   }
 }
 
-const shared = {
-  entryPoints: ['src/index.ts'],
-  sourcemap: true,
-  bundle: true,
-  external,
-  plugins: [NearleyPlugin.default],
-  watch
-}
-
 esbuild
   .build({
-    ...shared,
-    outfile: 'lib/index.js',
-    platform: 'browser',
-    format: 'iife'
-  })
-  .catch(() => process.exit(1))
-
-esbuild
-  .build({
-    ...shared,
-    outfile: 'lib/index.cjs',
-    platform: 'browser',
-    format: 'cjs'
+    entryPoints: ['src/index.ts'],
+    outfile: 'dist/index.js',
+    platform: 'node',
+    format: 'cjs',
+    sourcemap: true,
+    bundle: true,
+    external,
+    watch
   })
   .catch(() => process.exit(1))

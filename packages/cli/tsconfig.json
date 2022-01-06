@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.settings.json",
   "compilerOptions": {
+    "emitDeclarationOnly": true,
     "outDir": "./lib",
     "rootDir": "./src",
     "composite": true
