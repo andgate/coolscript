@@ -1,5 +1,5 @@
 import { useContext, useMemo } from 'react'
-import { evalcs } from '@coolscript/eval'
+import { evaluate } from '@coolscript/eval'
 import { parse } from '@coolscript/parser'
 import { style } from 'typestyle'
 import * as csstips from 'csstips'
@@ -17,7 +17,7 @@ export function EditorConsole() {
     [editorState]
   )
   const evalResult = useMemo(
-    () => (parseResult ? evalcs(parseResult) : null),
+    () => (parseResult ? evaluate(parseResult) : null),
     [parseResult]
   )
   return (
@@ -39,7 +39,7 @@ export function EditorConsole() {
             <div>{JSON.stringify(evalResult)}</div>
           </div>
         ) : (
-          <></>
+          <h3>Evaluation failed</h3>
         )}
       </div>
     </div>

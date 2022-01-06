@@ -52,7 +52,15 @@ export function VError(err: string): Value {
   return { tag: 'VError', err }
 }
 
-export type Term = TmVar | TmLam | TmCall | TmValue | TmLet | TmSeq | TmBind
+export type Term =
+  | TmVar
+  | TmLam
+  | TmCall
+  | TmValue
+  | TmObject
+  | TmLet
+  | TmSeq
+  | TmBind
 
 export type TmVar = {
   tag: 'TmVar'
@@ -112,6 +120,15 @@ export function TmLet(binders: Binding[], body: Term): Term {
   return { tag: 'TmLet', let: { binders, body } }
 }
 
+export type TmObject = {
+  tag: 'TmObject'
+  obj: { [key: string]: Term }
+}
+
+export function TmObject(obj: { [key: string]: Term }): Term {
+  return { tag: 'TmObject', obj }
+}
+
 // x; y
 export type TmSeq = {
   tag: 'TmSeq'
@@ -130,4 +147,8 @@ export type TmBind = {
 
 export function TmBind(v: Var, a: Term, b: Term): Term {
   return { tag: 'TmBind', bind: { binding: Binding(v, a), body: b } }
+}
+
+export function TmError(msg: string): Term {
+  return TmValue(VError(msg))
 }

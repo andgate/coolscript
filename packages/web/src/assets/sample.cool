@@ -1,3 +1,11 @@
 // This is a comment
-1 + 2
-print('Hello World')
+let
+  id = (x) => x;
+  const = (a, b) => a;
+  createFoo = (x) => {
+    name: "Foo",
+    value: x
+  };
+  bar = 999;
+in
+  createFoo(bar)
