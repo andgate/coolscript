@@ -59,7 +59,7 @@ export type Term =
   | TmValue
   | TmObject
   | TmLet
-  | TmSeq
+  | TmDo
   | TmBind
 
 export type TmVar = {
@@ -129,14 +129,36 @@ export function TmObject(obj: { [key: string]: Term }): Term {
   return { tag: 'TmObject', obj }
 }
 
-// x; y
-export type TmSeq = {
-  tag: 'TmSeq'
-  seq: { a: Term; b: Term }
+// do { s1; ...; sn }
+export type TmDo = {
+  tag: 'TmDo'
+  do: { statements: DoStatement[] }
 }
 
-export function TmSeq(a: Term, b: Term): Term {
-  return { tag: 'TmSeq', seq: { a, b } }
+export function TmDo(statements: DoStatement[]): Term {
+  return { tag: 'TmDo', do: { statements } }
+}
+
+export type DoStatement = DoBind | DoCommand
+
+// x <- t
+export type DoBind = {
+  tag: 'DoBind'
+  bind: { lhs: string; rhs: Term }
+}
+
+export function DoBind(lhs: string, rhs: Term): DoBind {
+  return { tag: 'DoBind', bind: { lhs, rhs } }
+}
+
+// t
+export type DoCommand = {
+  tag: 'DoCommand'
+  command: { term: Term }
+}
+
+export function DoCommand(term: Term): DoCommand {
+  return { tag: 'DoCommand', command: { term } }
 }
 
 // v = x; y v

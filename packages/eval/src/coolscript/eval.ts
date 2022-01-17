@@ -20,6 +20,11 @@ export function evaluate(tm: Term): Value {
 }
 
 export function reduce(tm: Term, env: EvalEnv = {}): Term {
+  if (!tm) {
+    const msg = `Term undefined: ${tm}`
+    return TmError(msg)
+  }
+
   switch (tm.tag) {
     case 'TmVar': {
       const t = env[tm.variable]
@@ -77,6 +82,9 @@ export function reduce(tm: Term, env: EvalEnv = {}): Term {
         return TmValue(VObject(obj))
       }
       return TmObject(obj)
+    }
+    case 'TmDo': {
+      return tm
     }
     default:
       return TmError(`Unknown term tag encountered "${tm.tag}".`)

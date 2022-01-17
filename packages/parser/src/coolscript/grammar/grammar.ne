@@ -1,5 +1,5 @@
 @{%
-const { Binding, VBool, VNumber, VString, TmObject, TmLet, TmValue, TmVar, TmCall, TmLam } = require("@coolscript/syntax");
+const { Binding, VBool, VNumber, VString, TmObject, TmLet, TmValue, TmVar, TmCall, TmLam, TmDo, DoBind, DoCommand } = require("@coolscript/syntax");
 const moo = require("moo");
 
 const lexer = moo.compile({
@@ -10,7 +10,7 @@ const lexer = moo.compile({
   number:     /[0-9]+/,
   dqstring:   { match: /"(?:\\["\\]|[^\n"\\])*"/, lineBreaks: true },
   sqstring:   { match: /'(?:\\['\\]|[^\n'\\])*'/, lineBreaks: true },
-  keyword: [ "true", "false", ".", "+", "-", "(", ")", "{", "}", ":", ",", "=>", "error", "let", "in", ";", "=" ]
+  keyword: [ "true", "false", ".", "+", "-", "(", ")", "{", "}", ":", ",", "=>", "error", "let", "in", ";", "=", "do", "<-" ]
 });
 %}
 
@@ -63,6 +63,7 @@ aterm ->
   | tmvalue {% id %}
   | object  {% ([o]) => TmObject(o) %}
   | "(" _ term _ ")" {% ([,,t,,]) => t %}
+  | tmdo {% ([d]) => d %}
 
 tmvar ->
     id
@@ -85,7 +86,7 @@ object_entry ->
     id _ ":" _ term {% ([k,,,,v]) => [k, v] %}
 
 tmlet ->
-    "let" _ let_binding_list _ ";" _ "in" _ term
+    "let" _ let_binding_list _ ";":? _ "in" _ term
       {% ([,,bs,,,,,,t]) => TmLet(bs, t) %}
 
 let_binding_list ->
@@ -117,3 +118,27 @@ call_args ->
       {% ([t]) => [t] %}
   | call_args _ "," _ bterm
       {% ([ts,,,,t]) => [...ts, t] %}
+
+tmdo ->
+  "do" _ "{" _ do_stmts _ ";":? _ "}"
+    {% ([,,,,stmts,,,,]) => TmDo(stmts) %}
+
+do_stmts ->
+    do_stmt
+      {% ([stmt]) => [stmt] %}
+  | do_stmts _ ";" _ do_stmt
+      {% ([stmts,,,,s]) => [...stmts, s] %}
+
+do_stmt ->
+    do_bind
+      {% ([b]) => b %}
+  | do_command
+      {% ([c]) => c %}
+
+do_bind ->
+    varid _ "<-" _ term
+      {% ([v,,,,t]) => DoBind(v, t) %}
+
+do_command ->
+    term
+      {% ([t]) => DoCommand(t) %}

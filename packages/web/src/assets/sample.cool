@@ -8,4 +8,7 @@ let
   };
   bar = 999;
 in
-  createFoo(bar)
+do {
+  baz <- id(bar);
+  createFoo(baz);
+}
