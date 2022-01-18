@@ -1,5 +1,5 @@
 @{%
-const { Binding, VBool, VNumber, VString, TmObject, TmLet, TmValue, TmVar, TmCall, TmLam, TmDo, DoBind, DoCommand } = require("@coolscript/syntax");
+const { Binding, VNull, VBool, VNumber, VString, TmNull, TmObject, TmLet, TmValue, TmVar, TmCall, TmLam, TmDo, DoBind, DoCommand, DoReturn } = require("@coolscript/syntax");
 const moo = require("moo");
 
 const lexer = moo.compile({
@@ -10,7 +10,7 @@ const lexer = moo.compile({
   number:     /[0-9]+/,
   dqstring:   { match: /"(?:\\["\\]|[^\n"\\])*"/, lineBreaks: true },
   sqstring:   { match: /'(?:\\['\\]|[^\n'\\])*'/, lineBreaks: true },
-  keyword: [ "true", "false", ".", "+", "-", "(", ")", "{", "}", ":", ",", "=>", "error", "let", "in", ";", "=", "do", "<-" ]
+  keyword: [ "true", "false", ".", "+", "-", "(", ")", "{", "}", ":", ",", "=>", "error", "let", "in", ";", "=", "do", "null" ]
 });
 %}
 
@@ -49,7 +49,8 @@ bool ->
   | "false" {% () => false %}
 
 # Values
-value -> vnumber {% id %} | vbool {% id %} | vstring {% id %}
+value -> vnull {% id %} | vnumber {% id %} | vbool {% id %} | vstring {% id %}
+vnull -> "null" {% _ => VNull %}
 vnumber -> number {% ([n]) => VNumber(n) %}
 vstring -> string {% ([s]) => VString(s.slice(1,-1)) %}
 vbool -> bool {% ([b]) => VBool(b) %}
@@ -59,11 +60,14 @@ term  -> cterm {% id %}
 cterm -> tmlet {% id %} | tmlam {% id %} | bterm {% id %}
 bterm -> tmcall {% id %} | aterm {% id %}
 aterm -> 
-    tmvar   {% id %}
+    tmnull   {% id %}
+  | tmvar   {% id %}
   | tmvalue {% id %}
   | object  {% ([o]) => TmObject(o) %}
   | "(" _ term _ ")" {% ([,,t,,]) => t %}
   | tmdo {% ([d]) => d %}
+
+tmnull -> vnull {% _ => TmNull %}
 
 tmvar ->
     id
@@ -130,15 +134,18 @@ do_stmts ->
       {% ([stmts,,,,s]) => [...stmts, s] %}
 
 do_stmt ->
-    do_bind
-      {% ([b]) => b %}
-  | do_command
-      {% ([c]) => c %}
+    do_bind     {% id %}
+  | do_command  {% id %}
+  | do_return   {% id %}
 
 do_bind ->
-    varid _ "<-" _ term
+    varid _ "=" _ term
       {% ([v,,,,t]) => DoBind(v, t) %}
 
 do_command ->
     term
       {% ([t]) => DoCommand(t) %}
+
+do_return ->
+    "return" _ term
+      {% ([,,t]) => DoReturn(t) %}

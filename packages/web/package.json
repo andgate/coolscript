@@ -5,7 +5,7 @@
   "description": "Website for coolscript",
   "source": "src/index.html",
   "scripts": {
-    "start": "parcel",
+    "start": "parcel --open",
     "build": "parcel build --dist-dir ../../docs --no-source-maps --no-cache --no-content-hash --public-url ./",
     "check": "tsc --noEmit",
     "prettier": "prettier --check src/ tests/",

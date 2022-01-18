@@ -8,6 +8,6 @@ let
   };
   bar = 999;
 in do {
-  baz <- id(bar);
-  createFoo(baz);
+  baz = id(bar);
+  return createFoo(baz);
 }

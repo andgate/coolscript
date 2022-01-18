@@ -1,6 +1,13 @@
 export type Var = string
 
-export type Value = VNumber | VString | VBool | VObject | VError
+export type Value = VNull | VNumber | VString | VBool | VObject | VError
+
+// null value
+export type VNull = {
+  tag: 'VNull'
+}
+
+export const VNull: VNull = { tag: 'VNull' }
 
 // Integer, double, etc.
 export type VNumber = {
@@ -53,6 +60,7 @@ export function VError(err: string): Value {
 }
 
 export type Term =
+  | TmNull
   | TmVar
   | TmLam
   | TmCall
@@ -61,6 +69,9 @@ export type Term =
   | TmLet
   | TmDo
   | TmBind
+
+export type TmNull = { tag: 'TmNull'; value: VNull }
+export const TmNull: TmNull = { tag: 'TmNull', value: VNull }
 
 export type TmVar = {
   tag: 'TmVar'
@@ -139,7 +150,7 @@ export function TmDo(statements: DoStatement[]): Term {
   return { tag: 'TmDo', do: { statements } }
 }
 
-export type DoStatement = DoBind | DoCommand
+export type DoStatement = DoBind | DoCommand | DoReturn
 
 // x <- t
 export type DoBind = {
@@ -159,6 +170,16 @@ export type DoCommand = {
 
 export function DoCommand(term: Term): DoCommand {
   return { tag: 'DoCommand', command: { term } }
+}
+
+// return t
+export type DoReturn = {
+  tag: 'DoReturn'
+  return: { term: Term }
+}
+
+export function DoReturn(term: Term): DoReturn {
+  return { tag: 'DoReturn', return: { term } }
 }
 
 // v = x; y v

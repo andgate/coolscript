@@ -5,7 +5,9 @@ import {
   TmError,
   VObject,
   TmObject,
-  TmValue
+  TmValue,
+  DoStatement,
+  TmNull
 } from '@coolscript/syntax'
 
 type EvalEnv = { [key: string]: Term }
@@ -84,9 +86,57 @@ export function reduce(tm: Term, env: EvalEnv = {}): Term {
       return TmObject(obj)
     }
     case 'TmDo': {
-      return tm
+      return executeStatements(tm.do.statements, env)
     }
     default:
       return TmError(`Unknown term tag encountered "${tm.tag}".`)
+  }
+}
+
+type ExecutionEnv = {
+  env: EvalEnv
+  result: Term | null
+}
+
+const ExecutionEnv = (env: EvalEnv, result: Term | null = null) => ({
+  env,
+  result
+})
+
+function executeStatements(stmts: DoStatement[], env: EvalEnv): Term {
+  let exe: ExecutionEnv = ExecutionEnv(env)
+  for (let i = 0; i <= stmts.length; i++) {
+    exe = executeStatement(stmts[i], exe)
+    if (exe.result) {
+      return exe.result
+    }
+  }
+  return TmNull
+}
+
+function executeStatement(stmt: DoStatement, exe: ExecutionEnv): ExecutionEnv {
+  switch (stmt.tag) {
+    case 'DoBind': {
+      const env = { ...exe.env }
+      const bind = stmt.bind
+      const v = bind.lhs
+      env[v] = reduce(bind.rhs, env)
+      return ExecutionEnv(env)
+    }
+    case 'DoCommand': {
+      const term = stmt.command.term
+      reduce(term, exe.env)
+      return ExecutionEnv(exe.env)
+    }
+    case 'DoReturn': {
+      const term = stmt.return.term
+      const result = reduce(term, exe.env)
+      return ExecutionEnv(exe.env, result)
+    }
+    default:
+      return {
+        env: exe.env,
+        result: TmError(`Unrecognized statement: ${JSON.stringify(stmt)}`)
+      }
   }
 }
