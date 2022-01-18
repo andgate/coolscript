@@ -1,6 +1,6 @@
 {
   "name": "@coolscript/parser",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Coolscript programming language parser.",
   "main": "./lib/index.js",
   "module": "./lib/index.cjs",
@@ -44,7 +44,7 @@
     "nearley": "^2.20.1"
   },
   "dependencies": {
-    "@coolscript/syntax": "^0.0.5"
+    "@coolscript/syntax": "^0.0.6"
   },
   "gitHead": "9b91bf0df0bb73d74440b9a1d191fd5c91c6af93"
 }

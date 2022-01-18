@@ -1,6 +1,6 @@
 {
   "name": "@coolscript/eval",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Coolscript programming language evaluator.",
   "author": "Gabriel Anderson",
   "license": "MIT",
@@ -37,6 +37,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@coolscript/syntax": "^0.0.5"
+    "@coolscript/syntax": "^0.0.6"
   }
 }
