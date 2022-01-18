@@ -57,8 +57,20 @@ export function NearlyPlugin(
       build.onLoad({ filter: /.*/, namespace: 'nearley' }, async (args) => {
         const ns_path = args.path
         const txt = await fs.promises.readFile(ns_path, 'utf8')
+
+        let contents = ''
+        try {
+          contents = compileNearley(ns_path, txt, opts)
+        } catch (e) {
+          return {
+            errors: [{ text: e.message }],
+            resolveDir: path.dirname(ns_path),
+            watchFiles: [ns_path]
+          }
+        }
+
         return {
-          contents: compileNearley(ns_path, txt, opts),
+          contents,
           loader: 'js',
           resolveDir: path.dirname(ns_path),
           watchFiles: [ns_path]

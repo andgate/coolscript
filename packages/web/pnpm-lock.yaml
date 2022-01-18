@@ -1,6 +1,8 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@types/react': ^17.0.38
+  '@types/react-dom': ^17.0.11
   csstips: ^1.2.0
   csx: ^10.0.2
   react: ^17.0.2
@@ -8,6 +10,8 @@ specifiers:
   typestyle: ^2.2.0
 
 devDependencies:
+  '@types/react': 17.0.38
+  '@types/react-dom': 17.0.11
   csstips: 1.2.0_typestyle@2.2.0
   csx: 10.0.2
   react: 17.0.2
@@ -15,6 +19,28 @@ devDependencies:
   typestyle: 2.2.0
 
 packages:
+
+  /@types/prop-types/15.7.4:
+    resolution: {integrity: sha512-rZ5drC/jWjrArrS8BR6SIr4cWpW09RNTYt9AMZo3Jwwif+iacXAqgVjm0B0Bv/S1jhDXKHqRVNCbACkJ89RAnQ==}
+    dev: true
+
+  /@types/react-dom/17.0.11:
+    resolution: {integrity: sha512-f96K3k+24RaLGVu/Y2Ng3e1EbZ8/cVJvypZWd7cy0ofCBaf2lcM46xNhycMZ2xGwbBjRql7hOlZ+e2WlJ5MH3Q==}
+    dependencies:
+      '@types/react': 17.0.38
+    dev: true
+
+  /@types/react/17.0.38:
+    resolution: {integrity: sha512-SI92X1IA+FMnP3qM5m4QReluXzhcmovhZnLNm3pyeQlooi02qI7sLiepEYqT678uNiyc25XfCqxREFpy3W7YhQ==}
+    dependencies:
+      '@types/prop-types': 15.7.4
+      '@types/scheduler': 0.16.2
+      csstype: 3.0.10
+    dev: true
+
+  /@types/scheduler/0.16.2:
+    resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
+    dev: true
 
   /csstips/1.2.0_typestyle@2.2.0:
     resolution: {integrity: sha512-2KgBibTljubrEuaiCNdJ0zcy6BmJck+J9YUufb+Hwz3T0XANLfevVIabHtCO9T5Zr2kHyvpT+0XM9vk44nmsZg==}
@@ -30,6 +56,10 @@ packages:
 
   /csstype/2.6.9:
     resolution: {integrity: sha512-xz39Sb4+OaTsULgUERcCk+TJj8ylkL4aSVDQiX/ksxbELSqwkgt4d4RD7fovIdgJGSuNYqwZEiVjYY5l0ask+Q==}
+    dev: true
+
+  /csstype/3.0.10:
+    resolution: {integrity: sha512-2u44ZG2OcNUO9HDp/Jl8C07x6pU/eTR3ncV91SiK3dhG9TWvRVsCoJw14Ckx5DgWkzGA3waZWO3d7pgqpUI/XA==}
     dev: true
 
   /csx/10.0.2:
