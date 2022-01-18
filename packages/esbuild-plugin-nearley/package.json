@@ -1,6 +1,6 @@
 {
   "name": "esbuild-plugin-nearley",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Esbuild plugin for nearley grammar files.",
   "author": "Gabriel Anderson",
   "license": "MIT",
