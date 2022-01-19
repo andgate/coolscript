@@ -118,12 +118,12 @@ cterm ->
 bterm ->
     tmcall   {% id %}
   | tmassign {% id %}
+  | tmreturn {% id %}
   | aterm    {% id %}
 
 aterm -> 
     tmvalue  {% id %}
   | tmvar    {% id %}
-  | tmreturn {% id %}
   | tmparens {% id %}
   | tmarray  {% id %}
   | tmobject {% id %}

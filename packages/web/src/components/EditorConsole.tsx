@@ -1,4 +1,5 @@
 import { useContext, useMemo } from 'react'
+import ReactJson from 'react-json-view'
 import { evaluate } from '@coolscript/eval'
 import { parse } from '@coolscript/parser'
 import { style } from 'typestyle'
@@ -20,13 +21,18 @@ export function EditorConsole() {
     () => (parseResult ? evaluate(parseResult) : null),
     [parseResult]
   )
+  const parseResultJSON = useMemo(
+    () => JSON.stringify(parseResult),
+    [parseResult]
+  )
+  const evalResultJSON = useMemo(() => JSON.stringify(evalResult), [evalResult])
   return (
     <div className={consoleRoot}>
       <div>
         {parseResult ? (
           <div>
             <h3>Parsed</h3>
-            <div>{JSON.stringify(parseResult)}</div>
+            <ReactJson src={parseResult}></ReactJson>
           </div>
         ) : (
           <h1>Parsing failed.</h1>
@@ -36,7 +42,7 @@ export function EditorConsole() {
         {evalResult ? (
           <div>
             <h3>Evaluated</h3>
-            <div>{JSON.stringify(evalResult)}</div>
+            <ReactJson src={evalResult}></ReactJson>
           </div>
         ) : (
           <h3>Evaluation failed</h3>

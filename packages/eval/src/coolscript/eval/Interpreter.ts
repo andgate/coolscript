@@ -12,9 +12,14 @@ import {
   TmWhile,
   VArray,
   VBool,
-  VObject
+  VObject,
+  Term,
+  TmAssign,
+  Value,
+  Var,
+  VError,
+  VLam
 } from '@coolscript/syntax'
-import { Term, TmAssign, Value, Var, VError, VLam } from '@coolscript/syntax'
 import { MemorySpace } from './MemorySpace'
 import { ReturnValue } from './ReturnValue'
 import { Scope } from './Scope'
@@ -25,7 +30,7 @@ export class Interpreter {
   rootScope: Scope // root space (filled by parser)
   globals: MemorySpace = new MemorySpace() // global memory
   currentSpace: MemorySpace = this.globals
-  stack: MemorySpace[] = [] // call stack
+  stack: MemorySpace[] = [this.currentSpace] // call stack
 
   interpret(tm: Term): Value | null {
     this.rootScope = new Scope()
@@ -87,6 +92,7 @@ export class Interpreter {
   }
 
   assign(tm: TmAssign): Value {
+    console.log('Performing assignment', tm)
     const value = this.exec(tm.rhs)
     let space: MemorySpace = this.getSpaceWithSymbol(tm.lhs)
     if (space == null) {
@@ -96,7 +102,7 @@ export class Interpreter {
     return this.load(tm.lhs)
   }
 
-  getSpaceWithSymbol(id: string): MemorySpace {
+  getSpaceWithSymbol(id: string): MemorySpace | null {
     // On top of the stack?
     const top = this.stack.length - 1
     if (this.stack.length > 0 && this.stack[top].get(id) != null) {
@@ -115,11 +121,13 @@ export class Interpreter {
   }
 
   call(tm: TmCall): Value {
+    console.log(`calling function`, tm.caller)
     const fn = this.exec(tm.caller)
     if (fn.tag != 'VLam') {
       return VError(`Cannot call non-function: ${JSON.stringify(fn)}`)
     }
     const args = tm.args.map((x) => this.exec(x))
+    console.log('function args evaluated', args)
 
     // Create new memory space for stack.
     const fspace = new MemorySpace()
@@ -139,13 +147,14 @@ export class Interpreter {
     let result: Value = null
     this.stack.push(fspace)
     try {
-      this.exec(fn.body)
+      result = this.exec(fn.body)
     } catch (r) {
       // catch return values
       result = r.value
     }
     this.stack.pop()
     this.currentSpace = saveSpace
+    console.log('returning result', result)
     return result
   }
 
@@ -183,6 +192,7 @@ export class Interpreter {
       result = this.exec(tm.body)
     }
     this.stack.pop()
+    this.currentSpace = saveSpace
 
     return result
   }
@@ -237,15 +247,10 @@ export class Interpreter {
   }
 
   block(statements: Term[]): Value | null {
-    let stmt: Term
+    let stmt: Value | null = null
     for (let i = 0; i < statements.length; i++) {
-      stmt = statements[i]
-      try {
-        this.exec(stmt)
-      } catch (r) {
-        return r
-      }
+      stmt = this.exec(statements[i])
     }
-    return null
+    return stmt
   }
 }
