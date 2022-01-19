@@ -15,7 +15,7 @@ const headerTitleText = style({ fontSize: px(24) })
 export function Header() {
   return (
     <div className={headerRoot}>
-      <div className={headerTitleText}>CoolScript</div>
+      <div className={headerTitleText}>😎 CoolScript</div>
     </div>
   )
 }
