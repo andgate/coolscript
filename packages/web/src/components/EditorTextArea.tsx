@@ -1,20 +1,27 @@
 import { useContext } from 'react'
-import { style } from 'typestyle'
+import { media, style } from 'typestyle'
 import * as csstips from 'csstips'
-import { percent, viewHeight } from 'csx'
+import { color, percent, px, viewHeight } from 'csx'
 import { EditorContext } from '../contexts/EditorContext'
 
-const editorTextAreaRoot = style(csstips.flex, csstips.height(viewHeight(70)))
+const editorTextAreaRoot = style(csstips.flex)
 
 const editorTextArea = style(
-  csstips.fillParent,
-  csstips.height(viewHeight(70)),
+  media({ maxWidth: px(699) }, { height: viewHeight(70) }),
+  media(
+    { minWidth: px(700) },
+    {
+      height: viewHeight(90)
+    }
+  ),
   {
     resize: 'none',
     backgroundColor: '#FFFFFF',
     color: '#000000',
     width: percent(100),
-    border: 'none'
+    border: 'none',
+    borderColor: color('#CCCCCC').toHexString(),
+    borderStyle: 'solid'
   }
 )
 
