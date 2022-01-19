@@ -1,6 +1,12 @@
 export type Var = string
 
-export type Value = VNull | VNumber | VString | VBool | VObject | VError
+export type ObjectF<T> = { [key: string]: T }
+
+// Values
+export type Value = AValue | VLam | VArray | VObject | VError
+
+// Atomic Values
+export type AValue = VNull | VNumber | VString | VBool
 
 // null value
 export type VNull = {
@@ -15,7 +21,7 @@ export type VNumber = {
   num: number
 }
 
-export function VNumber(num: number): Value {
+export function VNumber(num: number): VNumber {
   return { tag: 'VNumber', num }
 }
 
@@ -25,7 +31,7 @@ export type VString = {
   str: string
 }
 
-export function VString(str: string): Value {
+export function VString(str: string): VString {
   return { tag: 'VString', str }
 }
 
@@ -35,17 +41,37 @@ export type VBool = {
   bool: boolean
 }
 
-export function VBool(bool: boolean): Value {
+export function VBool(bool: boolean): VBool {
   return { tag: 'VBool', bool }
+}
+
+export type VLam = {
+  tag: 'VLam'
+  args: Var[]
+  body: Term
+}
+
+export function VLam(args: Var[], body: Term): VLam {
+  return { tag: 'VLam', args, body }
+}
+
+// [ x1, x2, ..., xn ]
+export type VArray = {
+  tag: 'VArray'
+  elements: Value[]
+}
+
+export function VArray(elements: Value[]): VArray {
+  return { tag: 'VArray', elements }
 }
 
 // { key1: value, key2: value, ...etc }
 export type VObject = {
   tag: 'VObject'
-  obj: { [key: string]: Value }
+  obj: ObjectF<Value>
 }
 
-export function VObject(obj: { [key: string]: Value }): Value {
+export function VObject(obj: ObjectF<Value>): VObject {
   return { tag: 'VObject', obj }
 }
 
@@ -59,59 +85,128 @@ export function VError(err: string): Value {
   return { tag: 'VError', err }
 }
 
+export type TermBlock = {
+  tag: 'TmBlock'
+  statements: Term[]
+}
+
+export function TermBlock(statements: Term[]): TermBlock {
+  return { tag: 'TmBlock', statements }
+}
+
 export type Term =
-  | TmNull
-  | TmVar
-  | TmLam
-  | TmCall
+  | TmError
   | TmValue
+  | TmVar
+  | TmAssign
+  | TmLam
+  | TmReturn
+  | TmCall
+  | TmParens
+  | TmArray
   | TmObject
   | TmLet
   | TmDo
-  | TmBind
+  | TmIf
+  | TmWhile
+  | TmFor
 
-export type TmNull = { tag: 'TmNull'; value: VNull }
-export const TmNull: TmNull = { tag: 'TmNull', value: VNull }
-
-export type TmVar = {
-  tag: 'TmVar'
-  variable: Var
+export type TmError = {
+  tag: 'TmError'
+  ann: any
+  msg: string
 }
 
-export function TmVar(variable: Var): Term {
-  return { tag: 'TmVar', variable }
+export function TmError(msg: string, ann: any = null): TmError {
+  return { tag: 'TmError', ann, msg }
 }
 
 export type TmValue = {
   tag: 'TmValue'
-  value: Value
+  ann: any
+  value: AValue
 }
 
-export function TmValue(value: Value): Term {
-  return { tag: 'TmValue', value }
+export function TmValue(value: AValue, ann: any = null): TmValue {
+  return { tag: 'TmValue', ann, value }
+}
+
+export type TmVar = {
+  tag: 'TmVar'
+  ann: any
+  variable: Var
+}
+
+export function TmVar(variable: Var, ann: any = null): TmVar {
+  return { tag: 'TmVar', ann, variable }
+}
+
+// x = t
+export type TmAssign = {
+  tag: 'TmAssign'
+  ann: any
+  lhs: string
+  rhs: Term
+}
+
+export function TmAssign(lhs: string, rhs: Term, ann: any = null): TmAssign {
+  return { tag: 'TmAssign', ann, lhs, rhs }
 }
 
 // (x, y) => f(x, y)
 export type TmLam = {
   tag: 'TmLam'
-  lam: { args: Var[]; body: Term }
+  ann: any
+  args: Var[]
+  body: Term
 }
 
-export function TmLam(args: Var[], body: Term): Term {
-  return { tag: 'TmLam', lam: { args, body } }
+export function TmLam(args: Var[], body: Term, ann: any = null): TmLam {
+  return { tag: 'TmLam', ann, args, body }
+}
+
+// return t
+export type TmReturn = {
+  tag: 'TmReturn'
+  ann: any
+  result: Term
+}
+
+export function TmReturn(result: Term, ann: any = null): TmReturn {
+  return { tag: 'TmReturn', ann, result }
 }
 
 // f(x, y)
 export type TmCall = {
   tag: 'TmCall'
-  call: { caller: Term; args: Term[] }
+  ann: any
+  caller: Term
+  args: Term[]
 }
 
-export function TmCall(caller: Term, args: Term[]): Term {
-  return { tag: 'TmCall', call: { caller, args } }
+export function TmCall(caller: Term, args: Term[], ann: any = null): TmCall {
+  return { tag: 'TmCall', ann, caller, args }
+}
+
+// let v = x; u = y in f(v, u)
+// let v = x; u = y do { ... }
+export type TmLet = {
+  tag: 'TmLet'
+  ann: any
+  binders: Binding[]
+  body: Term | TermBlock
+}
+
+export function TmLet(
+  binders: Binding[],
+  body: Term | TermBlock,
+  ann: any = null
+): TmLet {
+  return { tag: 'TmLet', ann, binders, body }
 }
 
 // v = x
+// Definition, not assignment.
 export type Binding = {
   variable: Var
   body: Term
@@ -121,77 +216,125 @@ export function Binding(variable: Var, body: Term): Binding {
   return { variable, body }
 }
 
-// let v = x; u = y in f(v, u)
-export type TmLet = {
-  tag: 'TmLet'
-  let: { binders: Binding[]; body: Term }
+// (t)
+export type TmParens = {
+  tag: 'TmParens'
+  ann: any
+  term: Term
 }
 
-export function TmLet(binders: Binding[], body: Term): Term {
-  return { tag: 'TmLet', let: { binders, body } }
+export function TmParens(term: Term, ann: any = null): TmParens {
+  return { tag: 'TmParens', ann, term }
 }
 
+// [ x1, x2, ..., xn ]
+export type TmArray = {
+  tag: 'TmArray'
+  ann: any
+  elements: Term[]
+}
+
+export function TmArray(elements: Term[] = [], ann: any = null): TmArray {
+  return { tag: 'TmArray', ann, elements }
+}
+
+// { a1: x1, a2: x2, ..., an: xn }
 export type TmObject = {
   tag: 'TmObject'
-  obj: { [key: string]: Term }
+  ann: any
+  obj: ObjectF<Term>
 }
 
-export function TmObject(obj: { [key: string]: Term }): Term {
-  return { tag: 'TmObject', obj }
+export function TmObject(obj: ObjectF<Term> = {}, ann: any = null): TmObject {
+  return { tag: 'TmObject', ann, obj }
 }
 
-// do { s1; ...; sn }
+// do { t1; ...; tn }
 export type TmDo = {
   tag: 'TmDo'
-  do: { statements: DoStatement[] }
+  ann: any
+  block: TermBlock
 }
 
-export function TmDo(statements: DoStatement[]): Term {
-  return { tag: 'TmDo', do: { statements } }
+export function TmDo(block: TermBlock, ann: any = null): TmDo {
+  return { tag: 'TmDo', ann, block }
 }
 
-export type DoStatement = DoBind | DoCommand | DoReturn
-
-// x <- t
-export type DoBind = {
-  tag: 'DoBind'
-  bind: { lhs: string; rhs: Term }
+// if (p) t
+// if (p) t1 else t2
+// if (p) t1 elif t2
+// if (p) t1 elif t2 else t3
+export type TmIf = {
+  tag: 'TmIf'
+  ann: any
+  pred: Term
+  body: Term
+  branch: Branch | null
 }
 
-export function DoBind(lhs: string, rhs: Term): DoBind {
-  return { tag: 'DoBind', bind: { lhs, rhs } }
+export function TmIf(
+  pred: Term,
+  body: Term,
+  branch: Branch | null = null,
+  ann: any = null
+): TmIf {
+  return { tag: 'TmIf', ann, pred, body, branch }
 }
 
-// t
-export type DoCommand = {
-  tag: 'DoCommand'
-  command: { term: Term }
+export type Branch = ElifBranch | ElseBranch
+
+export type ElifBranch = {
+  tag: 'Elif'
+  pred: Term
+  body: Term
+  branch: Branch | null
 }
 
-export function DoCommand(term: Term): DoCommand {
-  return { tag: 'DoCommand', command: { term } }
+export function ElifBranch(
+  pred: Term,
+  body: Term,
+  branch: Branch | null = null
+): ElifBranch {
+  return { tag: 'Elif', pred, body, branch }
 }
 
-// return t
-export type DoReturn = {
-  tag: 'DoReturn'
-  return: { term: Term }
+export type ElseBranch = {
+  tag: 'Else'
+  body: Term
 }
 
-export function DoReturn(term: Term): DoReturn {
-  return { tag: 'DoReturn', return: { term } }
+export function ElseBranch(body: Term): ElseBranch {
+  return { tag: 'Else', body }
 }
 
-// v = x; y v
-export type TmBind = {
-  tag: 'TmBind'
-  bind: { binding: Binding; body: Term }
+// while (t1) t2
+export type TmWhile = {
+  tag: 'TmWhile'
+  ann: any
+  pred: Term
+  body: Term
 }
 
-export function TmBind(v: Var, a: Term, b: Term): Term {
-  return { tag: 'TmBind', bind: { binding: Binding(v, a), body: b } }
+export function TmWhile(pred: Term, body: Term, ann: any = null): TmWhile {
+  return { tag: 'TmWhile', ann, pred, body }
 }
 
-export function TmError(msg: string): Term {
-  return TmValue(VError(msg))
+// for (t1; t2; t3) t4
+export type TmFor = {
+  tag: 'TmFor'
+  ann: any
+  init: Term
+  pred: Term
+  iter: Term
+  body: Term
+}
+
+export function TmFor(
+  init: Term,
+  pred: Term,
+  iter: Term,
+  body: Term,
+  ann: any = null
+): TmFor {
+  return { tag: 'TmFor', ann, init, pred, iter, body }
 }

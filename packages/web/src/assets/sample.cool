@@ -9,5 +9,6 @@ let
   bar = 999;
 in do {
   baz = id(bar);
+  const(bar, baz);
   return createFoo(baz);
 }
