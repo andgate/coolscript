@@ -14,9 +14,10 @@ const editorTextArea = style(
     backgroundColor: '#FFFFFF',
     color: '#000000',
     width: percent(100),
-    border: 'none',
     borderColor: color('#CCCCCC').toHexString(),
-    borderStyle: 'solid'
+    borderStyle: 'solid',
+    borderWidth: px(1),
+    outline: 'none'
   }
 )
 

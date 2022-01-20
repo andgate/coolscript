@@ -1,11 +1,4 @@
-import {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import ReactJson from 'react-json-view'
 import prettyJs from 'pretty-js'
 import { evaluate } from '@coolscript/eval'
@@ -25,14 +18,20 @@ const outputPanelRoot = style(csstips.flex, {
 const tabContainer = style({
   overflow: 'hidden',
   borderWidth: px(1),
-  borderStyle: 'solid',
+  borderTopStyle: 'solid',
+  borderBottomStyle: 'none',
+  borderLeftStyle: 'solid',
+  borderRightStyle: 'solid',
   borderColor: '#CCCCCC'
 })
 
 const tabLink = style({
   backgroundColor: 'inherit',
+  borderTopStyle: 'none',
+  borderBottomStyle: 'none',
+  borderLeftStyle: 'none',
+  borderRightStyle: 'solid',
   borderWidth: px(1),
-  borderStyle: 'solid',
   borderColor: '#CCCCCC',
   outline: 'none',
   cursor: 'pointer',
@@ -42,8 +41,7 @@ const tabLink = style({
 
 const activeTabLink = style({
   backgroundColor: '#CCCCCC',
-  border: 'none',
-  outline: 'none',
+  borderStyle: 'none',
   cursor: 'default',
   minWidth: px(75),
   height: px(40)
