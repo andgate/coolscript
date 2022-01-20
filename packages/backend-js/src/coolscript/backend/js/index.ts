@@ -15,26 +15,27 @@ import {
   TmDo,
   TmIf,
   TmWhile,
-  TmFor
+  TmFor,
+  TermBlock
 } from '@coolscript/syntax'
 import { StringBuilder } from './StringBuilder'
 
 export function generateJS(tm: Term): string {
   const builder = new StringBuilder()
-  buildTermJS(tm, builder)
+  buildTerm(tm, builder)
   return builder.toString()
 }
 
-function buildTermJS(tm: Term, builder: StringBuilder) {
+function buildTerm(tm: Term, builder: StringBuilder) {
   switch (tm.tag) {
     case 'TmError':
-      buildTmErrorJS(tm, builder)
+      buildTmError(tm, builder)
       return
     case 'TmValue':
-      buildTmValueJS(tm, builder)
+      buildTmValue(tm, builder)
       return
     case 'TmVar':
-      buildTmVarJS(tm, builder)
+      buildTmVar(tm, builder)
       return
     case 'TmAssign':
       buildTmAssign(tm, builder)
@@ -78,15 +79,15 @@ function buildTermJS(tm: Term, builder: StringBuilder) {
   }
 }
 
-function buildTmErrorJS(tm: TmError, builder: StringBuilder) {
+function buildTmError(tm: TmError, builder: StringBuilder) {
   builder.append(`throw new Error(${tm.msg});`)
 }
 
-function buildTmValueJS(tm: TmValue, builder: StringBuilder) {
-  buildAValueJS(tm.value, builder)
+function buildTmValue(tm: TmValue, builder: StringBuilder) {
+  buildAValue(tm.value, builder)
 }
 
-function buildAValueJS(v: AValue, builder: StringBuilder) {
+function buildAValue(v: AValue, builder: StringBuilder) {
   switch (v.tag) {
     case 'VNull':
       builder.append('null')
@@ -106,31 +107,104 @@ function buildAValueJS(v: AValue, builder: StringBuilder) {
   }
 }
 
-function buildTmVarJS(tm: TmVar, builder: StringBuilder) {
+function buildTmVar(tm: TmVar, builder: StringBuilder) {
   builder.append(tm.variable)
 }
 
 function buildTmAssign(tm: TmAssign, builder: StringBuilder) {
   builder.append(`${tm.lhs} = `)
-  buildTermJS(tm.rhs, builder)
+  buildTerm(tm.rhs, builder)
   builder.append(';')
 }
 
-function buildTmLam(tm: TmLam, builder: StringBuilder) {}
+function buildTmLam(tm: TmLam, builder: StringBuilder) {
+  builder.append('(')
+  for (let i = 0; i < tm.args.length; i++) {
+    builder.append(tm.args[i])
+    if (i != tm.args.length - 1) {
+      builder.append(', ')
+    }
+  }
+  builder.append(') => ')
+  buildTerm(tm.body, builder)
+}
 
-function buildTmReturn(tm: TmReturn, builder: StringBuilder) {}
+function buildTmReturn(tm: TmReturn, builder: StringBuilder) {
+  builder.append('return ')
+  buildTerm(tm.result, builder)
+}
 
-function buildTmCall(tm: TmCall, builder: StringBuilder) {}
+function buildTmCall(tm: TmCall, builder: StringBuilder) {
+  buildTerm(tm.caller, builder)
+  builder.append('(')
+  for (let i = 0; i < tm.args.length; i++) {
+    buildTerm(tm.args[i], builder)
+    if (i != tm.args.length - 1) {
+      builder.append(', ')
+    }
+  }
+  builder.append(')')
+}
 
-function buildTmParens(tm: TmParens, builder: StringBuilder) {}
+function buildTmParens(tm: TmParens, builder: StringBuilder) {
+  builder.append('(')
+  buildTerm(tm, builder)
+  builder.append(')')
+}
 
-function buildTmArray(tm: TmArray, builder: StringBuilder) {}
+function buildTmArray(tm: TmArray, builder: StringBuilder) {
+  builder.append('[')
+  for (let i = 0; i < tm.elements.length; i++) {
+    buildTerm(tm.elements[i], builder)
+    if (i != tm.elements.length - 1) {
+      builder.append(', ')
+    }
+  }
+  builder.append(']')
+}
 
-function buildTmObject(tm: TmObject, builder: StringBuilder) {}
+function buildTmObject(tm: TmObject, builder: StringBuilder) {
+  builder.append('{ ')
+  const entries = Object.entries(tm.obj)
+  for (let i = 0; i < entries.length; i++) {
+    builder.append(entries[i][0])
+    builder.append(': ')
+    buildTerm(entries[i][1], builder)
+    if (i != entries.length - 1) {
+      builder.append(', ')
+    }
+  }
+  builder.append(' }')
+}
 
-function buildTmLet(tm: TmLet, builder: StringBuilder) {}
+function buildTmLet(tm: TmLet, builder: StringBuilder) {
+  const binders = tm.binders
+  const body = tm.body
+  for (let i = 0; i < binders.length; i++) {
+    builder.append('const ')
+    builder.append(binders[i].variable)
+    builder.append(' = ')
+    buildTerm(binders[i].body, builder)
+    builder.append(';')
+  }
+  if (body.tag == 'TmBlock') {
+    buildTermBlock(body, builder)
+  } else {
+    buildTerm(body, builder)
+    builder.append(';')
+  }
+}
 
-function buildTmDo(tm: TmDo, builder: StringBuilder) {}
+function buildTermBlock(block: TermBlock, builder: StringBuilder) {
+  for (let i = 0; i < block.statements.length; i++) {
+    buildTerm(block.statements[i], builder)
+    builder.append(';')
+  }
+}
+
+function buildTmDo(tm: TmDo, builder: StringBuilder) {
+  buildTermBlock(tm.block, builder)
+}
 
 function buildTmIf(tm: TmIf, builder: StringBuilder) {}
 
