@@ -1,9 +1,9 @@
 import { media, style } from 'typestyle'
 import * as csstips from 'csstips'
 import { EditorTextArea } from './EditorTextArea'
-import { EditorConsole } from './EditorConsole'
 import { px } from 'csx'
 import { EditorStateContextProvider } from '../contexts/EditorContext'
+import { OutputPanel } from './OutputPanel'
 
 const editorRoot = style(
   csstips.fillParent,
@@ -24,7 +24,7 @@ export function Editor() {
     <div className={editorRoot}>
       <EditorStateContextProvider>
         <EditorTextArea />
-        <EditorConsole />
+        <OutputPanel />
       </EditorStateContextProvider>
     </div>
   )

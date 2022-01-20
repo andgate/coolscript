@@ -19,6 +19,7 @@ specifiers:
   parcel: ^2.0.1
   prettier: 2.5.1
   prettier-config-standard: ^4.0.0
+  pretty-js: ^0.2.2
   rimraf: ^3.0.2
   touch: ^3.1.0
   ts-jest: ^27.1.2
@@ -43,6 +44,7 @@ devDependencies:
   parcel: 2.1.0
   prettier: 2.5.1
   prettier-config-standard: 4.0.0
+  pretty-js: 0.2.2
   rimraf: 3.0.2
   touch: 3.1.0
   ts-jest: 27.1.2_370c26f45a058e6a5609278152e0b5ee
@@ -3456,6 +3458,18 @@ packages:
     dependencies:
       array-ify: 1.0.0
       dot-prop: 5.3.0
+    dev: true
+
+  /complexion-js/0.2.2_complexion@0.2.2:
+    resolution: {integrity: sha512-qxqJq0nEBwSEZtoqK8bHIR2VwzbPatjtlU+ZH9IPObitTQqa2xMEryoAlCsjOH+ATgIScHt0aiCUBabPG2Mmcg==}
+    peerDependencies:
+      complexion: ^0.2.2
+    dependencies:
+      complexion: 0.2.2
+    dev: true
+
+  /complexion/0.2.2:
+    resolution: {integrity: sha512-YAfDsYc27CsPQPzZU4i1OklMCyigN7VHPylWba0AWf5VmVr34NpLhHjJm0gumFh9m2aX8fYGCTTgne7oLfXXug==}
     dev: true
 
   /concat-map/0.0.1:
@@ -7596,6 +7610,10 @@ packages:
       is-wsl: 2.2.0
     dev: true
 
+  /option-parser/1.0.2:
+    resolution: {integrity: sha512-Q56FmRi6TZX+S9jAl9f0Tnrk7W8faAZULf6Y0IgJR6Cy7/MxhzvBFoyL1Sz2DD7WbOY2Fxtkz2S/3kzlbn/VsQ==}
+    dev: true
+
   /optionator/0.8.3:
     resolution: {integrity: sha512-+IW9pACdk3XWmmTXG8m3upGUJst5XRGzxMRjXzAuJ1XnIFNvfhjjIuYkDvysnPQ7qzqVzLt78BCruntqRhWQbA==}
     engines: {node: '>= 0.8.0'}
@@ -8458,6 +8476,20 @@ packages:
       ansi-regex: 5.0.1
       ansi-styles: 5.2.0
       react-is: 17.0.2
+    dev: true
+
+  /pretty-js/0.2.2:
+    resolution: {integrity: sha512-SJIz4tGlSC4LBqSAb82yf1911C4HGILMiDoNn4aoYuHetdFbefdIyMHZ9c1mDsiv0CNSn9ac/kNM1xXdujZ/AA==}
+    hasBin: true
+    dependencies:
+      complexion: 0.2.2
+      complexion-js: 0.2.2_complexion@0.2.2
+      option-parser: 1.0.2
+      process-files: 1.0.0
+    dev: true
+
+  /process-files/1.0.0:
+    resolution: {integrity: sha1-LRq4SHZ1IhhBqiv98iCFYU1YjyM=}
     dev: true
 
   /process-nextick-args/2.0.1:

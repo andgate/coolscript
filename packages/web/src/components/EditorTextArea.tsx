@@ -8,12 +8,7 @@ const editorTextAreaRoot = style(csstips.flex)
 
 const editorTextArea = style(
   media({ maxWidth: px(699) }, { height: viewHeight(70) }),
-  media(
-    { minWidth: px(700) },
-    {
-      height: viewHeight(90)
-    }
-  ),
+  media({ minWidth: px(700) }, { height: viewHeight(90) }),
   {
     resize: 'none',
     backgroundColor: '#FFFFFF',

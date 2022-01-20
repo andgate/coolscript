@@ -19,6 +19,7 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
+    "@coolscript/backend-js": "^0.0.0",
     "@coolscript/eval": "^0.0.3",
     "@coolscript/parser": "^0.0.6",
     "@coolscript/syntax": "^0.0.6",

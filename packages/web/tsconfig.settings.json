@@ -8,13 +8,16 @@
   },
   "references": [
     {
-      "path": "../syntax/tsconfig.json"
+      "path": "../backend-js/tsconfig.json"
+    },
+    {
+      "path": "../eval/tsconfig.json"
     },
     {
       "path": "../parser/tsconfig.json"
     },
     {
-      "path": "../eval/tsconfig.json"
+      "path": "../syntax/tsconfig.json"
     }
   ]
 }

@@ -1,10 +1,19 @@
 import { createContext, useState } from 'react'
 import codeSample from 'bundle-text:../assets/sample.cool'
 
-export const EditorContext = createContext()
+export type EditorState = {
+  textContent: string
+}
+
+export type EditorContext = {
+  editorState: EditorState
+  setEditorState: (s: EditorState) => void
+}
+
+export const EditorContext = createContext<EditorContext>(undefined)
 
 export const EditorStateContextProvider = (props) => {
-  const [editorState, setEditorState] = useState({
+  const [editorState, setEditorState] = useState<EditorState>({
     textContent: codeSample
   })
 
