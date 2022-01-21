@@ -42,7 +42,7 @@ export class ScriptBuilder {
   freshen(id: string): string {
     let freshId = id
     let fresh = 0
-    while (this.block.isDefined(freshId)) {
+    while (this.block.resolve(freshId)) {
       freshId = `${id}_${fresh++}`
     }
     return freshId
@@ -143,7 +143,7 @@ export class ScriptBuilder {
   }
 
   visitTmAssign(tm: TmAssign) {
-    if (!this.block.isDefined(tm.lhs)) {
+    if (!this.block.resolve(tm.lhs)) {
       this.block.declareLet(tm.lhs)
     }
     this.visitTerm(tm.rhs)

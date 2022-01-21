@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./packages",
     "paths": {
+      "@coolscript/backend-js": ["backend-js/src"],
       "@coolscript/syntax": ["syntax/src"],
       "@coolscript/parser": ["parser/src"],
       "@coolscript/eval": ["eval/src"],

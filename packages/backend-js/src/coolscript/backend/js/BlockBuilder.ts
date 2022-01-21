@@ -13,27 +13,27 @@ export class BlockBuilder {
   }
 
   declareLet(lhs: string, rhs?: ES.Expression) {
-    if (this.isLocal(lhs)) return
+    if (this.resolveLocal(lhs)) return
     this.locals.add(lhs)
     this.declarations.push(e.Let(lhs, rhs))
   }
 
   declareConst(rhs: string, lhs: ES.Expression) {
-    if (this.isLocal(rhs)) return
+    if (this.resolveLocal(rhs)) return
     this.locals.add(rhs)
     this.declarations.push(e.Const(rhs, lhs))
   }
 
-  isLocal(id: string): boolean {
+  resolveLocal(id: string): boolean {
     return this.locals.has(id)
   }
 
-  isGlobal(id: string): boolean {
-    return this.parent && this.parent.isLocal(id)
+  resolveOuter(id: string): boolean {
+    return this.parent && this.parent.resolve(id)
   }
 
-  isDefined(id: string): boolean {
-    return this.isLocal(id) || this.isGlobal(id)
+  resolve(id: string): boolean {
+    return this.resolveLocal(id) || this.resolveOuter(id)
   }
 
   append(statement: ES.Statement) {
