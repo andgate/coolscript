@@ -1,11 +1,8 @@
 {
-  "extends": "./tsconfig.settings.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "emitDeclarationOnly": true,
-    "outDir": "./lib",
-    "rootDir": "./src",
-    "composite": true
+    "noEmit": true
   },
-  "include": ["src", "../esbuild-plugin-nearley/src/esbuild.d.ts"],
-  "exclude": ["tests", "lib", "node_modules"]
+  "include": ["src", "tests", "../esbuild-plugin-nearley/src/esbuild.d.ts"],
+  "exclude": ["lib", "node_modules"]
 }

@@ -1,7 +1,7 @@
 const process = require('process')
 const esbuild = require('esbuild')
 const { dependencies } = require('./package.json')
-const external = Object.keys(dependencies)
+const external = dependencies ? Object.keys(dependencies) : []
 
 let watch = process.argv.some((arg) => arg == '--watch')
 if (watch) {

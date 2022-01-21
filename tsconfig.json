@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.settings.json",
+  "compilerOptions": {
+    "baseUrl": "./packages",
+    "paths": {
+      "@coolscript/syntax": ["syntax/src"],
+      "@coolscript/parser": ["parser/src"],
+      "@coolscript/eval": ["eval/src"],
+      "esbuild-plugin-nearley": ["esbuild-plugin-nearley/src"],
+      "@coolscript/cli": ["cli/src"],
+      "coolscript": ["coolscript/src"]
+    }
+  }
+}

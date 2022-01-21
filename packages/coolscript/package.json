@@ -16,8 +16,8 @@
   ],
   "scripts": {
     "start": "pnpm watch",
-    "build": "esbuild src/index.ts --bundle --platform=node --target=node10.4 --outfile=bin/coolscript.js",
-    "watch": "esbuild src/index.ts --bundle --platform=node --target=node10.4 --outfile=bin/coolscript.js --watch",
+    "build": "esbuild src/index.ts --tsconfig=tsconfig.build.json --bundle --platform=node --target=node10.4 --outfile=bin/coolscript.js",
+    "watch": "esbuild src/index.ts --tsconfig=tsconfig.build.json --bundle --platform=node --target=node10.4 --outfile=bin/coolscript.js --watch",
     "check": "tsc",
     "prettier": "prettier --check src/",
     "prettier:fix": "prettier --write src/",

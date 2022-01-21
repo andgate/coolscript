@@ -1,11 +1,8 @@
 {
-  "extends": "./tsconfig.settings.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "emitDeclarationOnly": true,
-    "outDir": "./lib",
-    "rootDir": "./src",
-    "composite": true
+    "noEmit": true
   },
-  "include": ["src"],
-  "exclude": ["tests", "node_modules", "lib"]
+  "include": ["src", "tests"],
+  "exclude": ["node_modules", "lib"]
 }

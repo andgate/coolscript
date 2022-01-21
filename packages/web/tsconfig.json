@@ -1,13 +1,16 @@
 {
-  "extends": "./tsconfig.settings.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "isolatedModules": true
+    "noEmit": true,
+    "target": "es6",
+    "jsx": "react-jsx",
+    "lib": ["ES6", "DOM"]
   },
   "include": [
-    "src"
+    "src",
+    "tests"
   ],
   "exclude": [
-    "tests",
     "dist",
     "node_modules"
   ]

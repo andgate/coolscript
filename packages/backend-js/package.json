@@ -22,12 +22,12 @@
     "build": "pnpm build:lib",
     "build:lib": "pnpm clean && pnpm build:ts && pnpm build:js",
     "build:js": "node build.js",
-    "build:ts": "tsc",
-    "clean": "rimraf lib/ tsconfig.tsbuildinfo",
+    "build:ts": "tsc --project tsconfig.build.json",
+    "clean": "rimraf lib/ *.tsbuildinfo",
     "watch": "concurrently \"pnpm:watch:*\"",
     "watch:js": "node build.js --watch",
-    "watch:ts": "tsc --watch",
-    "check": "tsc --noEmit",
+    "watch:ts": "tsc --project tsconfig.build.json --watch",
+    "check": "tsc --project tsconfig.build.json --noEmit",
     "prettier": "prettier --check src/ tests/",
     "prettier:fix": "prettier --write src/ tests/",
     "lint": "eslint src/** tests/** --ext .ts,.tsx",
@@ -36,10 +36,11 @@
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
     "test": "jest"
   },
-  "dependencies": {
+  "devDependencies": {
     "@coolscript/syntax": "^0.0.6",
     "astring": "^1.8.1",
     "@types/estree": "^0.0.50",
-    "estree-builder": "^1.12.0"
+    "estree-builder": "^1.12.0",
+    "source-map": "^0.7.3"
   }
 }

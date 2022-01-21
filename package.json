@@ -23,10 +23,10 @@
     "clean": "pnpm clean:build && pnpm clean:etc && pnpm clean:node_modules",
     "clean:all": "pnpm run clean && rimraf node_modules",
     "clean:docs": "rimraf docs/",
-    "clean:build": "rimraf packages/*/dist/ packages/*/lib/ **/tsconfig.tsbuildinfo",
-    "clean:dist": "rimraf packages/*/dist/ **/tsconfig.tsbuildinfo",
-    "clean:lib": "rimraf packages/*/lib/ **/tsconfig.tsbuildinfo",
-    "clean:etc": "rimraf .parcel-cache **/tsconfig.tsbuildinfo **/.pnpm-debug.log **/lerna-debug.log **/coverage",
+    "clean:build": "rimraf packages/*/dist/ packages/*/lib/ **/*.tsbuildinfo",
+    "clean:dist": "rimraf packages/*/dist/ **/*.tsbuildinfo",
+    "clean:lib": "rimraf packages/*/lib/ **/*.tsbuildinfo",
+    "clean:etc": "rimraf .parcel-cache **/*.tsbuildinfo **/.pnpm-debug.log **/lerna-debug.log **/coverage",
     "clean:node_modules": "rimraf packages/*/node_modules/",
     "nojekyll": "nodetouch docs/.nojekyll"
   },
@@ -41,6 +41,7 @@
   },
   "homepage": "https://andgate.github.io/coolscript",
   "devDependencies": {
+    "@parcel/core": "^2.2.1",
     "@parcel/transformer-inline-string": "^2.0.1",
     "@types/jest": "^27.4.0",
     "@types/node": "^17.0.6",
