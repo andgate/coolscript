@@ -1,4 +1,4 @@
-import {
+import type {
   Term,
   TmValue,
   AValue,
@@ -19,21 +19,21 @@ import {
   TermBlock
 } from '@coolscript/syntax'
 import * as astring from 'astring'
-import * as ES from 'estree'
-import e from 'estree-builder'
+import type * as ES from 'estree'
+import * as e from '../../../estree/constructors'
 
 export function generateJS(tm: Term): string {
-  const main = e('function', [], fromTerm(tm), 'main')
-  const callMain = e(';', e('call', e('id', 'main'), []))
-  const estree: ES.Program = {
-    type: 'Program',
-    sourceType: 'script',
-    body: [main, callMain] as ES.Statement[]
-  }
+  const main = e.Function('main', [], [fromRootTerm(tm)])
+  const callMain = e.FunctionCallStatement('main', [])
+  const estree: ES.Program = e.Program([main, callMain] as ES.Statement[])
   return astring.generate(estree)
 }
 
-function fromTerm(tm: Term): ES.Node {
+function fromRootTerm(tm: Term): ES.ExpressionStatement {
+  return e.ExpressionStatement(fromTerm(tm))
+}
+
+function fromTerm(tm: Term): ES.Expression {
   switch (tm.tag) {
     case 'TmError':
       return fromTmError(tm)
@@ -67,84 +67,67 @@ function fromTerm(tm: Term): ES.Node {
       return fromTmFor(tm)
     default:
       console.error('Unknown term tag encountered.', tm)
-      return e('null')
+      return e.Null()
   }
 }
 
-function fromTmError(tm: TmError): ES.Node {
-  return e.throw(e.new('Error', e.str(tm.msg)))
+function fromTmError(tm: TmError): ES.Expression {
+  return e.ClosureExpression([e.ThrowError(tm.msg)])
 }
 
-function fromTmValue(tm: TmValue): ES.Node {
+function fromTmValue(tm: TmValue): ES.Literal {
   return fromAValue(tm.value)
 }
 
-function fromAValue(v: AValue): ES.Node {
+function fromAValue(v: AValue): ES.Literal {
   switch (v.tag) {
     case 'VNull':
-      return e('null')
+      return e.Null()
     case 'VNumber':
-      return e('number', v.num)
+      return e.Number(v.num)
     case 'VString':
-      return e('string', v.str)
+      return e.Str(v.str)
     case 'VBool':
-      return e(v.bool.toString())
+      return e.Bool(v.bool)
     default:
-      console.error('Unknown value tag encountered.', v)
-      return e('null')
+      throw new Error(`Unknown value tag encountered in: ${v}`)
   }
 }
 
-function fromTmVar(tm: TmVar): ES.Node {
-  return e('id', tm.variable)
+function fromTmVar(tm: TmVar): ES.Expression {
+  return e.Id(tm.variable)
 }
 
-function fromTmAssign(tm: TmAssign): ES.Node {
-  return e.assign(e('id', tm.lhs), fromTerm(tm.rhs))
+function fromTmAssign(tm: TmAssign): ES.Expression {
+  return e.Assign(tm.lhs, fromTerm(tm.rhs))
 }
 
-function fromTmLam(tm: TmLam): ES.Node {
-  const args = tm.args.map((arg) => e('id', arg))
-  const body = fromTerm(tm.body)
-  const fn = e('arrow', args, body)
-  console.log(tm, fn)
-  return {
-    type: 'ArrowFunctionExpression',
-    params: args as ES.Pattern[],
-    body: {
-      type: 'BlockStatement',
-      body: [e('return', body) as ES.Statement]
-    },
-    expression: false,
-    generator: false
-  }
+function fromTmLam(tm: TmLam): ES.Expression {
+  const args = tm.args.map((arg) => e.Id(arg))
+  const body = [e.ExpressionStatement(fromTerm(tm.body))]
+  return e.LambdaExpression(args, body)
 }
 
-function fromTmReturn(tm: TmReturn): ES.Node {
-  return e('return', fromTerm(tm.result))
+function fromTmReturn(tm: TmReturn): ES.Expression {
+  return e.ClosureExpression([e.ReturnStatement(fromTerm(tm.result))])
 }
 
-function fromTmCall(tm: TmCall): ES.Node {
+function fromTmCall(tm: TmCall): ES.Expression {
   const f = fromTerm(tm.caller)
   const args = tm.args.map((arg) => fromTerm(arg))
-  return {
-    type: 'CallExpression',
-    callee: f as ES.Expression,
-    arguments: args as ES.Expression[],
-    optional: false
-  }
+  return e.CallExpression(f, args)
 }
 
-function fromTmParens(tm: TmParens): ES.Node {
+function fromTmParens(tm: TmParens): ES.Expression {
   return fromTerm(tm.term)
 }
 
-function fromTmArray(tm: TmArray): ES.Node {
+function fromTmArray(tm: TmArray): ES.Expression {
   const elements = tm.elements.map((e) => fromTerm(e))
-  return e('array', elements)
+  return e.ArrayExpression(elements)
 }
 
-function fromTmObject(tm: TmObject): ES.Node {
+function fromTmObject(tm: TmObject): ES.Expression {
   const properties: ES.Property[] = Object.entries(tm.obj).map(
     ([name, val]) => ({
       type: 'Property',
@@ -165,33 +148,31 @@ function fromTmObject(tm: TmObject): ES.Node {
   }
 }
 
-function fromTmLet(tm: TmLet): ES.Node {
+function fromTmLet(tm: TmLet): ES.Expression {
   const binders = tm.binders
   const body = tm.body
-  const defs: ES.Node[] = binders.map((b) =>
-    e('const', b.variable, fromTerm(b.body))
-  )
+  const defs = binders.map((b) => e.Const(b.variable, fromTerm(b.body)))
   const esbody = body.tag == 'TmBlock' ? fromTermBlock(body) : fromTerm(body)
-  return e.block([...defs, esbody])
+  return e.ClosureExpression([...defs, e.ReturnStatement(esbody)])
 }
 
-function fromTermBlock(block: TermBlock): ES.Node {
-  const body = block.statements.map((s) => e(';', fromTerm(s)))
-  return e('block', body)
+function fromTermBlock(block: TermBlock): ES.Expression {
+  const body = block.statements.map((s) => e.ExpressionStatement(fromTerm(s)))
+  return e.ClosureExpression([e.BlockStatement(body)])
 }
 
-function fromTmDo(tm: TmDo): ES.Node {
+function fromTmDo(tm: TmDo): ES.Expression {
   return fromTermBlock(tm.block)
 }
 
-function fromTmIf(tm: TmIf): ES.Node {
-  return e('null')
+function fromTmIf(tm: TmIf): ES.Expression {
+  return e.Null()
 }
 
-function fromTmWhile(tm: TmWhile): ES.Node {
-  return e('null')
+function fromTmWhile(tm: TmWhile): ES.Expression {
+  return e.Null()
 }
 
-function fromTmFor(tm: TmFor): ES.Node {
-  return e('null')
+function fromTmFor(tm: TmFor): ES.Expression {
+  return e.Null()
 }

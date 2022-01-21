@@ -16,7 +16,7 @@
     "check": "lerna run check",
     "verify": "lerna run verify --stream",
     "prettier": "lerna run prettier",
-    "build": "lerna run build && pnpm nojekyll",
+    "build": "pnpm clean:docs && lerna run build && pnpm nojekyll",
     "build:lib": "pnpm build:plugin && lerna run build:lib",
     "build:plugin": "lerna run build:plugin",
     "test": "jest",
