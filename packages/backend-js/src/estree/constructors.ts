@@ -1,11 +1,14 @@
 import type * as ES from 'estree'
-import { isStringObject } from 'util/types'
 
 export function Program(
-  body: ES.Statement[],
-  sourceType: 'script' | 'module' = 'script'
+  sourceType: 'script' | 'module',
+  body: ES.Statement[]
 ): ES.Program {
   return { type: 'Program', sourceType, body }
+}
+
+export function Script(body: Array<ES.Statement>): ES.Program {
+  return Program('script', body)
 }
 
 export function Function(
@@ -97,18 +100,23 @@ export function VariableDeclaration(
 
 export function VariableDeclarator(
   id: ES.Pattern,
-  init: ES.Expression | null | undefined = null
+  init?: ES.Expression
 ): ES.VariableDeclarator {
   return { type: 'VariableDeclarator', id, init }
 }
 
-export function Const(id: string, init: ES.Expression | null | undefined) {
+export function Const(id: string, init?: ES.Expression) {
   const v = VariableDeclarator(Identifier(id), init)
   return VariableDeclaration([v], 'const')
 }
 
+export function Let(id: string, init?: ES.Expression) {
+  const v = VariableDeclarator(Identifier(id), init)
+  return VariableDeclaration([v], 'let')
+}
+
 export function ClosureExpression(stmts: Array<ES.Statement>): ES.Expression {
-  const f = LambdaExpression([], stmts)
+  const f = LambdaExpression([], BlockStatement(stmts))
   return CallExpression(f, [])
 }
 
@@ -118,22 +126,40 @@ export function ArrayExpression(
   return { type: 'ArrayExpression', elements }
 }
 
+export function ObjectExpression(
+  properties: Array<ES.Property>
+): ES.ObjectExpression {
+  return { type: 'ObjectExpression', properties }
+}
+
+export function Property(key: string, value: ES.Expression): ES.Property {
+  return {
+    type: 'Property',
+    key: Identifier(key),
+    value,
+    kind: 'init',
+    method: false,
+    shorthand: false,
+    computed: false
+  }
+}
+
 export function FunctionExpression(
   id: ES.Identifier | null | undefined,
   params: Array<ES.Pattern>,
-  body: Array<ES.Statement>
+  body: ES.BlockStatement
 ): ES.FunctionExpression {
   return {
     type: 'FunctionExpression',
     id,
     params,
-    body: BlockStatement(body)
+    body
   }
 }
 
 export function LambdaExpression(
   params: Array<ES.Pattern>,
-  body: Array<ES.Statement>
+  body: ES.BlockStatement
 ): ES.FunctionExpression {
   return FunctionExpression(null, params, body)
 }

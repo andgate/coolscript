@@ -3,13 +3,11 @@ lockfileVersion: 5.3
 specifiers:
   '@types/estree': ^0.0.50
   astring: ^1.8.1
-  estree-builder: ^1.12.0
   source-map: ^0.7.3
 
 devDependencies:
   '@types/estree': 0.0.50
   astring: 1.8.1
-  estree-builder: 1.12.0
   source-map: 0.7.3
 
 packages:
@@ -21,10 +19,6 @@ packages:
   /astring/1.8.1:
     resolution: {integrity: sha512-Aj3mbwVzj7Vve4I/v2JYOPFkCGM2YS7OqQTNSxmUR+LECRpokuPgAYghePgr6SALDo5bD5DlfbSaYjOzGJZOLQ==}
     hasBin: true
-    dev: true
-
-  /estree-builder/1.12.0:
-    resolution: {integrity: sha512-ofbs+yUQEfUHzPg1uZl3Bc7bYR9+bSrW2oBjOvg+el6hsyxn0FCj9ylq5okiihgMpwJhWobnC4tgO/H/Ve6kJw==}
     dev: true
 
   /source-map/0.7.3:
