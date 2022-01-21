@@ -68,7 +68,7 @@ function fromTerm(tm: Term): ES.Node {
       return fromTmFor(tm)
     default:
       console.error('Unknown term tag encountered.', tm)
-      return
+      return e('null')
   }
 }
 
@@ -92,9 +92,8 @@ function fromAValue(v: AValue): ES.Node {
       return e(v.bool.toString())
     default:
       console.error('Unknown value tag encountered.', v)
-      break
+      return e('null')
   }
-  return
 }
 
 function fromTmVar(tm: TmVar): ES.Node {
@@ -127,9 +126,9 @@ function fromTmReturn(tm: TmReturn): ES.Node {
 }
 
 function fromTmCall(tm: TmCall): ES.Node {
-  const callee = fromTerm(tm.caller)
+  const f = fromTerm(tm.caller)
   const args = tm.args.map((arg) => fromTerm(arg))
-  return e('call', callee, args)
+  return e('call', f, args)
 }
 
 function fromTmParens(tm: TmParens): ES.Node {
@@ -182,13 +181,13 @@ function fromTmDo(tm: TmDo): ES.Node {
 }
 
 function fromTmIf(tm: TmIf): ES.Node {
-  return
+  return e('null')
 }
 
 function fromTmWhile(tm: TmWhile): ES.Node {
-  return
+  return e('null')
 }
 
 function fromTmFor(tm: TmFor): ES.Node {
-  return
+  return e('null')
 }
