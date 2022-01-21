@@ -17,6 +17,7 @@ const shared = {
   entryPoints: ['src/index.ts'],
   sourcemap: true,
   bundle: true,
+  target: 'es6',
   external,
   watch
 }

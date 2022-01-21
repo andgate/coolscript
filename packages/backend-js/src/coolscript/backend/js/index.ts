@@ -127,7 +127,12 @@ function fromTmReturn(tm: TmReturn): ES.Node {
 function fromTmCall(tm: TmCall): ES.Node {
   const f = fromTerm(tm.caller)
   const args = tm.args.map((arg) => fromTerm(arg))
-  return e('call', f, args)
+  return {
+    type: 'CallExpression',
+    callee: f as ES.Expression,
+    arguments: args as ES.Expression[],
+    optional: false
+  }
 }
 
 function fromTmParens(tm: TmParens): ES.Node {

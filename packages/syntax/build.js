@@ -12,6 +12,7 @@ if (watch) {
 }
 
 const shared = {
+  target: 'es6',
   entryPoints: ['src/index.ts'],
   sourcemap: true,
   bundle: true,

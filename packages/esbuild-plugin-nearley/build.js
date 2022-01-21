@@ -19,6 +19,7 @@ esbuild
     entryPoints: ['src/index.ts'],
     outfile: 'dist/index.js',
     platform: 'node',
+    target: 'es6',
     format: 'cjs',
     sourcemap: true,
     bundle: true,
