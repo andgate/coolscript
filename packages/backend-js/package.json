@@ -37,6 +37,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@coolscript/syntax": "^0.0.6"
+    "@coolscript/syntax": "^0.0.6",
+    "astring": "^1.8.1",
+    "@types/estree": "^0.0.50",
+    "estree-builder": "^1.12.0"
   }
 }

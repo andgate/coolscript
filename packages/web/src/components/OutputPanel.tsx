@@ -1,6 +1,5 @@
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import ReactJson from 'react-json-view'
-import prettyJs from 'pretty-js'
 import { evaluate } from '@coolscript/eval'
 import { parse } from '@coolscript/parser'
 import type { Term, Value } from '@coolscript/syntax'
@@ -165,7 +164,7 @@ export function OutputPanel() {
       </div>
       <div ref={jsGenTabContent} className={tabContent}>
         {jsGenResult ? (
-          <pre>{prettyJs(jsGenResult)}</pre>
+          <pre>{jsGenResult}</pre>
         ) : (
           <p>Javascript code generation failed.</p>
         )}

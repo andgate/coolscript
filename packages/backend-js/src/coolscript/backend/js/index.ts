@@ -18,196 +18,177 @@ import {
   TmFor,
   TermBlock
 } from '@coolscript/syntax'
-import { StringBuilder } from './StringBuilder'
+import * as astring from 'astring'
+import * as ES from 'estree'
+import e from 'estree-builder'
+import {} from 'estree'
 
 export function generateJS(tm: Term): string {
-  const builder = new StringBuilder()
-  buildTerm(tm, builder)
-  return builder.toString()
+  const main = e('function', [], fromTerm(tm), 'main')
+  const callMain = e(';', e('call', e('id', 'main'), []))
+  const estree: ES.Program = {
+    type: 'Program',
+    sourceType: 'script',
+    body: [main, callMain] as ES.Statement[]
+  }
+  return astring.generate(estree)
 }
 
-function buildTerm(tm: Term, builder: StringBuilder) {
+function fromTerm(tm: Term): ES.Node {
   switch (tm.tag) {
     case 'TmError':
-      buildTmError(tm, builder)
-      return
+      return fromTmError(tm)
     case 'TmValue':
-      buildTmValue(tm, builder)
-      return
+      return fromTmValue(tm)
     case 'TmVar':
-      buildTmVar(tm, builder)
-      return
+      return fromTmVar(tm)
     case 'TmAssign':
-      buildTmAssign(tm, builder)
-      return
+      return fromTmAssign(tm)
     case 'TmLam':
-      buildTmLam(tm, builder)
-      return
+      return fromTmLam(tm)
     case 'TmReturn':
-      buildTmReturn(tm, builder)
-      return
+      return fromTmReturn(tm)
     case 'TmCall':
-      buildTmCall(tm, builder)
-      return
+      return fromTmCall(tm)
     case 'TmParens':
-      buildTmParens(tm, builder)
-      return
+      return fromTmParens(tm)
     case 'TmArray':
-      buildTmArray(tm, builder)
-      return
+      return fromTmArray(tm)
     case 'TmObject':
-      buildTmObject(tm, builder)
-      return
+      return fromTmObject(tm)
     case 'TmLet':
-      buildTmLet(tm, builder)
-      return
+      return fromTmLet(tm)
     case 'TmDo':
-      buildTmDo(tm, builder)
-      return
+      return fromTmDo(tm)
     case 'TmIf':
-      buildTmIf(tm, builder)
-      return
+      return fromTmIf(tm)
     case 'TmWhile':
-      buildTmWhile(tm, builder)
-      return
+      return fromTmWhile(tm)
     case 'TmFor':
-      buildTmFor(tm, builder)
-      return
+      return fromTmFor(tm)
     default:
       console.error('Unknown term tag encountered.', tm)
       return
   }
 }
 
-function buildTmError(tm: TmError, builder: StringBuilder) {
-  builder.append(`throw new Error(${tm.msg});`)
+function fromTmError(tm: TmError): ES.Node {
+  return e.throw(e.new('Error', e.str(tm.msg)))
 }
 
-function buildTmValue(tm: TmValue, builder: StringBuilder) {
-  buildAValue(tm.value, builder)
+function fromTmValue(tm: TmValue): ES.Node {
+  return fromAValue(tm.value)
 }
 
-function buildAValue(v: AValue, builder: StringBuilder) {
+function fromAValue(v: AValue): ES.Node {
   switch (v.tag) {
     case 'VNull':
-      builder.append('null')
-      break
+      return e('null')
     case 'VNumber':
-      builder.append(v.num.toString())
-      break
+      return e('number', v.num)
     case 'VString':
-      builder.append(`'${v.str}'`)
-      break
+      return e('string', v.str)
     case 'VBool':
-      builder.append(v.bool.toString())
-      break
+      return e(v.bool.toString())
     default:
       console.error('Unknown value tag encountered.', v)
       break
   }
+  return
 }
 
-function buildTmVar(tm: TmVar, builder: StringBuilder) {
-  builder.append(tm.variable)
+function fromTmVar(tm: TmVar): ES.Node {
+  return e('id', tm.variable)
 }
 
-function buildTmAssign(tm: TmAssign, builder: StringBuilder) {
-  builder.append(`${tm.lhs} = `)
-  buildTerm(tm.rhs, builder)
-  builder.append(';')
+function fromTmAssign(tm: TmAssign): ES.Node {
+  return e.assign(e('id', tm.lhs), fromTerm(tm.rhs))
 }
 
-function buildTmLam(tm: TmLam, builder: StringBuilder) {
-  builder.append('(')
-  for (let i = 0; i < tm.args.length; i++) {
-    builder.append(tm.args[i])
-    if (i != tm.args.length - 1) {
-      builder.append(', ')
-    }
+function fromTmLam(tm: TmLam): ES.Node {
+  const args = tm.args.map((arg) => e('id', arg))
+  const body = fromTerm(tm.body)
+  const fn = e('arrow', args, body)
+  console.log(tm, fn)
+  return {
+    type: 'ArrowFunctionExpression',
+    params: args as ES.Pattern[],
+    body: {
+      type: 'BlockStatement',
+      body: [e('return', body) as ES.Statement]
+    },
+    expression: false,
+    generator: false
   }
-  builder.append(') => ')
-  buildTerm(tm.body, builder)
 }
 
-function buildTmReturn(tm: TmReturn, builder: StringBuilder) {
-  builder.append('return ')
-  buildTerm(tm.result, builder)
+function fromTmReturn(tm: TmReturn): ES.Node {
+  return e('return', fromTerm(tm.result))
 }
 
-function buildTmCall(tm: TmCall, builder: StringBuilder) {
-  buildTerm(tm.caller, builder)
-  builder.append('(')
-  for (let i = 0; i < tm.args.length; i++) {
-    buildTerm(tm.args[i], builder)
-    if (i != tm.args.length - 1) {
-      builder.append(', ')
-    }
+function fromTmCall(tm: TmCall): ES.Node {
+  const callee = fromTerm(tm.caller)
+  const args = tm.args.map((arg) => fromTerm(arg))
+  return e('call', callee, args)
+}
+
+function fromTmParens(tm: TmParens): ES.Node {
+  return fromTerm(tm.term)
+}
+
+function fromTmArray(tm: TmArray): ES.Node {
+  const elements = tm.elements.map((e) => fromTerm(e))
+  return e('array', elements)
+}
+
+function fromTmObject(tm: TmObject): ES.Node {
+  const properties: ES.Property[] = Object.entries(tm.obj).map(
+    ([name, val]) => ({
+      type: 'Property',
+      key: {
+        type: 'Identifier',
+        name
+      },
+      value: fromTerm(val) as ES.Expression,
+      kind: 'init',
+      method: false,
+      shorthand: false,
+      computed: false
+    })
+  )
+  return {
+    type: 'ObjectExpression',
+    properties
   }
-  builder.append(')')
 }
 
-function buildTmParens(tm: TmParens, builder: StringBuilder) {
-  builder.append('(')
-  buildTerm(tm, builder)
-  builder.append(')')
-}
-
-function buildTmArray(tm: TmArray, builder: StringBuilder) {
-  builder.append('[')
-  for (let i = 0; i < tm.elements.length; i++) {
-    buildTerm(tm.elements[i], builder)
-    if (i != tm.elements.length - 1) {
-      builder.append(', ')
-    }
-  }
-  builder.append(']')
-}
-
-function buildTmObject(tm: TmObject, builder: StringBuilder) {
-  builder.append('{ ')
-  const entries = Object.entries(tm.obj)
-  for (let i = 0; i < entries.length; i++) {
-    builder.append(entries[i][0])
-    builder.append(': ')
-    buildTerm(entries[i][1], builder)
-    if (i != entries.length - 1) {
-      builder.append(', ')
-    }
-  }
-  builder.append(' }')
-}
-
-function buildTmLet(tm: TmLet, builder: StringBuilder) {
+function fromTmLet(tm: TmLet): ES.Node {
   const binders = tm.binders
   const body = tm.body
-  for (let i = 0; i < binders.length; i++) {
-    builder.append('const ')
-    builder.append(binders[i].variable)
-    builder.append(' = ')
-    buildTerm(binders[i].body, builder)
-    builder.append(';')
-  }
-  if (body.tag == 'TmBlock') {
-    buildTermBlock(body, builder)
-  } else {
-    buildTerm(body, builder)
-    builder.append(';')
-  }
+  const defs: ES.Node[] = binders.map((b) =>
+    e('const', b.variable, fromTerm(b.body))
+  )
+  const esbody = body.tag == 'TmBlock' ? fromTermBlock(body) : fromTerm(body)
+  return e.block([...defs, esbody])
 }
 
-function buildTermBlock(block: TermBlock, builder: StringBuilder) {
-  for (let i = 0; i < block.statements.length; i++) {
-    buildTerm(block.statements[i], builder)
-    builder.append(';')
-  }
+function fromTermBlock(block: TermBlock): ES.Node {
+  const body = block.statements.map((s) => e(';', fromTerm(s)))
+  return e('block', body)
 }
 
-function buildTmDo(tm: TmDo, builder: StringBuilder) {
-  buildTermBlock(tm.block, builder)
+function fromTmDo(tm: TmDo): ES.Node {
+  return fromTermBlock(tm.block)
 }
 
-function buildTmIf(tm: TmIf, builder: StringBuilder) {}
+function fromTmIf(tm: TmIf): ES.Node {
+  return
+}
 
-function buildTmWhile(tm: TmWhile, builder: StringBuilder) {}
+function fromTmWhile(tm: TmWhile): ES.Node {
+  return
+}
 
-function buildTmFor(tm: TmFor, builder: StringBuilder) {}
+function fromTmFor(tm: TmFor): ES.Node {
+  return
+}
