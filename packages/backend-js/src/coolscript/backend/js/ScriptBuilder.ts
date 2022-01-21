@@ -51,41 +51,61 @@ export class ScriptBuilder {
   generate(term: Term): ES.Program {
     this.visitTerm(term)
     const statements = this.block.build().body
+    while (this.stack.length > 0) {
+      const expression = this.stack.pop()
+      const expressionStatement = e.ExpressionStatement(expression)
+      statements.push(expressionStatement)
+    }
     return e.Script(statements)
   }
 
   visitTerm(tm: Term) {
     switch (tm.tag) {
       case 'TmError':
-        return this.visitTmError(tm)
+        this.visitTmError(tm)
+        break
       case 'TmValue':
-        return this.visitTmValue(tm)
+        this.visitTmValue(tm)
+        break
       case 'TmVar':
-        return this.visitTmVar(tm)
+        this.visitTmVar(tm)
+        break
       case 'TmAssign':
-        return this.visitTmAssign(tm)
+        this.visitTmAssign(tm)
+        break
       case 'TmLam':
-        return this.visitTmLam(tm)
+        this.visitTmLam(tm)
+        break
       case 'TmReturn':
-        return this.visitTmReturn(tm)
+        this.visitTmReturn(tm)
+        break
       case 'TmCall':
-        return this.visitTmCall(tm)
+        this.visitTmCall(tm)
+        break
       case 'TmParens':
-        return this.visitTmParens(tm)
+        this.visitTmParens(tm)
+        break
       case 'TmArray':
-        return this.visitTmArray(tm)
+        this.visitTmArray(tm)
+        break
       case 'TmObject':
-        return this.visitTmObject(tm)
+        this.visitTmObject(tm)
+        break
       case 'TmLet':
-        return this.visitTmLet(tm)
+        this.visitTmLet(tm)
+        break
       case 'TmDo':
-        return this.visitTmDo(tm)
+        this.visitTmDo(tm)
+        break
       case 'TmIf':
-        return this.visitTmIf(tm)
+        this.visitTmIf(tm)
+        break
       case 'TmWhile':
-        return this.visitTmWhile(tm)
+        this.visitTmWhile(tm)
+        break
       case 'TmFor':
-        return this.visitTmFor(tm)
+        this.visitTmFor(tm)
+        break
       default:
         throw new Error(`Unknown term tag encountered: ${tm}`)
     }
@@ -123,6 +143,9 @@ export class ScriptBuilder {
   }
 
   visitTmAssign(tm: TmAssign) {
+    if (!this.block.isDefined(tm.lhs)) {
+      this.block.declareLet(tm.lhs)
+    }
     this.visitTerm(tm.rhs)
     if (!this.stack) {
       throw new Error(
@@ -138,8 +161,15 @@ export class ScriptBuilder {
     const args = tm.args.map((arg) => e.Id(arg))
     this.enter(tm.args)
     this.visitTerm(tm.body)
-    const body = this.exit()
-    return e.LambdaExpression(args, body)
+    let body: ES.BlockStatement
+    body = this.exit()
+    if (body.body.length == 0) {
+      const bodyExpression = this.stack.pop()
+      const expressionStatement = e.ReturnStatement(bodyExpression)
+      body = e.BlockStatement([expressionStatement])
+    }
+    const lambda = e.LambdaExpression(args, body)
+    this.stack.push(lambda)
   }
 
   visitTmReturn(tm: TmReturn) {
@@ -222,12 +252,13 @@ export class ScriptBuilder {
         this.block.append(stmt)
       }
     })
-    const blockStatment = this.exit()
-    this.block.append(blockStatment)
+    const blockStatement = this.exit()
+    const closure = e.ClosureExpression(blockStatement.body)
+    this.stack.push(closure)
   }
 
   visitTmDo(tm: TmDo) {
-    return this.visitTermBlock(tm.block)
+    this.visitTermBlock(tm.block)
   }
 
   visitTmIf(tm: TmIf) {

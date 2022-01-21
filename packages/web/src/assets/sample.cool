@@ -1,7 +1,7 @@
 // This is a comment
 let
   id = (x) => x;
-  const = (a, b) => a;
+  constant = (a, b) => a;
   createFoo = (x) => {
     name: "Foo",
     value: x
@@ -9,6 +9,6 @@ let
   bar = 999;
 in do {
   baz = id(bar);
-  const(bar, baz);
+  constant(bar, baz);
   return createFoo(baz);
 }

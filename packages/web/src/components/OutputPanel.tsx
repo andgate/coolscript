@@ -59,21 +59,27 @@ const tabContent = style({
 
 export function OutputPanel() {
   const jsGenTabContent = useRef<HTMLDivElement>()
+  const jsEvalTabContent = useRef<HTMLDivElement>()
   const parseTabContent = useRef<HTMLDivElement>()
   const evalTabContent = useRef<HTMLDivElement>()
   const jsGenTabButton = useRef<HTMLButtonElement>()
+  const jsEvalTabButton = useRef<HTMLButtonElement>()
   const parseTabButton = useRef<HTMLButtonElement>()
   const evalTabButton = useRef<HTMLButtonElement>()
   const [currentTab, setCurrentTab] = useState<string>('js')
 
   useEffect(() => {
     jsGenTabContent.current.style.display = 'none'
+    jsEvalTabContent.current.style.display = 'none'
     parseTabContent.current.style.display = 'none'
     evalTabContent.current.style.display = 'none'
 
     switch (currentTab) {
       case 'js':
         jsGenTabContent.current.style.display = 'block'
+        break
+      case 'js-eval':
+        jsEvalTabContent.current.style.display = 'block'
         break
       case 'parser':
         parseTabContent.current.style.display = 'block'
@@ -89,12 +95,16 @@ export function OutputPanel() {
 
   useEffect(() => {
     jsGenTabButton.current.className = tabLink
+    jsEvalTabButton.current.className = tabLink
     parseTabButton.current.className = tabLink
     evalTabButton.current.className = tabLink
 
     switch (currentTab) {
       case 'js':
         jsGenTabButton.current.className = activeTabLink
+        break
+      case 'js-eval':
+        jsEvalTabButton.current.className = activeTabLink
         break
       case 'parser':
         parseTabButton.current.className = activeTabLink
@@ -121,6 +131,17 @@ export function OutputPanel() {
     () => (parseResult ? generateJS(parseResult) : null),
     [parseResult]
   )
+  const jsEvalResult = useMemo<any | null>(() => {
+    if (!jsGenResult) {
+      return null
+    }
+    try {
+      return eval(jsGenResult)
+    } catch (err) {
+      console.error(err)
+      return null
+    }
+  }, [jsGenResult])
 
   return (
     <div className={outputPanelRoot}>
@@ -130,6 +151,12 @@ export function OutputPanel() {
           className={tabLink}
           onClick={() => setCurrentTab('js')}>
           js
+        </button>
+        <button
+          ref={jsEvalTabButton}
+          className={tabLink}
+          onClick={() => setCurrentTab('js-eval')}>
+          js-eval
         </button>
         <button
           ref={parseTabButton}
@@ -147,6 +174,13 @@ export function OutputPanel() {
       <div ref={jsGenTabContent} className={tabContent}>
         {jsGenResult ? (
           <pre>{jsGenResult}</pre>
+        ) : (
+          <p>Javascript code generation failed.</p>
+        )}
+      </div>
+      <div ref={jsEvalTabContent} className={tabContent}>
+        {jsEvalResult ? (
+          <pre>{JSON.stringify(jsEvalResult)}</pre>
         ) : (
           <p>Javascript code generation failed.</p>
         )}
