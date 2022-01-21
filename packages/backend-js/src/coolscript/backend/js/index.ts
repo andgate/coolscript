@@ -21,7 +21,6 @@ import {
 import * as astring from 'astring'
 import * as ES from 'estree'
 import e from 'estree-builder'
-import {} from 'estree'
 
 export function generateJS(tm: Term): string {
   const main = e('function', [], fromTerm(tm), 'main')

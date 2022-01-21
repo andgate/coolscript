@@ -2,16 +2,9 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
-    "target": "es6",
     "jsx": "react-jsx",
     "lib": ["ES6", "DOM"]
   },
-  "include": [
-    "src",
-    "tests"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules"
-  ]
+  "include": ["src", "tests"],
+  "exclude": ["dist", "node_modules"]
 }
