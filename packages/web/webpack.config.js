@@ -77,7 +77,7 @@ module.exports = {
     }),
     new FaviconsWebpackPlugin({
       logo: path.resolve(__dirname, 'favicon.png'),
-      publicPath: './',
+      publicPath: './coolscript/',
       prefix: './'
     })
   ]
