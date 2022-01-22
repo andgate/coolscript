@@ -5,11 +5,11 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "main": "./lib/index.js",
-  "module": "./lib/index.cjs",
+  "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "publishConfig": {
     "main": "./lib/index.js",
-    "module": "./lib/index.cjs",
+    "module": "./lib/index.js",
     "typings": "lib/index.d.ts",
     "access": "public"
   },
@@ -27,7 +27,7 @@
     "watch": "concurrently \"pnpm:watch:*\"",
     "watch:js": "node build.js --watch",
     "watch:ts": "tsc --project tsconfig.build.json --watch",
-    "check": "tsc --project tsconfig.build.json --noEmit",
+    "check": "tsc --noEmit",
     "prettier": "prettier --check src/ tests/",
     "prettier:fix": "prettier --write src/ tests/",
     "lint": "eslint src/** tests/** --ext .ts,.tsx",
@@ -37,9 +37,11 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@coolscript/syntax": "^0.0.6",
     "astring": "^1.8.1",
     "@types/estree": "^0.0.50",
     "source-map": "^0.7.3"
+  },
+  "dependencies": {
+    "@coolscript/syntax": "0.0.6"
   }
 }

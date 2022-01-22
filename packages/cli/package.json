@@ -3,11 +3,11 @@
   "version": "0.0.6",
   "description": "Coolscript programming language commandline interface library.",
   "main": "./lib/index.js",
-  "module": "./lib/index.cjs",
+  "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "publishConfig": {
     "main": "./lib/index.js",
-    "module": "./lib/index.cjs",
+    "module": "./lib/index.js",
     "typings": "lib/index.d.ts",
     "access": "public"
   },
@@ -37,8 +37,8 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "dependencies": {
-    "@coolscript/parser": "^0.0.6",
-    "@coolscript/syntax": "^0.0.6"
+    "@coolscript/parser": "0.0.6",
+    "@coolscript/syntax": "0.0.6"
   },
   "gitHead": "9b91bf0df0bb73d74440b9a1d191fd5c91c6af93"
 }

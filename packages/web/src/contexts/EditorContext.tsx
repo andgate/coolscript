@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react'
-import codeSample from 'bundle-text:../assets/sample.cool'
+import codeSample from '../assets/sample.cool'
 
 export type EditorState = {
   textContent: string

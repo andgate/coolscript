@@ -59,10 +59,12 @@ packages:
     resolution: {integrity: sha1-4pf2DX7BAUp6lxo568ipjAtoHnA=}
     dev: true
 
-  /cross-fetch/3.1.4:
-    resolution: {integrity: sha512-1eAtFWdIubi6T4XPy6ei9iUFoKpUkIF971QLN8lIvvvwueI65+Nw5haMNKUwfJxabqlIIDODJKGrQ66gxC0PbQ==}
+  /cross-fetch/3.1.5:
+    resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
     dependencies:
-      node-fetch: 2.6.1
+      node-fetch: 2.6.7
+    transitivePeerDependencies:
+      - encoding
     dev: true
 
   /csstips/1.2.0_typestyle@2.2.0:
@@ -95,6 +97,8 @@ packages:
     resolution: {integrity: sha512-KWKaceCwKQU0+HPoop6gn4eOHk50bBv/VxjJtGMfwmJt3D29JpN4H4eisCtIPA+a8GVBam+ldMMpMjJUvpDyHw==}
     dependencies:
       fbjs: 3.0.2
+    transitivePeerDependencies:
+      - encoding
     dev: true
 
   /fbjs-css-vars/1.0.2:
@@ -104,13 +108,15 @@ packages:
   /fbjs/3.0.2:
     resolution: {integrity: sha512-qv+boqYndjElAJHNN3NoM8XuwQZ1j2m3kEvTgdle8IDjr6oUbkEpvABWtj/rQl3vq4ew7dnElBxL4YJAwTVqQQ==}
     dependencies:
-      cross-fetch: 3.1.4
+      cross-fetch: 3.1.5
       fbjs-css-vars: 1.0.2
       loose-envify: 1.4.0
       object-assign: 4.1.1
       promise: 7.3.1
       setimmediate: 1.0.5
       ua-parser-js: 0.7.31
+    transitivePeerDependencies:
+      - encoding
     dev: true
 
   /flux/4.0.3_react@17.0.2:
@@ -121,6 +127,8 @@ packages:
       fbemitter: 3.0.0
       fbjs: 3.0.2
       react: 17.0.2
+    transitivePeerDependencies:
+      - encoding
     dev: true
 
   /free-style/3.1.0:
@@ -146,9 +154,16 @@ packages:
       js-tokens: 4.0.0
     dev: true
 
-  /node-fetch/2.6.1:
-    resolution: {integrity: sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==}
+  /node-fetch/2.6.7:
+    resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
     engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
     dev: true
 
   /object-assign/4.1.1:
@@ -200,6 +215,7 @@ packages:
       react-textarea-autosize: 8.3.3_b08e3c15324cbe90a6ff8fcd416c932c
     transitivePeerDependencies:
       - '@types/react'
+      - encoding
     dev: true
 
   /react-lifecycles-compat/3.0.4:
@@ -241,6 +257,10 @@ packages:
 
   /setimmediate/1.0.5:
     resolution: {integrity: sha1-KQy7Iy4waULX1+qbg3Mqt4VvgoU=}
+    dev: true
+
+  /tr46/0.0.3:
+    resolution: {integrity: sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=}
     dev: true
 
   /typestyle/2.2.0:
@@ -287,4 +307,15 @@ packages:
       '@types/react': 17.0.38
       react: 17.0.2
       use-isomorphic-layout-effect: 1.1.1_b08e3c15324cbe90a6ff8fcd416c932c
+    dev: true
+
+  /webidl-conversions/3.0.1:
+    resolution: {integrity: sha1-JFNCdeKnvGvnvIZhHMFq4KVlSHE=}
+    dev: true
+
+  /whatwg-url/5.0.0:
+    resolution: {integrity: sha1-lmRU6HZUYuN2RNNib2dCzotwll0=}
+    dependencies:
+      tr46: 0.0.3
+      webidl-conversions: 3.0.1
     dev: true

@@ -3,11 +3,11 @@
   "version": "0.0.6",
   "description": "Coolscript programming language parser.",
   "main": "./lib/index.js",
-  "module": "./lib/index.cjs",
+  "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "publishConfig": {
     "main": "./lib/index.js",
-    "module": "./lib/index.cjs",
+    "module": "./lib/index.js",
     "typings": "lib/index.d.ts",
     "access": "public"
   },
@@ -37,14 +37,12 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
+    "@coolscript/syntax": "0.0.6",
     "@types/moo": "^0.5.5",
     "@types/nearley": "^2.11.2",
     "esbuild-plugin-nearley": "^1.0.3",
     "moo": "^0.5.1",
     "nearley": "^2.20.1"
-  },
-  "dependencies": {
-    "@coolscript/syntax": "^0.0.6"
   },
   "gitHead": "9b91bf0df0bb73d74440b9a1d191fd5c91c6af93"
 }

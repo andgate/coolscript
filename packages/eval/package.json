@@ -5,11 +5,11 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "main": "./lib/index.js",
-  "module": "./lib/index.cjs",
+  "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "publishConfig": {
     "main": "./lib/index.js",
-    "module": "./lib/index.cjs",
+    "module": "./lib/index.js",
     "typings": "lib/index.d.ts",
     "access": "public"
   },
@@ -37,6 +37,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@coolscript/syntax": "^0.0.6"
+    "@coolscript/syntax": "0.0.6"
   }
 }

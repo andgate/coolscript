@@ -220,7 +220,7 @@ export class ScriptBuilder {
 
   visitAssignmentStatement(s: AssignmentStatement) {
     const lhs = s.lhs
-    if (this.block.resolve(lhs)) {
+    if (!this.block.resolve(lhs)) {
       this.block.declareLet(lhs)
     }
     const rhs = this.visitTerm(s.rhs)

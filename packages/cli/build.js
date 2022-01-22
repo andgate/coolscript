@@ -25,17 +25,9 @@ const shared = {
 esbuild
   .build({
     ...shared,
-    outfile: 'lib/index.js',
-    platform: 'browser',
-    format: 'iife'
-  })
-  .catch(() => process.exit(1))
-
-esbuild
-  .build({
-    ...shared,
-    outfile: 'lib/index.cjs',
-    platform: 'browser',
-    format: 'cjs'
+    outdir: 'lib/',
+    tsconfig: 'tsconfig.build.json',
+    format: 'esm',
+    splitting: true
   })
   .catch(() => process.exit(1))

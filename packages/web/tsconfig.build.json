@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.settings.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "lib": ["ES6", "DOM"]
+  },
+  "include": ["src", "tests"],
+  "exclude": ["dist", "node_modules"]
+}
