@@ -9,12 +9,13 @@ const outdir = path.resolve(__dirname, '../../docs')
 
 module.exports = (env, argv) => {
   const isDev = argv.mode && argv.mode === 'development'
-  const publicPath = isDev ? './' : website
+  const publicPath = isDev ? './' : './coolscript/'
   return {
     entry: path.join(__dirname, 'src', 'index.tsx'),
     output: {
       path: outdir,
-      filename: 'index.js'
+      filename: 'index.js',
+      publicPath: publicPath
     },
     devtool: 'inline-source-map',
     devServer: {
