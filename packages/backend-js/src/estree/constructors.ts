@@ -210,7 +210,7 @@ export function New(
 }
 
 export function SimpleLiteral(
-  value: string | boolean | number | null
+  value: number | string | boolean | null
 ): ES.SimpleLiteral {
   return { type: 'Literal', value }
 }
@@ -219,16 +219,16 @@ export function Str(str: string): ES.SimpleLiteral {
   return SimpleLiteral(str)
 }
 
-export function Bool(bool: boolean): ES.SimpleLiteral {
-  return SimpleLiteral(bool)
+export function Bool(value: boolean): ES.SimpleLiteral {
+  return { type: 'Literal', value }
 }
 
-export function Number(num: number): ES.SimpleLiteral {
-  return SimpleLiteral(num)
+export function Number(value: number): ES.SimpleLiteral {
+  return { type: 'Literal', value }
 }
 
 export function Null(): ES.SimpleLiteral {
-  return SimpleLiteral(null)
+  return { type: 'Literal', value: null }
 }
 
 export function AssignmentExpression(

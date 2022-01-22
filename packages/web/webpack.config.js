@@ -21,7 +21,6 @@ module.exports = (env, argv) => {
       static: {
         publicPath: './'
       },
-      port: 9000,
       hot: false
     },
     resolve: {
@@ -32,7 +31,6 @@ module.exports = (env, argv) => {
         {
           test: /\.(js)x?$/,
           loader: 'esbuild-loader',
-          exclude: /node_modules/,
           options: {
             loader: 'jsx',
             target: 'es2015'
@@ -41,7 +39,6 @@ module.exports = (env, argv) => {
         {
           test: /\.tsx?$/,
           loader: 'esbuild-loader',
-          exclude: /node_modules/,
           options: {
             loader: 'tsx',
             target: 'es2015',

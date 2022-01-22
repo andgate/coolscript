@@ -96,7 +96,6 @@ export class Interpreter {
   }
 
   assign(tm: TmAssign): Value {
-    console.log('Performing assignment', tm)
     const value = this.exec(tm.rhs)
     let space: MemorySpace = this.getSpaceWithSymbol(tm.lhs)
     if (space == null) {
@@ -125,13 +124,11 @@ export class Interpreter {
   }
 
   call(tm: TmCall): Value {
-    console.log(`calling function`, tm.caller)
     const fn = this.exec(tm.caller)
     if (fn.tag != 'VLam') {
       return VError(`Cannot call non-function: ${JSON.stringify(fn)}`)
     }
     const args = tm.args.map((x) => this.exec(x))
-    console.log('function args evaluated', args)
 
     // Create new memory space for stack.
     const fspace = new MemorySpace()
@@ -158,7 +155,6 @@ export class Interpreter {
     }
     this.stack.pop()
     this.currentSpace = saveSpace
-    console.log('returning result', result)
     return result
   }
 
