@@ -95,11 +95,11 @@ export type Term =
   | TmParens
   | TmArray
   | TmObject
+  | TmGet
+  | TmGetI
   | TmLet
   | TmDo
   | TmIf
-  | TmWhile
-  | TmFor
 
 export type TmError = {
   tag: 'TmError'
@@ -224,7 +224,36 @@ export function TmObject(obj: ObjectF<Term> = {}, ann?: any): TmObject {
   return { tag: 'TmObject', ann, obj }
 }
 
-// do { t1; ...; tn }
+export type TmGet = {
+  tag: 'TmGet'
+  ann?: any
+  parent: Term
+  child: Var
+}
+
+// t.m
+export function TmGet(parent: Term, child: Var, ann?: any): TmGet {
+  return {
+    tag: 'TmGet',
+    ann,
+    parent,
+    child
+  }
+}
+
+// t[i]
+export type TmGetI = {
+  tag: 'TmGetI'
+  ann?: any
+  parent: Term
+  index: Term
+}
+
+export function TmGetI(parent: Term, index: Term, ann?: any): TmGetI {
+  return { tag: 'TmGetI', ann, parent, index }
+}
+
+// do { s1; s2; ...; sn; }
 export type TmDo = {
   tag: 'TmDo'
   ann?: any
@@ -244,15 +273,10 @@ export type TmIf = {
   ann?: any
   pred: Term
   body: Term
-  branch: Branch | null
+  branch: Branch
 }
 
-export function TmIf(
-  pred: Term,
-  body: Term,
-  branch: Branch | null = null,
-  ann?: any
-): TmIf {
+export function TmIf(pred: Term, body: Term, branch: Branch, ann?: any): TmIf {
   return { tag: 'TmIf', ann, pred, body, branch }
 }
 
@@ -262,14 +286,10 @@ export type ElifBranch = {
   tag: 'Elif'
   pred: Term
   body: Term
-  branch: Branch | null
+  branch: Branch
 }
 
-export function ElifBranch(
-  pred: Term,
-  body: Term,
-  branch: Branch | null = null
-): ElifBranch {
+export function ElifBranch(pred: Term, body: Term, branch: Branch): ElifBranch {
   return { tag: 'Elif', pred, body, branch }
 }
 
@@ -282,43 +302,15 @@ export function ElseBranch(body: Term): ElseBranch {
   return { tag: 'Else', body }
 }
 
-// while (t1) t2
-export type TmWhile = {
-  tag: 'TmWhile'
-  ann?: any
-  pred: Term
-  body: Term
-}
-
-export function TmWhile(pred: Term, body: Term, ann?: any): TmWhile {
-  return { tag: 'TmWhile', ann, pred, body }
-}
-
-// for (t1; t2; t3) t4
-export type TmFor = {
-  tag: 'TmFor'
-  ann?: any
-  init: Term
-  pred: Term
-  iter: Term
-  body: Term
-}
-
-export function TmFor(
-  init: Term,
-  pred: Term,
-  iter: Term,
-  body: Term,
-  ann?: any
-): TmFor {
-  return { tag: 'TmFor', ann, init, pred, iter, body }
-}
-
 export type Statement =
   | AssignmentStatement
   | CallStatement
   | ReturnStatement
   | BlockStatement
+  | IfStatement
+  | WhileStatement
+  | DoWhileStatement
+  | ForStatement
 
 export type AssignmentStatement = {
   tag: 'AssignmentStatement'
@@ -371,4 +363,102 @@ export type ReturnStatement = {
 
 export function ReturnStatement(result: Term, ann?: any): ReturnStatement {
   return { tag: 'ReturnStatement', result, ann }
+}
+
+// if (t) s
+// if (t) s1 else s2
+// if (t1) s1 elif (t2) s2
+// if (t1) s1 elif (t2) s2 else t3
+export type IfStatement = {
+  tag: 'IfStatement'
+  ann?: any
+  pred: Term
+  body: Statement
+  branch?: BranchStatement
+}
+export function IfStatement(
+  pred: Term,
+  body: Statement,
+  branch?: BranchStatement,
+  ann?: any
+): IfStatement {
+  return { tag: 'IfStatement', ann, pred, body, branch }
+}
+
+export type BranchStatement = ElifStatement | ElseStatement
+
+export type ElifStatement = {
+  tag: 'ElifStatement'
+  pred: Term
+  body: Statement
+  branch?: BranchStatement
+}
+
+export function ElifStatement(
+  pred: Term,
+  body: Statement,
+  branch?: BranchStatement
+): ElifStatement {
+  return { tag: 'ElifStatement', pred, body, branch }
+}
+
+export type ElseStatement = {
+  tag: 'ElseStatement'
+  body: Statement
+}
+
+export function ElseStatement(body: Statement): ElseStatement {
+  return { tag: 'ElseStatement', body }
+}
+
+// while (t) s
+export type WhileStatement = {
+  tag: 'WhileStatement'
+  ann?: any
+  pred: Term
+  body: Statement
+}
+
+export function WhileStatement(
+  pred: Term,
+  body: Statement,
+  ann?: any
+): WhileStatement {
+  return { tag: 'WhileStatement', ann, pred, body }
+}
+
+// while (t) s
+export type DoWhileStatement = {
+  tag: 'DoWhileStatement'
+  ann?: any
+  body: Statement
+  pred: Term
+}
+
+export function DoWhileStatement(
+  body: Statement,
+  pred: Term,
+  ann?: any
+): DoWhileStatement {
+  return { tag: 'DoWhileStatement', ann, body, pred }
+}
+
+// for (t1; t2; t3) s
+export type ForStatement = {
+  tag: 'ForStatement'
+  ann?: any
+  init: Term
+  pred: Term
+  iter: Term
+  body: Statement
+}
+
+export function ForStatement(
+  init: Term,
+  pred: Term,
+  iter: Term,
+  body: Statement,
+  ann?: any
+): ForStatement {
+  return { tag: 'ForStatement', ann, init, pred, iter, body }
 }

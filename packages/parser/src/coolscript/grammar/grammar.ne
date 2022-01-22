@@ -17,16 +17,23 @@ const {
   TmParens,
   TmArray,
   TmObject,
+  TmGet,
+  TmGetI,
   TmDo,
   TmIf,
   ElifBranch,
   ElseBranch,
-  TmWhile,
-  TmFor,
   AssignmentStatement,
   CallStatement,
   ReturnStatement,
   BlockStatement,
+  IfStatement,
+  BranchStatement,
+  ElifStatement,
+  ElseStatement,
+  WhileStatement,
+  DoWhileStatement,
+  ForStatement,
 } = require("@coolscript/syntax");
 
 const lexer = moo.compile({
@@ -104,13 +111,13 @@ cterm ->
   | tmlam   {% id %}
   | tmdo    {% id %}
   | tmif    {% id %}
-  | tmwhile {% id %}
-  | tmfor   {% id %}
+  | tmassign {% id %}
   | bterm   {% id %}
 
 bterm ->
     tmcall   {% id %}
-  | tmassign {% id %}
+  | tmget    {% id %}
+  | tmgeti   {% id %}
   | aterm    {% id %}
 
 aterm -> 
@@ -139,7 +146,7 @@ lam_args ->
       {% ([vs,,,,v]) => [...vs, v] %}
 
 tmcall ->
-    aterm _ "(" _ call_args _ ",":? _ ")"
+    bterm _ "(" _ call_args _ ",":? _ ")"
       {% (d) => TmCall(d[0], d[4]) %}
 
 call_args ->
@@ -179,6 +186,14 @@ tmobject_entries ->
 tmobject_entry ->
     id _ ":" _ term {% ([k,,,,v]) => [k, v] %}
 
+tmget ->
+    bterm _ "." _ id
+      {% (d) => TmGet(d[0], d[4]) %}
+
+tmgeti ->
+    bterm _ "[" _ bterm _ "]"
+      {% (d) => TmGetI(d[0], d[4]) %}
+
 tmlet ->
     "let" _ let_binding_list _ ";":? _ "in" _ term
       {% ([,,bs,,,,,,t]) => TmLet(bs, t) %}
@@ -207,19 +222,15 @@ branch ->
   | "else" _ term
     {% (r) => ElseBranch(r[2]) %}
 
-tmwhile ->
-  "while" _ "(" _ term _ ")" _ term
-    {% (r) => TmWhile(r[4], r[8]) %}
-
-tmfor ->
-  "for" _ "(" _ term _ ";" _ term _ ";" _ term _ ")" _ term
-    {% (r) => TmWhile(r[4], r[8], r[12], r[16]) %}
-
 statement ->
     sassign {% id %}
   | scall   {% id %}
   | sreturn {% id %}
   | block_statement  {% id %}
+  | sif {% id %}
+  | swhile {% id %}
+  | sdowhile {% id %}
+  | sfor {% id %}
 
 sassign ->
     id _ "=" _ term {% (d) => AssignmentStatement(d[0], d[4]) %}
@@ -241,3 +252,25 @@ statement_list ->
       {% ([t]) => [t] %}
   | statement_list _ ";" _ statement
       {% ([blk,,,,t]) => [...blk, t] %}
+
+sif ->
+  "if" _ "(" _ term _ ")" _ statement _ sbranch:?
+    {% (r) => TmIf(r[4], r[8], r[10]) %}
+
+sbranch ->
+    "elif" _ "(" _ term _ ")" _ statement _ sbranch:?
+    {% (r) => ElifStatement(r[4], r[8], r[10]) %}
+  | "else" _ term
+    {% (r) => ElseStatement(r[2]) %}
+
+swhile ->
+  "while" _ "(" _ term _ ")" _ statement
+    {% (r) => WhileStatement(r[4], r[8]) %}
+
+sdowhile ->
+   "do" _ statement _ "while" _ "(" _ term _ ")"
+    {% (r) => DoWhileStatement(r[2], r[8]) %}
+
+sfor ->
+  "for" _ "(" _ term _ ";" _ term _ ";" _ term _ ")" _ statement
+    {% (r) => ForStatement(r[4], r[8], r[12], r[16]) %}

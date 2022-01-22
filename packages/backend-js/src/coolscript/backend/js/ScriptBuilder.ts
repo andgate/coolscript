@@ -1,25 +1,33 @@
 import {
   AValue,
   Term,
-  TmArray,
   TmAssign,
   TmCall,
   TmDo,
   TmError,
-  TmFor,
   TmIf,
   TmLam,
   TmLet,
+  TmArray,
   TmObject,
+  TmGet,
+  TmGetI,
   TmParens,
   TmValue,
   TmVar,
-  TmWhile,
   Statement,
   AssignmentStatement,
   CallStatement,
   ReturnStatement,
-  BlockStatement
+  BlockStatement,
+  IfStatement,
+  BranchStatement,
+  ElifStatement,
+  ElseStatement,
+  WhileStatement,
+  DoWhileStatement,
+  ForStatement,
+  Branch
 } from '@coolscript/syntax'
 import { BlockBuilder } from './BlockBuilder'
 import * as ES from 'estree'
@@ -78,16 +86,16 @@ export class ScriptBuilder {
         return this.visitTmArray(tm)
       case 'TmObject':
         return this.visitTmObject(tm)
+      case 'TmGet':
+        return this.visitTmGet(tm)
+      case 'TmGetI':
+        return this.visitTmGetI(tm)
       case 'TmLet':
         return this.visitTmLet(tm)
       case 'TmDo':
         return this.visitTmDo(tm)
       case 'TmIf':
         return this.visitTmIf(tm)
-      case 'TmWhile':
-        return this.visitTmWhile(tm)
-      case 'TmFor':
-        return this.visitTmFor(tm)
       default:
         throw new Error(`Unknown term tag encountered: ${tm}`)
     }
@@ -167,6 +175,18 @@ export class ScriptBuilder {
     return e.ObjectExpression(properties)
   }
 
+  visitTmGet(tm: TmGet): ES.Expression {
+    const object = this.visitTerm(tm.parent)
+    const prop = e.Id(tm.child)
+    return e.MemberExpression(object, prop)
+  }
+
+  visitTmGetI(tm: TmGetI): ES.Expression {
+    const object = this.visitTerm(tm.parent)
+    const index = this.visitTerm(tm.index)
+    return e.MemberExpression(object, index)
+  }
+
   visitTmLet(tm: TmLet): ES.Expression {
     this.enter()
     tm.binders.forEach((b) => {
@@ -184,16 +204,20 @@ export class ScriptBuilder {
     return e.ClosureExpression(body)
   }
 
-  visitTmIf(tm: TmIf) {
-    return e.Null()
+  visitTmIf(tm: TmIf): ES.ConditionalExpression {
+    const test = this.visitTerm(tm.pred)
+    const alternate = this.visitBranch(tm.branch)
+    const consequent = this.visitTerm(tm.body)
+    return e.ConditionalExpression(test, alternate, consequent)
   }
 
-  visitTmWhile(tm: TmWhile) {
-    return e.Null()
-  }
-
-  visitTmFor(tm: TmFor) {
-    return e.Null()
+  visitBranch(br: Branch): ES.Expression {
+    switch (br.tag) {
+      case 'Elif':
+        return this.visitTmIf(TmIf(br.pred, br.body, br.branch))
+      case 'Else':
+        return this.visitTerm(br.body)
+    }
   }
 
   visitStatement(s: Statement) {
@@ -203,16 +227,33 @@ export class ScriptBuilder {
         break
       }
       case 'CallStatement': {
-        this.vistCallStatement(s)
+        this.visitCallStatement(s)
         break
       }
       case 'ReturnStatement': {
-        this.vistReturnStatement(s)
+        this.visitReturnStatement(s)
         break
       }
       case 'BlockStatement': {
         const blockStatement = this.visitBlockStatement(s)
         this.block.append(blockStatement)
+        break
+      }
+      case 'IfStatement': {
+        const sif = this.visitIfStatement(s)
+        this.block.append(sif)
+        break
+      }
+      case 'WhileStatement': {
+        this.visitWhileStatement(s)
+        break
+      }
+      case 'DoWhileStatement': {
+        this.visitDoWhileStatement(s)
+        break
+      }
+      case 'ForStatement': {
+        this.visitForStatement(s)
         break
       }
     }
@@ -228,14 +269,14 @@ export class ScriptBuilder {
     this.block.append(assignStatement)
   }
 
-  vistCallStatement(s: CallStatement) {
+  visitCallStatement(s: CallStatement) {
     const fn = this.visitTerm(s.fn)
     const args = s.args.map((arg) => this.visitTerm(arg))
     const callStatement = e.CallStatement(fn, args)
     this.block.append(callStatement)
   }
 
-  vistReturnStatement(s: ReturnStatement) {
+  visitReturnStatement(s: ReturnStatement) {
     const result = this.visitTerm(s.result)
     const returnStatement = e.ReturnStatement(result)
     this.block.append(returnStatement)
@@ -247,5 +288,59 @@ export class ScriptBuilder {
       this.visitStatement(s)
     })
     return this.exit()
+  }
+
+  visitIfStatement(s: IfStatement) {
+    const test = this.visitTerm(s.pred)
+    this.enter()
+    this.visitStatement(s.body)
+    const consequent = this.exit()
+    let alternate = null
+    if (s.branch) {
+      alternate = this.visitBranchStatement(s.branch)
+    }
+    const sif = e.IfStatement(test, consequent, alternate)
+    return sif
+  }
+
+  visitBranchStatement(s: BranchStatement): ES.Statement {
+    switch (s.tag) {
+      case 'ElifStatement':
+        const sif = IfStatement(s.pred, s.body, s.branch)
+        return this.visitIfStatement(sif)
+      case 'ElseStatement':
+        this.enter()
+        this.visitStatement(s.body)
+        return this.exit()
+    }
+  }
+
+  visitWhileStatement(s: WhileStatement) {
+    const test = this.visitTerm(s.pred)
+    this.enter()
+    this.visitStatement(s.body)
+    const body = this.exit()
+    const swhile = e.WhileStatement(test, body)
+    this.block.append(swhile)
+  }
+
+  visitDoWhileStatement(s: DoWhileStatement) {
+    const test = this.visitTerm(s.pred)
+    this.enter()
+    this.visitStatement(s.body)
+    const body = this.exit()
+    const sdowhile = e.DoWhileStatement(body, test)
+    this.block.append(sdowhile)
+  }
+
+  visitForStatement(s: ForStatement) {
+    const init = this.visitTerm(s.init)
+    const test = this.visitTerm(s.pred)
+    const update = this.visitTerm(s.iter)
+    this.enter()
+    this.visitStatement(s.body)
+    const body = this.exit()
+    const sfor = e.ForStatement(init, test, update, body)
+    this.block.append(sfor)
   }
 }

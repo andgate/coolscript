@@ -1,7 +1,5 @@
 import {
   Term,
-  TmWhile,
-  TmFor,
   TmAssign,
   TmError,
   TmLam,
@@ -22,7 +20,16 @@ import {
   AssignmentStatement,
   CallStatement,
   ReturnStatement,
-  BlockStatement
+  BlockStatement,
+  IfStatement,
+  BranchStatement,
+  ElifStatement,
+  ElseStatement,
+  WhileStatement,
+  DoWhileStatement,
+  ForStatement,
+  TmGet,
+  TmGetI
 } from '@coolscript/syntax'
 import { Scope } from './Scope'
 import { SymbolCS } from './SymbolCS'
@@ -71,6 +78,15 @@ export function scopeTerm(tm: Term, scope: Scope): Term {
       const obj = Object.fromEntries(entries)
       return TmObject(obj, ann)
     }
+    case 'TmGet': {
+      const parent = scopeTerm(tm.parent, scope)
+      return TmGet(parent, tm.child, ann)
+    }
+    case 'TmGetI': {
+      const parent = scopeTerm(tm.parent, scope)
+      const index = scopeTerm(tm.index, scope)
+      return TmGetI(parent, index, ann)
+    }
     case 'TmLet':
       return scopeTmLet(tm, scope)
     case 'TmDo': {
@@ -79,26 +95,8 @@ export function scopeTerm(tm: Term, scope: Scope): Term {
       const block = scopeBlockStatement(tm.block, childScope)
       return TmDo(block, ann)
     }
-    case 'TmIf': {
-      const pred = scopeTerm(tm.pred, scope)
-      const body = scopeTerm(tm.body, scope)
-      const branch = scopeBranch(tm.branch, scope)
-      return TmIf(pred, body, branch, ann)
-    }
-    case 'TmWhile': {
-      const pred = scopeTerm(tm.pred, scope)
-      const body = scopeTerm(tm.body, new Scope(scope))
-      return TmWhile(pred, body, ann)
-    }
-    case 'TmFor': {
-      const childScope = new Scope(scope)
-      ann.scope = childScope
-      const init = scopeTerm(tm.init, childScope)
-      const pred = scopeTerm(tm.pred, childScope)
-      const iter = scopeTerm(tm.iter, childScope)
-      const body = scopeTerm(tm.body, childScope)
-      return TmFor(init, pred, iter, body, ann)
-    }
+    case 'TmIf':
+      return scopeTmIf(tm, scope)
     default: {
       throw Error(
         `scopedTerm: Unrecognized term tag encountered: ${JSON.stringify(tm)}`
@@ -116,6 +114,13 @@ function scopeTmLet(tm: TmLet, scope: Scope): TmLet {
   )
   const body = scopeTerm(tm.body, childScope)
   return TmLet(binders, body, ann)
+}
+
+function scopeTmIf(tm: TmIf, scope: Scope): TmIf {
+  const pred = scopeTerm(tm.pred, scope)
+  const body = scopeTerm(tm.body, scope)
+  const branch = scopeBranch(tm.branch, scope)
+  return TmIf(pred, body, branch, { scope })
 }
 
 function scopeBranch(br: Branch, scope: Scope): Branch {
@@ -155,6 +160,18 @@ function scopeStatement(s: Statement, scope: Scope): Statement {
     }
     case 'BlockStatement': {
       return scopeBlockStatement(s, scope)
+    }
+    case 'IfStatement': {
+      return scopeIfStatement(s, scope)
+    }
+    case 'WhileStatement': {
+      return scopeWhileStatement(s, scope)
+    }
+    case 'DoWhileStatement': {
+      return scopeDoWhileStatement(s, scope)
+    }
+    case 'ForStatement': {
+      return scopeForStatement(s, scope)
     }
     default:
       throw new Error(
@@ -196,4 +213,62 @@ function scopeBlockStatement(s: BlockStatement, scope: Scope): BlockStatement {
     scopeStatement(stmt, childScope)
   )
   return BlockStatement(statements, ann)
+}
+
+function scopeIfStatement(s: IfStatement, scope: Scope): IfStatement {
+  const pred = scopeTerm(s.pred, scope)
+  const body = scopeStatement(s.body, scope)
+  const branch = scopeBranchStatement(s.branch, scope)
+  return IfStatement(pred, body, branch, { scope })
+}
+
+function scopeBranchStatement(
+  s: BranchStatement,
+  scope: Scope
+): BranchStatement {
+  switch (s.tag) {
+    case 'ElifStatement':
+      return scopeElifStatement(s, scope)
+    case 'ElseStatement':
+      return scopeElseStatement(s, scope)
+  }
+}
+
+function scopeElifStatement(s: ElifStatement, scope: Scope): ElifStatement {
+  const pred = scopeTerm(s.pred, scope)
+  const body = scopeStatement(s.body, scope)
+  let branch: BranchStatement | null = null
+  if (s.branch) {
+    branch = scopeBranchStatement(s.branch, scope)
+  }
+  return ElifStatement(pred, body, branch)
+}
+
+function scopeElseStatement(s: ElseStatement, scope: Scope): ElseStatement {
+  const body = scopeStatement(s.body, scope)
+  return ElseStatement(body)
+}
+
+function scopeWhileStatement(s: WhileStatement, scope: Scope): WhileStatement {
+  const pred = scopeTerm(s.pred, scope)
+  const body = scopeStatement(s.body, new Scope(scope))
+  return WhileStatement(pred, body, { scope })
+}
+
+function scopeDoWhileStatement(
+  s: DoWhileStatement,
+  scope: Scope
+): DoWhileStatement {
+  const body = scopeStatement(s.body, new Scope(scope))
+  const pred = scopeTerm(s.pred, scope)
+  return DoWhileStatement(body, pred, { scope })
+}
+
+function scopeForStatement(s: ForStatement, scope: Scope): ForStatement {
+  const childScope = new Scope(scope)
+  const init = scopeTerm(s.init, childScope)
+  const pred = scopeTerm(s.pred, childScope)
+  const iter = scopeTerm(s.iter, childScope)
+  const body = scopeStatement(s.body, childScope)
+  return ForStatement(init, pred, iter, body, { scope })
 }

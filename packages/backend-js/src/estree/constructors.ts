@@ -99,6 +99,37 @@ export function AssignStatement(left: string, right: ES.Expression) {
   return AssignmentStatement('=', Identifier(left), right)
 }
 
+export function IfStatement(
+  test: ES.Expression,
+  consequent: ES.Statement,
+  alternate?: ES.Statement
+): ES.IfStatement {
+  return { type: 'IfStatement', test, consequent, alternate }
+}
+
+export function WhileStatement(
+  test: ES.Expression,
+  body: ES.Statement
+): ES.WhileStatement {
+  return { type: 'WhileStatement', test, body }
+}
+
+export function DoWhileStatement(
+  body: ES.Statement,
+  test: ES.Expression
+): ES.DoWhileStatement {
+  return { type: 'DoWhileStatement', body, test }
+}
+
+export function ForStatement(
+  init: ES.VariableDeclaration | ES.Expression,
+  test: ES.Expression,
+  update: ES.Expression,
+  body: ES.Statement
+): ES.ForStatement {
+  return { type: 'ForStatement', init, test, update, body }
+}
+
 export function VariableDeclaration(
   decls: Array<ES.VariableDeclarator>,
   kind: 'var' | 'let' | 'const'
@@ -249,4 +280,25 @@ export function Assign(
   rhs: ES.Expression
 ): ES.AssignmentExpression {
   return AssignmentExpression('=', Identifier(lhs), rhs)
+}
+
+export function MemberExpression(
+  object: ES.Expression,
+  property: ES.Expression
+): ES.MemberExpression {
+  return {
+    type: 'MemberExpression',
+    object,
+    property,
+    computed: false,
+    optional: false
+  }
+}
+
+export function ConditionalExpression(
+  test: ES.Expression,
+  alternate: ES.Expression,
+  consequent: ES.Expression
+): ES.ConditionalExpression {
+  return { type: 'ConditionalExpression', test, alternate, consequent }
 }

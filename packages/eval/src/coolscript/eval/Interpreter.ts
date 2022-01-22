@@ -5,11 +5,9 @@ import {
   TmArray,
   TmCall,
   TmDo,
-  TmFor,
   TmIf,
   TmLet,
   TmObject,
-  TmWhile,
   VArray,
   VBool,
   VObject,
@@ -24,7 +22,16 @@ import {
   CallStatement,
   ReturnStatement,
   BlockStatement,
-  VNull
+  VNull,
+  TmGet,
+  TmGetI,
+  VNumber,
+  WhileStatement,
+  ForStatement,
+  IfStatement,
+  BranchStatement,
+  ElifStatement,
+  DoWhileStatement
 } from '@coolscript/syntax'
 import { MemorySpace } from './MemorySpace'
 import { ReturnValue } from './ReturnValue'
@@ -62,7 +69,6 @@ export class Interpreter {
         return this.assign(tm)
       case 'TmLam':
         return VLam(tm.args, tm.body)
-        break // return throws, so this should never execute
       case 'TmCall':
         return this.call(tm)
       case 'TmParens':
@@ -71,16 +77,16 @@ export class Interpreter {
         return this.makeArray(tm)
       case 'TmObject':
         return this.makeObject(tm)
+      case 'TmGet':
+        return this.execGet(tm)
+      case 'TmGetI':
+        return this.execGetI(tm)
       case 'TmLet':
         return this.execLet(tm)
       case 'TmDo':
         return this.execDo(tm)
       case 'TmIf':
         return this.execIf(tm)
-      case 'TmWhile':
-        return this.execWhile(tm)
-      case 'TmFor':
-        return this.execFor(tm)
       default:
         break
     }
@@ -169,6 +175,17 @@ export class Interpreter {
     return VObject(obj)
   }
 
+  execGet(tm: TmGet): Value {
+    const parentValue = this.exec(tm.parent) as VObject
+    return parentValue.obj[tm.child] || VNull
+  }
+
+  execGetI(tm: TmGetI): Value {
+    const parentValue = this.exec(tm.parent) as VArray
+    const indexValue = this.exec(tm.index) as VNumber
+    return parentValue.elements[indexValue.num] || VNull
+  }
+
   execLet(tm: TmLet): Value | null {
     // Create a new local memory space to bind too
     const localSpace = new MemorySpace()
@@ -227,26 +244,6 @@ export class Interpreter {
     return this.branch(br.branch)
   }
 
-  execWhile(tm: TmWhile): null {
-    let pred: VBool = this.exec(tm.pred) as VBool
-    while (pred) {
-      this.exec(tm.body)
-      pred = this.exec(tm.pred) as VBool
-    }
-    return null
-  }
-
-  execFor(tm: TmFor): null {
-    this.exec(tm.init)
-    let pred: VBool = this.exec(tm.pred) as VBool
-    while (pred) {
-      this.exec(tm.body)
-      this.exec(tm.iter)
-      pred = this.exec(tm.pred) as VBool
-    }
-    return null
-  }
-
   execStatement(s: Statement) {
     switch (s.tag) {
       case 'AssignmentStatement': {
@@ -263,6 +260,22 @@ export class Interpreter {
       }
       case 'BlockStatement': {
         this.execBlockStatement(s)
+        break
+      }
+      case 'IfStatement': {
+        this.execIfStatement(s)
+        break
+      }
+      case 'WhileStatement': {
+        this.execWhileStatement(s)
+        break
+      }
+      case 'DoWhileStatement': {
+        this.execDoWhileStatement(s)
+        break
+      }
+      case 'ForStatement': {
+        this.execForStatement(s)
         break
       }
       default: {
@@ -289,5 +302,51 @@ export class Interpreter {
     block.statements.forEach((s) => {
       this.execStatement(s)
     })
+  }
+
+  execIfStatement(s: IfStatement) {
+    const pred: VBool = this.exec(s.pred) as VBool
+    if (pred.bool) {
+      return this.execStatement(s.body)
+    }
+    return this.execBranchStatement(s.branch)
+  }
+
+  execBranchStatement(br: BranchStatement) {
+    switch (br.tag) {
+      case 'ElifStatement':
+        return this.execIfStatement(IfStatement(br.pred, br.body, br.branch))
+      case 'ElseStatement':
+        return this.execStatement(br.body)
+    }
+  }
+
+  execWhileStatement(s: WhileStatement) {
+    let pred: VBool = this.exec(s.pred) as VBool
+    while (pred) {
+      this.execStatement(s.body)
+      pred = this.exec(s.pred) as VBool
+    }
+    return null
+  }
+
+  execDoWhileStatement(s: DoWhileStatement) {
+    let pred: VBool
+    do {
+      this.execStatement(s.body)
+      pred = this.exec(s.pred) as VBool
+    } while (pred)
+    return null
+  }
+
+  execForStatement(tm: ForStatement) {
+    this.exec(tm.init)
+    let pred: VBool = this.exec(tm.pred) as VBool
+    while (pred) {
+      this.execStatement(tm.body)
+      this.exec(tm.iter)
+      pred = this.exec(tm.pred) as VBool
+    }
+    return null
   }
 }

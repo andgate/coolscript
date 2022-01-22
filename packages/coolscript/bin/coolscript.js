@@ -980,15 +980,21 @@ __export(lib_exports, {
   Binding: () => Binding,
   BlockStatement: () => BlockStatement,
   CallStatement: () => CallStatement,
+  DoWhileStatement: () => DoWhileStatement,
   ElifBranch: () => ElifBranch,
+  ElifStatement: () => ElifStatement,
   ElseBranch: () => ElseBranch,
+  ElseStatement: () => ElseStatement,
+  ForStatement: () => ForStatement,
+  IfStatement: () => IfStatement,
   ReturnStatement: () => ReturnStatement,
   TmArray: () => TmArray,
   TmAssign: () => TmAssign,
   TmCall: () => TmCall,
   TmDo: () => TmDo,
   TmError: () => TmError,
-  TmFor: () => TmFor,
+  TmGet: () => TmGet,
+  TmGetI: () => TmGetI,
   TmIf: () => TmIf,
   TmLam: () => TmLam,
   TmLet: () => TmLet,
@@ -996,7 +1002,6 @@ __export(lib_exports, {
   TmParens: () => TmParens,
   TmValue: () => TmValue,
   TmVar: () => TmVar,
-  TmWhile: () => TmWhile,
   VArray: () => VArray,
   VBool: () => VBool,
   VError: () => VError,
@@ -1004,7 +1009,8 @@ __export(lib_exports, {
   VNull: () => VNull,
   VNumber: () => VNumber,
   VObject: () => VObject,
-  VString: () => VString
+  VString: () => VString,
+  WhileStatement: () => WhileStatement
 });
 function VNumber(num) {
   return { tag: "VNumber", num };
@@ -1060,23 +1066,28 @@ function TmArray(elements = [], ann) {
 function TmObject(obj = {}, ann) {
   return { tag: "TmObject", ann, obj };
 }
+function TmGet(parent, child, ann) {
+  return {
+    tag: "TmGet",
+    ann,
+    parent,
+    child
+  };
+}
+function TmGetI(parent, index, ann) {
+  return { tag: "TmGetI", ann, parent, index };
+}
 function TmDo(block, ann) {
   return { tag: "TmDo", ann, block };
 }
-function TmIf(pred, body, branch = null, ann) {
+function TmIf(pred, body, branch, ann) {
   return { tag: "TmIf", ann, pred, body, branch };
 }
-function ElifBranch(pred, body, branch = null) {
+function ElifBranch(pred, body, branch) {
   return { tag: "Elif", pred, body, branch };
 }
 function ElseBranch(body) {
   return { tag: "Else", body };
-}
-function TmWhile(pred, body, ann) {
-  return { tag: "TmWhile", ann, pred, body };
-}
-function TmFor(init, pred, iter, body, ann) {
-  return { tag: "TmFor", ann, init, pred, iter, body };
 }
 function AssignmentStatement(lhs, rhs, ann) {
   return { tag: "AssignmentStatement", lhs, rhs, ann };
@@ -1089,6 +1100,24 @@ function BlockStatement(statements, ann) {
 }
 function ReturnStatement(result, ann) {
   return { tag: "ReturnStatement", result, ann };
+}
+function IfStatement(pred, body, branch, ann) {
+  return { tag: "IfStatement", ann, pred, body, branch };
+}
+function ElifStatement(pred, body, branch) {
+  return { tag: "ElifStatement", pred, body, branch };
+}
+function ElseStatement(body) {
+  return { tag: "ElseStatement", body };
+}
+function WhileStatement(pred, body, ann) {
+  return { tag: "WhileStatement", ann, pred, body };
+}
+function DoWhileStatement(body, pred, ann) {
+  return { tag: "DoWhileStatement", ann, body, pred };
+}
+function ForStatement(init, pred, iter, body, ann) {
+  return { tag: "ForStatement", ann, init, pred, iter, body };
 }
 var VNull;
 var init_lib = __esm({
@@ -1120,16 +1149,23 @@ var require_grammar = __commonJS({
         TmParens: TmParens2,
         TmArray: TmArray2,
         TmObject: TmObject2,
+        TmGet: TmGet2,
+        TmGetI: TmGetI2,
         TmDo: TmDo2,
         TmIf: TmIf2,
         ElifBranch: ElifBranch2,
         ElseBranch: ElseBranch2,
-        TmWhile: TmWhile2,
-        TmFor: TmFor2,
         AssignmentStatement: AssignmentStatement2,
         CallStatement: CallStatement2,
         ReturnStatement: ReturnStatement2,
-        BlockStatement: BlockStatement2
+        BlockStatement: BlockStatement2,
+        IfStatement: IfStatement2,
+        BranchStatement,
+        ElifStatement: ElifStatement2,
+        ElseStatement: ElseStatement2,
+        WhileStatement: WhileStatement2,
+        DoWhileStatement: DoWhileStatement2,
+        ForStatement: ForStatement2
       } = (init_lib(), __toCommonJS(lib_exports));
       const lexer = moo.compile({
         ws: /[ \t\v\f]+/,
@@ -1203,11 +1239,11 @@ var require_grammar = __commonJS({
           { "name": "cterm", "symbols": ["tmlam"], "postprocess": id },
           { "name": "cterm", "symbols": ["tmdo"], "postprocess": id },
           { "name": "cterm", "symbols": ["tmif"], "postprocess": id },
-          { "name": "cterm", "symbols": ["tmwhile"], "postprocess": id },
-          { "name": "cterm", "symbols": ["tmfor"], "postprocess": id },
+          { "name": "cterm", "symbols": ["tmassign"], "postprocess": id },
           { "name": "cterm", "symbols": ["bterm"], "postprocess": id },
           { "name": "bterm", "symbols": ["tmcall"], "postprocess": id },
-          { "name": "bterm", "symbols": ["tmassign"], "postprocess": id },
+          { "name": "bterm", "symbols": ["tmget"], "postprocess": id },
+          { "name": "bterm", "symbols": ["tmgeti"], "postprocess": id },
           { "name": "bterm", "symbols": ["aterm"], "postprocess": id },
           { "name": "aterm", "symbols": ["tmvalue"], "postprocess": id },
           { "name": "aterm", "symbols": ["tmvar"], "postprocess": id },
@@ -1228,7 +1264,7 @@ var require_grammar = __commonJS({
           { "name": "tmcall$ebnf$1", "symbols": [], "postprocess": function(d) {
             return null;
           } },
-          { "name": "tmcall", "symbols": ["aterm", "_", { "literal": "(" }, "_", "call_args", "_", "tmcall$ebnf$1", "_", { "literal": ")" }], "postprocess": (d) => TmCall2(d[0], d[4]) },
+          { "name": "tmcall", "symbols": ["bterm", "_", { "literal": "(" }, "_", "call_args", "_", "tmcall$ebnf$1", "_", { "literal": ")" }], "postprocess": (d) => TmCall2(d[0], d[4]) },
           { "name": "call_args", "symbols": ["bterm"], "postprocess": ([t]) => [t] },
           { "name": "call_args", "symbols": ["call_args", "_", { "literal": "," }, "_", "bterm"], "postprocess": ([ts, , , , t]) => [...ts, t] },
           { "name": "tmparens", "symbols": [{ "literal": "(" }, "_", "term", "_", { "literal": ")" }], "postprocess": ([, , t, ,]) => TmParens2(t) },
@@ -1249,6 +1285,8 @@ var require_grammar = __commonJS({
           { "name": "tmobject_entries", "symbols": ["tmobject_entry"], "postprocess": ([e]) => [e] },
           { "name": "tmobject_entries", "symbols": ["tmobject_entries", "_", { "literal": "," }, "_", "tmobject_entry"], "postprocess": ([es, , , , e]) => [...es, e] },
           { "name": "tmobject_entry", "symbols": ["id", "_", { "literal": ":" }, "_", "term"], "postprocess": ([k, , , , v]) => [k, v] },
+          { "name": "tmget", "symbols": ["bterm", "_", { "literal": "." }, "_", "id"], "postprocess": (d) => TmGet2(d[0], d[4]) },
+          { "name": "tmgeti", "symbols": ["bterm", "_", { "literal": "[" }, "_", "bterm", "_", { "literal": "]" }], "postprocess": (d) => TmGetI2(d[0], d[4]) },
           { "name": "tmlet$ebnf$1", "symbols": [{ "literal": ";" }], "postprocess": id },
           { "name": "tmlet$ebnf$1", "symbols": [], "postprocess": function(d) {
             return null;
@@ -1269,12 +1307,14 @@ var require_grammar = __commonJS({
           } },
           { "name": "branch", "symbols": [{ "literal": "elif" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "term", "_", "branch$ebnf$1"], "postprocess": (r) => ElifBranch2(r[4], r[8], r[10]) },
           { "name": "branch", "symbols": [{ "literal": "else" }, "_", "term"], "postprocess": (r) => ElseBranch2(r[2]) },
-          { "name": "tmwhile", "symbols": [{ "literal": "while" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "term"], "postprocess": (r) => TmWhile2(r[4], r[8]) },
-          { "name": "tmfor", "symbols": [{ "literal": "for" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ";" }, "_", "term", "_", { "literal": ";" }, "_", "term", "_", { "literal": ")" }, "_", "term"], "postprocess": (r) => TmWhile2(r[4], r[8], r[12], r[16]) },
           { "name": "statement", "symbols": ["sassign"], "postprocess": id },
           { "name": "statement", "symbols": ["scall"], "postprocess": id },
           { "name": "statement", "symbols": ["sreturn"], "postprocess": id },
           { "name": "statement", "symbols": ["block_statement"], "postprocess": id },
+          { "name": "statement", "symbols": ["sif"], "postprocess": id },
+          { "name": "statement", "symbols": ["swhile"], "postprocess": id },
+          { "name": "statement", "symbols": ["sdowhile"], "postprocess": id },
+          { "name": "statement", "symbols": ["sfor"], "postprocess": id },
           { "name": "sassign", "symbols": ["id", "_", { "literal": "=" }, "_", "term"], "postprocess": (d) => AssignmentStatement2(d[0], d[4]) },
           { "name": "scall$ebnf$1", "symbols": [{ "literal": "," }], "postprocess": id },
           { "name": "scall$ebnf$1", "symbols": [], "postprocess": function(d) {
@@ -1292,7 +1332,21 @@ var require_grammar = __commonJS({
           } },
           { "name": "block_statement", "symbols": [{ "literal": "{" }, "_", "block_statement$ebnf$1", "_", "block_statement$ebnf$2", "_", { "literal": "}" }], "postprocess": (r) => BlockStatement2(r[2]) },
           { "name": "statement_list", "symbols": ["statement"], "postprocess": ([t]) => [t] },
-          { "name": "statement_list", "symbols": ["statement_list", "_", { "literal": ";" }, "_", "statement"], "postprocess": ([blk, , , , t]) => [...blk, t] }
+          { "name": "statement_list", "symbols": ["statement_list", "_", { "literal": ";" }, "_", "statement"], "postprocess": ([blk, , , , t]) => [...blk, t] },
+          { "name": "sif$ebnf$1", "symbols": ["sbranch"], "postprocess": id },
+          { "name": "sif$ebnf$1", "symbols": [], "postprocess": function(d) {
+            return null;
+          } },
+          { "name": "sif", "symbols": [{ "literal": "if" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "statement", "_", "sif$ebnf$1"], "postprocess": (r) => TmIf2(r[4], r[8], r[10]) },
+          { "name": "sbranch$ebnf$1", "symbols": ["sbranch"], "postprocess": id },
+          { "name": "sbranch$ebnf$1", "symbols": [], "postprocess": function(d) {
+            return null;
+          } },
+          { "name": "sbranch", "symbols": [{ "literal": "elif" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "statement", "_", "sbranch$ebnf$1"], "postprocess": (r) => ElifStatement2(r[4], r[8], r[10]) },
+          { "name": "sbranch", "symbols": [{ "literal": "else" }, "_", "term"], "postprocess": (r) => ElseStatement2(r[2]) },
+          { "name": "swhile", "symbols": [{ "literal": "while" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "statement"], "postprocess": (r) => WhileStatement2(r[4], r[8]) },
+          { "name": "sdowhile", "symbols": [{ "literal": "do" }, "_", "statement", "_", { "literal": "while" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }], "postprocess": (r) => DoWhileStatement2(r[2], r[8]) },
+          { "name": "sfor", "symbols": [{ "literal": "for" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ";" }, "_", "term", "_", { "literal": ";" }, "_", "term", "_", { "literal": ")" }, "_", "statement"], "postprocess": (r) => ForStatement2(r[4], r[8], r[12], r[16]) }
         ],
         ParserStart: "main"
       };
