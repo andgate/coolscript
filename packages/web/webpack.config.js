@@ -14,8 +14,7 @@ module.exports = (env, argv) => {
     entry: path.join(__dirname, 'src', 'index.tsx'),
     output: {
       path: outdir,
-      filename: 'index.js',
-      publicPath: publicPath
+      filename: 'index.js'
     },
     devtool: 'inline-source-map',
     devServer: {
