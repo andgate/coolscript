@@ -1,6 +1,6 @@
 {
   "name": "@coolscript/backend-js",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Coolscript programming language javascript backend.",
   "author": "Gabriel Anderson",
   "license": "MIT",
@@ -37,11 +37,11 @@
     "test": "jest"
   },
   "devDependencies": {
-    "astring": "^1.8.1",
     "@types/estree": "^0.0.50",
+    "astring": "^1.8.1",
     "source-map": "^0.7.3"
   },
   "dependencies": {
-    "@coolscript/syntax": "0.0.6"
+    "@coolscript/syntax": "^0.0.7"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@coolscript/syntax",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Coolscript programming language syntax library.",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
