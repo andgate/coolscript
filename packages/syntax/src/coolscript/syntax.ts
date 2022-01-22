@@ -85,22 +85,12 @@ export function VError(err: string): Value {
   return { tag: 'VError', err }
 }
 
-export type TermBlock = {
-  tag: 'TmBlock'
-  statements: Term[]
-}
-
-export function TermBlock(statements: Term[]): TermBlock {
-  return { tag: 'TmBlock', statements }
-}
-
 export type Term =
   | TmError
   | TmValue
   | TmVar
   | TmAssign
   | TmLam
-  | TmReturn
   | TmCall
   | TmParens
   | TmArray
@@ -113,78 +103,67 @@ export type Term =
 
 export type TmError = {
   tag: 'TmError'
-  ann: any
+  ann?: any
   msg: string
 }
 
-export function TmError(msg: string, ann: any = null): TmError {
+export function TmError(msg: string, ann?: any): TmError {
   return { tag: 'TmError', ann, msg }
 }
 
 export type TmValue = {
   tag: 'TmValue'
-  ann: any
+  ann?: any
   value: AValue
 }
 
-export function TmValue(value: AValue, ann: any = null): TmValue {
+export function TmValue(value: AValue, ann?: any): TmValue {
   return { tag: 'TmValue', ann, value }
 }
 
 export type TmVar = {
   tag: 'TmVar'
-  ann: any
+  ann?: any
   variable: Var
 }
 
-export function TmVar(variable: Var, ann: any = null): TmVar {
+export function TmVar(variable: Var, ann?: any): TmVar {
   return { tag: 'TmVar', ann, variable }
 }
 
 // x = t
 export type TmAssign = {
   tag: 'TmAssign'
-  ann: any
+  ann?: any
   lhs: string
   rhs: Term
 }
 
-export function TmAssign(lhs: string, rhs: Term, ann: any = null): TmAssign {
+export function TmAssign(lhs: string, rhs: Term, ann?: any): TmAssign {
   return { tag: 'TmAssign', ann, lhs, rhs }
 }
 
 // (x, y) => f(x, y)
 export type TmLam = {
   tag: 'TmLam'
-  ann: any
+  ann?: any
   args: Var[]
   body: Term
 }
 
-export function TmLam(args: Var[], body: Term, ann: any = null): TmLam {
+export function TmLam(args: Var[], body: Term, ann?: any): TmLam {
   return { tag: 'TmLam', ann, args, body }
-}
-
-// return t
-export type TmReturn = {
-  tag: 'TmReturn'
-  ann: any
-  result: Term
-}
-
-export function TmReturn(result: Term, ann: any = null): TmReturn {
-  return { tag: 'TmReturn', ann, result }
 }
 
 // f(x, y)
 export type TmCall = {
   tag: 'TmCall'
-  ann: any
+  ann?: any
   caller: Term
   args: Term[]
 }
 
-export function TmCall(caller: Term, args: Term[], ann: any = null): TmCall {
+export function TmCall(caller: Term, args: Term[], ann?: any): TmCall {
   return { tag: 'TmCall', ann, caller, args }
 }
 
@@ -192,16 +171,12 @@ export function TmCall(caller: Term, args: Term[], ann: any = null): TmCall {
 // let v = x; u = y do { ... }
 export type TmLet = {
   tag: 'TmLet'
-  ann: any
+  ann?: any
   binders: Binding[]
-  body: Term | TermBlock
+  body: Term
 }
 
-export function TmLet(
-  binders: Binding[],
-  body: Term | TermBlock,
-  ann: any = null
-): TmLet {
+export function TmLet(binders: Binding[], body: Term, ann?: any): TmLet {
   return { tag: 'TmLet', ann, binders, body }
 }
 
@@ -219,44 +194,44 @@ export function Binding(variable: Var, body: Term): Binding {
 // (t)
 export type TmParens = {
   tag: 'TmParens'
-  ann: any
+  ann?: any
   term: Term
 }
 
-export function TmParens(term: Term, ann: any = null): TmParens {
+export function TmParens(term: Term, ann?: any): TmParens {
   return { tag: 'TmParens', ann, term }
 }
 
 // [ x1, x2, ..., xn ]
 export type TmArray = {
   tag: 'TmArray'
-  ann: any
+  ann?: any
   elements: Term[]
 }
 
-export function TmArray(elements: Term[] = [], ann: any = null): TmArray {
+export function TmArray(elements: Term[] = [], ann?: any): TmArray {
   return { tag: 'TmArray', ann, elements }
 }
 
 // { a1: x1, a2: x2, ..., an: xn }
 export type TmObject = {
   tag: 'TmObject'
-  ann: any
+  ann?: any
   obj: ObjectF<Term>
 }
 
-export function TmObject(obj: ObjectF<Term> = {}, ann: any = null): TmObject {
+export function TmObject(obj: ObjectF<Term> = {}, ann?: any): TmObject {
   return { tag: 'TmObject', ann, obj }
 }
 
 // do { t1; ...; tn }
 export type TmDo = {
   tag: 'TmDo'
-  ann: any
-  block: TermBlock
+  ann?: any
+  block: BlockStatement
 }
 
-export function TmDo(block: TermBlock, ann: any = null): TmDo {
+export function TmDo(block: BlockStatement, ann?: any): TmDo {
   return { tag: 'TmDo', ann, block }
 }
 
@@ -266,7 +241,7 @@ export function TmDo(block: TermBlock, ann: any = null): TmDo {
 // if (p) t1 elif t2 else t3
 export type TmIf = {
   tag: 'TmIf'
-  ann: any
+  ann?: any
   pred: Term
   body: Term
   branch: Branch | null
@@ -276,7 +251,7 @@ export function TmIf(
   pred: Term,
   body: Term,
   branch: Branch | null = null,
-  ann: any = null
+  ann?: any
 ): TmIf {
   return { tag: 'TmIf', ann, pred, body, branch }
 }
@@ -310,19 +285,19 @@ export function ElseBranch(body: Term): ElseBranch {
 // while (t1) t2
 export type TmWhile = {
   tag: 'TmWhile'
-  ann: any
+  ann?: any
   pred: Term
   body: Term
 }
 
-export function TmWhile(pred: Term, body: Term, ann: any = null): TmWhile {
+export function TmWhile(pred: Term, body: Term, ann?: any): TmWhile {
   return { tag: 'TmWhile', ann, pred, body }
 }
 
 // for (t1; t2; t3) t4
 export type TmFor = {
   tag: 'TmFor'
-  ann: any
+  ann?: any
   init: Term
   pred: Term
   iter: Term
@@ -334,7 +309,66 @@ export function TmFor(
   pred: Term,
   iter: Term,
   body: Term,
-  ann: any = null
+  ann?: any
 ): TmFor {
   return { tag: 'TmFor', ann, init, pred, iter, body }
+}
+
+export type Statement =
+  | AssignmentStatement
+  | CallStatement
+  | ReturnStatement
+  | BlockStatement
+
+export type AssignmentStatement = {
+  tag: 'AssignmentStatement'
+  lhs: Var
+  rhs: Term
+  ann?: any
+}
+
+export function AssignmentStatement(
+  lhs: Var,
+  rhs: Term,
+  ann?: any
+): AssignmentStatement {
+  return { tag: 'AssignmentStatement', lhs, rhs, ann }
+}
+
+export type CallStatement = {
+  tag: 'CallStatement'
+  fn: Term
+  args: Array<Term>
+  ann?: any
+}
+
+export function CallStatement(
+  fn: Term,
+  args: Array<Term>,
+  ann?: any
+): CallStatement {
+  return { tag: 'CallStatement', fn, args, ann }
+}
+
+export type BlockStatement = {
+  tag: 'BlockStatement'
+  statements: Array<Statement>
+  ann?: any
+}
+
+export function BlockStatement(
+  statements: Array<Statement>,
+  ann?: any
+): BlockStatement {
+  return { tag: 'BlockStatement', statements, ann }
+}
+
+export type ReturnStatement = {
+  tag: 'ReturnStatement'
+  result: Term
+  ann?: any
+}
+
+export function ReturnStatement(result: Term, ann?: any): ReturnStatement {
+  return { tag: 'ReturnStatement', result, ann }
 }

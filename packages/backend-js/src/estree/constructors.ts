@@ -87,6 +87,18 @@ export function ReturnStatement(
   }
 }
 
+export function AssignmentStatement(
+  operator: ES.AssignmentOperator,
+  left: ES.Pattern | ES.MemberExpression,
+  right: ES.Expression
+): ES.ExpressionStatement {
+  return ExpressionStatement(AssignmentExpression(operator, left, right))
+}
+
+export function AssignStatement(left: string, right: ES.Expression) {
+  return AssignmentStatement('=', Identifier(left), right)
+}
+
 export function VariableDeclaration(
   decls: Array<ES.VariableDeclarator>,
   kind: 'var' | 'let' | 'const'

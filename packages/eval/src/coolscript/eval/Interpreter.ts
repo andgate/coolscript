@@ -18,7 +18,13 @@ import {
   Value,
   Var,
   VError,
-  VLam
+  VLam,
+  Statement,
+  AssignmentStatement,
+  CallStatement,
+  ReturnStatement,
+  BlockStatement,
+  VNull
 } from '@coolscript/syntax'
 import { MemorySpace } from './MemorySpace'
 import { ReturnValue } from './ReturnValue'
@@ -56,8 +62,6 @@ export class Interpreter {
         return this.assign(tm)
       case 'TmLam':
         return VLam(tm.args, tm.body)
-      case 'TmReturn':
-        this.ret(tm.result)
         break // return throws, so this should never execute
       case 'TmCall':
         return this.call(tm)
@@ -186,11 +190,7 @@ export class Interpreter {
 
     let result: Value
     this.stack.push(localSpace)
-    if (tm.body.tag == 'TmBlock') {
-      result = this.block(tm.body.statements)
-    } else {
-      result = this.exec(tm.body)
-    }
+    result = this.exec(tm.body)
     this.stack.pop()
     this.currentSpace = saveSpace
 
@@ -198,7 +198,12 @@ export class Interpreter {
   }
 
   execDo(tm: TmDo): Value {
-    return this.block(tm.block.statements)
+    try {
+      this.execBlockStatement(tm.block)
+    } catch (r) {
+      return r
+    }
+    return VNull
   }
 
   execIf(tm: TmIf): Value {
@@ -246,11 +251,47 @@ export class Interpreter {
     return null
   }
 
-  block(statements: Term[]): Value | null {
-    let stmt: Value | null = null
-    for (let i = 0; i < statements.length; i++) {
-      stmt = this.exec(statements[i])
+  execStatement(s: Statement) {
+    switch (s.tag) {
+      case 'AssignmentStatement': {
+        this.execAssignmentStatement(s)
+        break
+      }
+      case 'CallStatement': {
+        this.execCallStatement(s)
+        break
+      }
+      case 'ReturnStatement': {
+        this.execReturnStatement(s)
+        break
+      }
+      case 'BlockStatement': {
+        this.execBlockStatement(s)
+        break
+      }
+      default: {
+        break
+      }
     }
-    return stmt
+  }
+
+  execAssignmentStatement(s: AssignmentStatement) {
+    this.assign(TmAssign(s.lhs, s.rhs))
+  }
+
+  execCallStatement(s: CallStatement) {
+    this.call(TmCall(s.fn, s.args))
+  }
+
+  execReturnStatement(s: ReturnStatement) {
+    const result = this.exec(s.result)
+    this.stack.pop()
+    throw result
+  }
+
+  execBlockStatement(block: BlockStatement) {
+    block.statements.forEach((s) => {
+      this.execStatement(s)
+    })
   }
 }

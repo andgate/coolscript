@@ -8,6 +8,7 @@ import { style } from 'typestyle'
 import * as csstips from 'csstips'
 import { EditorContext } from '../contexts/EditorContext'
 import { px } from 'csx'
+import React = require('react')
 
 const outputPanelRoot = style(csstips.flex, {
   backgroundColor: '#FFFFFF',

@@ -6,7 +6,6 @@ import {
   TmError,
   TmLam,
   TmValue,
-  TmReturn,
   TmVar,
   TmCall,
   TmParens,
@@ -14,13 +13,16 @@ import {
   TmObject,
   Binding,
   TmLet,
-  TermBlock,
   TmDo,
   Branch,
   TmIf,
   ElifBranch,
   ElseBranch,
-  Value
+  Statement,
+  AssignmentStatement,
+  CallStatement,
+  ReturnStatement,
+  BlockStatement
 } from '@coolscript/syntax'
 import { Scope } from './Scope'
 import { SymbolCS } from './SymbolCS'
@@ -49,8 +51,6 @@ export function scopeTerm(tm: Term, scope: Scope): Term {
       const body = scopeTerm(tm.body, childScope)
       return TmLam(tm.args, body, ann)
     }
-    case 'TmReturn':
-      return TmReturn(tm.result, ann)
     case 'TmCall': {
       const caller = scopeTerm(tm.caller, scope)
       const args = tm.args.map((arg) => scopeTerm(arg, scope))
@@ -76,7 +76,7 @@ export function scopeTerm(tm: Term, scope: Scope): Term {
     case 'TmDo': {
       const childScope = new Scope(scope)
       ann.scope = childScope
-      const block = scopeBlock(tm.block, childScope)
+      const block = scopeBlockStatement(tm.block, childScope)
       return TmDo(block, ann)
     }
     case 'TmIf': {
@@ -114,19 +114,8 @@ function scopeTmLet(tm: TmLet, scope: Scope): TmLet {
   const binders = tm.binders.map((b) =>
     Binding(b.variable, scopeTerm(b.body, childScope))
   )
-  const oldBody = tm.body
-  let body: Term | TermBlock
-  if (oldBody.tag == 'TmBlock') {
-    body = scopeBlock(oldBody, childScope)
-  } else {
-    body = scopeTerm(oldBody, childScope)
-  }
+  const body = scopeTerm(tm.body, childScope)
   return TmLet(binders, body, ann)
-}
-
-function scopeBlock(block: TermBlock, scope: Scope): TermBlock {
-  const statements = block.statements.map((t) => scopeTerm(t, scope))
-  return TermBlock(statements)
 }
 
 function scopeBranch(br: Branch, scope: Scope): Branch {
@@ -151,4 +140,60 @@ function scopeElifBranch(br: ElifBranch, scope: Scope): Branch {
 function scopeElseBranch(br: ElseBranch, scope: Scope): Branch {
   const body = scopeTerm(br.body, scope)
   return ElseBranch(body)
+}
+
+function scopeStatement(s: Statement, scope: Scope): Statement {
+  switch (s.tag) {
+    case 'AssignmentStatement': {
+      return scopeAssignmentStatement(s, scope)
+    }
+    case 'CallStatement': {
+      return scopeCallStatement(s, scope)
+    }
+    case 'ReturnStatement': {
+      return scopeReturnStatement(s, scope)
+    }
+    case 'BlockStatement': {
+      return scopeBlockStatement(s, scope)
+    }
+    default:
+      throw new Error(
+        `scopeStatement: Unrecognized statement tag ${JSON.stringify(s)}`
+      )
+  }
+}
+
+function scopeAssignmentStatement(
+  s: AssignmentStatement,
+  scope: Scope
+): AssignmentStatement {
+  const lhs = s.lhs
+  if (!scope.resolve(lhs)) {
+    scope.define(SymbolCS(lhs, scope))
+  }
+  const rhs = scopeTerm(s.rhs, scope)
+  return AssignmentStatement(lhs, rhs, { scope })
+}
+
+function scopeCallStatement(s: CallStatement, scope: Scope): CallStatement {
+  const fn = scopeTerm(s.fn, scope)
+  const args = s.args.map((arg) => scopeTerm(arg, scope))
+  return CallStatement(fn, args, { scope })
+}
+
+function scopeReturnStatement(
+  s: ReturnStatement,
+  scope: Scope
+): ReturnStatement {
+  const result = scopeTerm(s.result, scope)
+  return ReturnStatement(result, { scope })
+}
+
+function scopeBlockStatement(s: BlockStatement, scope: Scope): BlockStatement {
+  const childScope = new Scope(scope)
+  const ann = { scope: childScope }
+  const statements = s.statements.map((stmt) =>
+    scopeStatement(stmt, childScope)
+  )
+  return BlockStatement(statements, ann)
 }

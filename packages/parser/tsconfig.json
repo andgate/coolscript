@@ -3,6 +3,6 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["src", "tests", "../esbuild-plugin-nearley/src/esbuild.d.ts"],
+  "include": ["src", "tests"],
   "exclude": ["lib", "node_modules"]
 }

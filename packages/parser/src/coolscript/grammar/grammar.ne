@@ -23,6 +23,10 @@ const {
   ElseBranch,
   TmWhile,
   TmFor,
+  AssignmentStatement,
+  CallStatement,
+  ReturnStatement,
+  BlockStatement,
 } = require("@coolscript/syntax");
 
 const lexer = moo.compile({
@@ -92,17 +96,6 @@ vnumber -> number {% ([n]) => VNumber(n) %}
 vstring -> string {% ([s]) => VString(s.slice(1,-1)) %}
 vbool   -> bool   {% ([b]) => VBool(b) %}
 
-# Term Block
-term_block ->
-    "{" _ term_block_statments _ ";":? _ "}"
-      {% (r) => TermBlock(r[2]) %}
-  
-term_block_statments -> 
-    term
-      {% ([t]) => [t] %}
-  | term_block_statments _ ";" _ term
-      {% ([blk,,,,t]) => [...blk, t] %}
-
 # Terms
 term  -> cterm {% id %}
 
@@ -118,7 +111,6 @@ cterm ->
 bterm ->
     tmcall   {% id %}
   | tmassign {% id %}
-  | tmreturn {% id %}
   | aterm    {% id %}
 
 aterm -> 
@@ -146,13 +138,9 @@ lam_args ->
   | lam_args _ "," _ varid
       {% ([vs,,,,v]) => [...vs, v] %}
 
-tmreturn ->
-    "return" _ term
-      {% ([,,t]) => TmReturn(t) %}
-
 tmcall ->
     aterm _ "(" _ call_args _ ",":? _ ")"
-      {% ([f,,,,xs,,,,]) => TmCall(f, xs) %}
+      {% (d) => TmCall(d[0], d[4]) %}
 
 call_args ->
     bterm 
@@ -206,7 +194,7 @@ let_binding ->
       {% ([v,,,,t]) => Binding(v, t) %}
 
 tmdo ->
-  "do" _ term_block
+  "do" _ block_statement
     {% (r) => TmDo(r[2]) %}
 
 tmif ->
@@ -226,3 +214,30 @@ tmwhile ->
 tmfor ->
   "for" _ "(" _ term _ ";" _ term _ ";" _ term _ ")" _ term
     {% (r) => TmWhile(r[4], r[8], r[12], r[16]) %}
+
+statement ->
+    sassign {% id %}
+  | scall   {% id %}
+  | sreturn {% id %}
+  | block_statement  {% id %}
+
+sassign ->
+    id _ "=" _ term {% (d) => AssignmentStatement(d[0], d[4]) %}
+
+scall ->
+    aterm _ "(" _ call_args _ ",":? _ ")"
+      {% (d) => CallStatement(d[0], d[4]) %}
+
+sreturn ->
+    "return" _ term
+      {% ([,,t]) => ReturnStatement(t) %}
+
+block_statement ->
+    "{" _ statement_list:? _ ";":? _ "}"
+      {% (r) => BlockStatement(r[2]) %}
+  
+statement_list -> 
+    statement
+      {% ([t]) => [t] %}
+  | statement_list _ ";" _ statement
+      {% ([blk,,,,t]) => [...blk, t] %}

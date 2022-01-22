@@ -1,7 +1,6 @@
 import {
   AValue,
   Term,
-  TermBlock,
   TmArray,
   TmAssign,
   TmCall,
@@ -13,10 +12,14 @@ import {
   TmLet,
   TmObject,
   TmParens,
-  TmReturn,
   TmValue,
   TmVar,
-  TmWhile
+  TmWhile,
+  Statement,
+  AssignmentStatement,
+  CallStatement,
+  ReturnStatement,
+  BlockStatement
 } from '@coolscript/syntax'
 import { BlockBuilder } from './BlockBuilder'
 import * as ES from 'estree'
@@ -24,7 +27,6 @@ import * as e from '../../../estree/constructors'
 
 export class ScriptBuilder {
   block: BlockBuilder = new BlockBuilder()
-  stack: Array<ES.Expression> = []
 
   enter(params: Array<string> = []) {
     this.block = new BlockBuilder(params, this.block)
@@ -49,77 +51,55 @@ export class ScriptBuilder {
   }
 
   generate(term: Term): ES.Program {
-    this.visitTerm(term)
+    const terminalExpression = this.visitTerm(term)
     const statements = this.block.build().body
-    while (this.stack.length > 0) {
-      const expression = this.stack.pop()
-      const expressionStatement = e.ExpressionStatement(expression)
-      statements.push(expressionStatement)
-    }
+    const terminalStatement = e.ExpressionStatement(terminalExpression)
+    statements.push(terminalStatement)
     return e.Script(statements)
   }
 
-  visitTerm(tm: Term) {
+  visitTerm(tm: Term): ES.Expression {
     switch (tm.tag) {
       case 'TmError':
-        this.visitTmError(tm)
-        break
+        return this.visitTmError(tm)
       case 'TmValue':
-        this.visitTmValue(tm)
-        break
+        return this.visitTmValue(tm)
       case 'TmVar':
-        this.visitTmVar(tm)
-        break
+        return this.visitTmVar(tm)
       case 'TmAssign':
-        this.visitTmAssign(tm)
-        break
+        return this.visitTmAssign(tm)
       case 'TmLam':
-        this.visitTmLam(tm)
-        break
-      case 'TmReturn':
-        this.visitTmReturn(tm)
-        break
+        return this.visitTmLam(tm)
       case 'TmCall':
-        this.visitTmCall(tm)
-        break
+        return this.visitTmCall(tm)
       case 'TmParens':
-        this.visitTmParens(tm)
-        break
+        return this.visitTmParens(tm)
       case 'TmArray':
-        this.visitTmArray(tm)
-        break
+        return this.visitTmArray(tm)
       case 'TmObject':
-        this.visitTmObject(tm)
-        break
+        return this.visitTmObject(tm)
       case 'TmLet':
-        this.visitTmLet(tm)
-        break
+        return this.visitTmLet(tm)
       case 'TmDo':
-        this.visitTmDo(tm)
-        break
+        return this.visitTmDo(tm)
       case 'TmIf':
-        this.visitTmIf(tm)
-        break
+        return this.visitTmIf(tm)
       case 'TmWhile':
-        this.visitTmWhile(tm)
-        break
+        return this.visitTmWhile(tm)
       case 'TmFor':
-        this.visitTmFor(tm)
-        break
+        return this.visitTmFor(tm)
       default:
         throw new Error(`Unknown term tag encountered: ${tm}`)
     }
   }
 
-  visitTmError(tm: TmError) {
+  visitTmError(tm: TmError): ES.Expression {
     const err = e.ThrowError(tm.msg)
-    const errorClosure = e.ClosureExpression([err])
-    this.stack.push(errorClosure)
+    return e.ClosureExpression([err])
   }
 
-  visitTmValue(tm: TmValue) {
-    const value = this.visitAValue(tm.value)
-    this.stack.push(value)
+  visitTmValue(tm: TmValue): ES.Literal {
+    return this.visitAValue(tm.value)
   }
 
   visitAValue(v: AValue): ES.Literal {
@@ -137,128 +117,71 @@ export class ScriptBuilder {
     }
   }
 
-  visitTmVar(tm: TmVar) {
-    const v = e.Id(tm.variable)
-    this.stack.push(v)
+  visitTmVar(tm: TmVar): ES.Identifier {
+    return e.Id(tm.variable)
   }
 
-  visitTmAssign(tm: TmAssign) {
-    if (!this.block.resolve(tm.lhs)) {
-      this.block.declareLet(tm.lhs)
+  visitTmAssign(tm: TmAssign): ES.AssignmentExpression {
+    const lhs = tm.lhs
+    if (!this.block.resolve(lhs)) {
+      this.block.declareLet(lhs)
     }
-    this.visitTerm(tm.rhs)
-    if (!this.stack) {
-      throw new Error(
-        `Expected right-hand side expression in assignment: ${tm}`
-      )
-    }
-    const rhs: ES.Expression = this.stack.pop()
-    const assignment = e.Assign(tm.lhs, rhs)
-    this.stack.push(assignment)
+    const rhs: ES.Expression = this.visitTerm(tm.rhs)
+    return e.Assign(lhs, rhs)
   }
 
-  visitTmLam(tm: TmLam) {
+  visitTmLam(tm: TmLam): ES.FunctionExpression {
     const args = tm.args.map((arg) => e.Id(arg))
     this.enter(tm.args)
-    this.visitTerm(tm.body)
-    let body: ES.BlockStatement
-    body = this.exit()
-    if (body.body.length == 0) {
-      const bodyExpression = this.stack.pop()
-      const expressionStatement = e.ReturnStatement(bodyExpression)
-      body = e.BlockStatement([expressionStatement])
-    }
-    const lambda = e.LambdaExpression(args, body)
-    this.stack.push(lambda)
+    const body = this.visitTerm(tm.body)
+    this.exit() // can safely ignore, only capabable of producing declarations for parameters
+    const expressionStatement = e.ReturnStatement(body)
+    const bodyBlock = e.BlockStatement([expressionStatement])
+    return e.LambdaExpression(args, bodyBlock)
   }
 
-  visitTmReturn(tm: TmReturn) {
-    this.visitTerm(tm.result)
-    const result = this.stack.pop()
-    const returnStatement = e.ReturnStatement(result)
-    this.block.append(returnStatement)
-  }
-
-  visitTmCall(tm: TmCall) {
-    this.visitTerm(tm.caller)
-    const f = this.stack.pop()
+  visitTmCall(tm: TmCall): ES.CallExpression {
+    const f = this.visitTerm(tm.caller)
     const args = tm.args.map((arg) => {
-      this.visitTerm(arg)
-      return this.stack.pop()
+      return this.visitTerm(arg)
     })
-    const callExpression = e.CallExpression(f, args)
-    this.stack.push(callExpression)
+    return e.CallExpression(f, args)
   }
 
-  visitTmParens(tm: TmParens) {
-    this.visitTerm(tm.term)
+  visitTmParens(tm: TmParens): ES.Expression {
+    return this.visitTerm(tm.term)
   }
 
-  visitTmArray(tm: TmArray) {
+  visitTmArray(tm: TmArray): ES.ArrayExpression {
     const elements = tm.elements.map((e) => {
-      this.visitTerm(e)
-      return this.stack.pop()
+      return this.visitTerm(e)
     })
-    this.stack.push(e.ArrayExpression(elements))
+    return e.ArrayExpression(elements)
   }
 
-  visitTmObject(tm: TmObject) {
+  visitTmObject(tm: TmObject): ES.ObjectExpression {
     const entries = Object.entries(tm.obj)
     const properties = entries.map(([name, val]) => {
-      this.visitTerm(val)
-      const value = this.stack.pop()
-      return e.Property(name, value)
+      return e.Property(name, this.visitTerm(val))
     })
-    const objectExpression = e.ObjectExpression(properties)
-    this.stack.push(objectExpression)
+    return e.ObjectExpression(properties)
   }
 
-  visitTmLet(tm: TmLet) {
-    const resultVarId = this.freshen('result')
-    this.block.declareLet(resultVarId)
+  visitTmLet(tm: TmLet): ES.Expression {
     this.enter()
     tm.binders.forEach((b) => {
-      this.visitTerm(b.body)
-      const bindingBody = this.stack.pop()
-      const declaration = e.Const(b.variable, bindingBody)
-      this.block.append(declaration)
+      const bindingBody = this.visitTerm(b.body)
+      this.block.declareConst(b.variable, bindingBody)
     })
-    const body = tm.body
-    if (body.tag == 'TmBlock') {
-      this.visitTermBlock(body)
-    } else {
-      this.visitTerm(body)
-    }
-    const resultExp = this.stack.pop()
-    if (resultExp) {
-      const assignResult = e.ExpressionStatement(
-        e.Assign(resultVarId, resultExp)
-      )
-      this.block.append(assignResult)
-    }
-    const blockStatement = this.exit()
-    this.block.append(blockStatement)
-    this.stack.push(e.Identifier(resultVarId))
+    const body = this.visitTerm(tm.body)
+    const decls = this.exit()
+    const terminalExpression = e.ReturnStatement(body)
+    return e.ClosureExpression([...decls.body, terminalExpression])
   }
 
-  visitTermBlock(block: TermBlock) {
-    this.enter()
-    let stmt
-    let n = this.stack.length
-    block.statements.forEach((s) => {
-      this.visitTerm(s)
-      if (this.stack.length > n) {
-        stmt = e.ExpressionStatement(this.stack.pop())
-        this.block.append(stmt)
-      }
-    })
-    const blockStatement = this.exit()
-    const closure = e.ClosureExpression(blockStatement.body)
-    this.stack.push(closure)
-  }
-
-  visitTmDo(tm: TmDo) {
-    this.visitTermBlock(tm.block)
+  visitTmDo(tm: TmDo): ES.Expression {
+    const { body } = this.visitBlockStatement(tm.block)
+    return e.ClosureExpression(body)
   }
 
   visitTmIf(tm: TmIf) {
@@ -271,5 +194,58 @@ export class ScriptBuilder {
 
   visitTmFor(tm: TmFor) {
     return e.Null()
+  }
+
+  visitStatement(s: Statement) {
+    switch (s.tag) {
+      case 'AssignmentStatement': {
+        this.visitAssignmentStatement(s)
+        break
+      }
+      case 'CallStatement': {
+        this.vistCallStatement(s)
+        break
+      }
+      case 'ReturnStatement': {
+        this.vistReturnStatement(s)
+        break
+      }
+      case 'BlockStatement': {
+        const blockStatement = this.visitBlockStatement(s)
+        this.block.append(blockStatement)
+        break
+      }
+    }
+  }
+
+  visitAssignmentStatement(s: AssignmentStatement) {
+    const lhs = s.lhs
+    if (this.block.resolve(lhs)) {
+      this.block.declareLet(lhs)
+    }
+    const rhs = this.visitTerm(s.rhs)
+    const assignStatement = e.AssignStatement(lhs, rhs)
+    this.block.append(assignStatement)
+  }
+
+  vistCallStatement(s: CallStatement) {
+    const fn = this.visitTerm(s.fn)
+    const args = s.args.map((arg) => this.visitTerm(arg))
+    const callStatement = e.CallStatement(fn, args)
+    this.block.append(callStatement)
+  }
+
+  vistReturnStatement(s: ReturnStatement) {
+    const result = this.visitTerm(s.result)
+    const returnStatement = e.ReturnStatement(result)
+    this.block.append(returnStatement)
+  }
+
+  visitBlockStatement(s: BlockStatement): ES.BlockStatement {
+    this.enter()
+    s.statements.forEach((s) => {
+      this.visitStatement(s)
+    })
+    return this.exit()
   }
 }

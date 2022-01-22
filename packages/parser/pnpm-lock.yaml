@@ -3,12 +3,14 @@ lockfileVersion: 5.3
 specifiers:
   '@types/moo': ^0.5.5
   '@types/nearley': ^2.11.2
+  esbuild-plugin-nearley: ^1.0.3
   moo: ^0.5.1
   nearley: ^2.20.1
 
 devDependencies:
   '@types/moo': 0.5.5
   '@types/nearley': 2.11.2
+  esbuild-plugin-nearley: 1.0.3_nearley@2.20.1
   moo: 0.5.1
   nearley: 2.20.1
 
@@ -28,6 +30,16 @@ packages:
 
   /discontinuous-range/1.0.0:
     resolution: {integrity: sha1-44Mx8IRLukm5qctxx3FYWqsbxlo=}
+    dev: true
+
+  /esbuild-plugin-nearley/1.0.3_nearley@2.20.1:
+    resolution: {integrity: sha512-put4IL3TkSRETj1jvqPGXRfpXmtZiuD5Er41UgKTlZsH7cjoHbPtXP/2FDBdt0D9BB5pWZRnOQET+0NQXOqoBA==}
+    engines: {node: '>=16', npm: '>=8', pnpm: '>=6'}
+    peerDependencies:
+      esbuild: ^0.14
+      nearley: ^2
+    dependencies:
+      nearley: 2.20.1
     dev: true
 
   /moo/0.5.1:
