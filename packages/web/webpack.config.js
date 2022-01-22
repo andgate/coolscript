@@ -3,13 +3,13 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 const { ESBuildMinifyPlugin } = require('esbuild-loader')
-const { website } = require('../../package.json')
+const { homepage } = require('../../package.json')
 
 const outdir = path.resolve(__dirname, '../../docs')
 
 module.exports = (env, argv) => {
   const isDev = argv.mode && argv.mode === 'development'
-  const publicPath = isDev ? './' : './coolscript/'
+  const publicPath = isDev ? './' : homepage
   return {
     entry: path.join(__dirname, 'src', 'index.tsx'),
     output: {
