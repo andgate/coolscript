@@ -976,153 +976,317 @@ var require_moo = __commonJS({
 });
 var lib_exports = {};
 __export(lib_exports, {
-  AssignmentStatement: () => AssignmentStatement,
-  Binding: () => Binding,
-  BlockStatement: () => BlockStatement,
-  CallStatement: () => CallStatement,
-  DoWhileStatement: () => DoWhileStatement,
-  ElifBranch: () => ElifBranch,
-  ElifStatement: () => ElifStatement,
-  ElseBranch: () => ElseBranch,
-  ElseStatement: () => ElseStatement,
-  ForStatement: () => ForStatement,
-  IfStatement: () => IfStatement,
-  ReturnStatement: () => ReturnStatement,
-  TmArray: () => TmArray,
-  TmAssign: () => TmAssign,
-  TmCall: () => TmCall,
-  TmDo: () => TmDo,
-  TmError: () => TmError,
-  TmGet: () => TmGet,
-  TmGetI: () => TmGetI,
-  TmIf: () => TmIf,
-  TmLam: () => TmLam,
-  TmLet: () => TmLet,
-  TmObject: () => TmObject,
-  TmParens: () => TmParens,
-  TmValue: () => TmValue,
-  TmVar: () => TmVar,
-  VArray: () => VArray,
-  VBool: () => VBool,
-  VError: () => VError,
-  VLam: () => VLam,
-  VNull: () => VNull,
-  VNumber: () => VNumber,
-  VObject: () => VObject,
-  VString: () => VString,
-  WhileStatement: () => WhileStatement
+  ArrayTerm: () => ArrayTerm2,
+  AssignmentStatement: () => AssignmentStatement2,
+  AssignmentTerm: () => AssignmentTerm2,
+  BlockStatement: () => BlockStatement2,
+  CallStatement: () => CallStatement2,
+  CallTerm: () => CallTerm2,
+  ConditionalTerm: () => ConditionalTerm2,
+  DoTerm: () => DoTerm2,
+  DoWhileStatement: () => DoWhileStatement2,
+  ElifStatement: () => ElifStatement2,
+  ElifTerm: () => ElifTerm2,
+  ElseStatement: () => ElseStatement2,
+  ElseTerm: () => ElseTerm2,
+  ErrorTerm: () => ErrorTerm2,
+  FalseValue: () => FalseValue,
+  ForStatement: () => ForStatement2,
+  IfStatement: () => IfStatement2,
+  IndexAccessTerm: () => IndexAccessTerm2,
+  LambdaTerm: () => LambdaTerm2,
+  LetTerm: () => LetTerm2,
+  MemberAccessTerm: () => MemberAccessTerm2,
+  Merge: () => Merge,
+  NullValue: () => NullValue2,
+  NumberValue: () => NumberValue2,
+  ObjectTerm: () => ObjectTerm2,
+  ParentheticalTerm: () => ParentheticalTerm2,
+  ReturnStatement: () => ReturnStatement2,
+  SourceToken: () => SourceToken,
+  Span: () => Span,
+  StringValue: () => StringValue2,
+  Token: () => Token,
+  TrueValue: () => TrueValue,
+  ValueTerm: () => ValueTerm2,
+  VariableDeclaration: () => VariableDeclaration2,
+  VariableTerm: () => VariableTerm2,
+  WhileStatement: () => WhileStatement2
 });
-function VNumber(num) {
-  return { tag: "VNumber", num };
-}
-function VString(str) {
-  return { tag: "VString", str };
-}
-function VBool(bool) {
-  return { tag: "VBool", bool };
-}
-function VLam(args, body) {
-  return { tag: "VLam", args, body };
-}
-function VArray(elements) {
-  return { tag: "VArray", elements };
-}
-function VObject(obj) {
-  return { tag: "VObject", obj };
-}
-function VError(err) {
-  return { tag: "VError", err };
-}
-function TmError(msg, ann) {
-  return { tag: "TmError", ann, msg };
-}
-function TmValue(value, ann) {
-  return { tag: "TmValue", ann, value };
-}
-function TmVar(variable, ann) {
-  return { tag: "TmVar", ann, variable };
-}
-function TmAssign(lhs, rhs, ann) {
-  return { tag: "TmAssign", ann, lhs, rhs };
-}
-function TmLam(args, body, ann) {
-  return { tag: "TmLam", ann, args, body };
-}
-function TmCall(caller, args, ann) {
-  return { tag: "TmCall", ann, caller, args };
-}
-function TmLet(binders, body, ann) {
-  return { tag: "TmLet", ann, binders, body };
-}
-function Binding(variable, body) {
-  return { variable, body };
-}
-function TmParens(term, ann) {
-  return { tag: "TmParens", ann, term };
-}
-function TmArray(elements = [], ann) {
-  return { tag: "TmArray", ann, elements };
-}
-function TmObject(obj = {}, ann) {
-  return { tag: "TmObject", ann, obj };
-}
-function TmGet(parent, child, ann) {
+function Span(lineStart, lineEnd, columnStart, columnEnd) {
   return {
-    tag: "TmGet",
-    ann,
-    parent,
-    child
+    type: "Span",
+    line: {
+      start: lineStart,
+      end: lineEnd
+    },
+    column: {
+      start: columnStart,
+      end: columnEnd
+    }
   };
 }
-function TmGetI(parent, index, ann) {
-  return { tag: "TmGetI", ann, parent, index };
+function Merge(spanLeft, spanRight) {
+  return {
+    type: "Span",
+    line: {
+      start: spanLeft.line.start,
+      end: spanRight.line.end
+    },
+    column: {
+      start: spanLeft.column.start,
+      end: spanRight.column.end
+    }
+  };
 }
-function TmDo(block, ann) {
-  return { tag: "TmDo", ann, block };
+function SourceToken(source) {
+  const text = source.text;
+  if (text.length == 0) {
+    const l = source.line;
+    const c = source.column;
+    return {
+      type: "Token",
+      text: "",
+      span: Span(l, l, c, c)
+    };
+  }
+  const n = text.length - 1;
+  const lineStart = source.line;
+  const lineEnd = source.line + source.lineBreaks;
+  const columnStart = source.column;
+  let columnEnd = source.column;
+  for (let i = n; i >= 0; i--) {
+    if (text[i] == "\n") {
+      columnEnd = n - i;
+      break;
+    }
+  }
+  return {
+    type: "Token",
+    text: source.text,
+    span: Span(lineStart, lineEnd, columnStart, columnEnd)
+  };
 }
-function TmIf(pred, body, branch, ann) {
-  return { tag: "TmIf", ann, pred, body, branch };
+function Token(firstSource, ...otherSources) {
+  let token = SourceToken(firstSource);
+  const n = otherSources.length;
+  if (otherSources && otherSources.length <= 0) {
+    return token;
+  }
+  token.text += otherSources.map((s) => s.text).join("");
+  const lastSource = otherSources[n - 1];
+  const lastToken = SourceToken(lastSource);
+  const span = Merge(token.span, lastToken.span);
+  token.span = span;
+  return token;
 }
-function ElifBranch(pred, body, branch) {
-  return { tag: "Elif", pred, body, branch };
+function NullValue(ann) {
+  return { tag: "NullValue", ann };
 }
-function ElseBranch(body) {
-  return { tag: "Else", body };
+function NumberValue(num, ann) {
+  return { tag: "NumberValue", num, ann };
+}
+function StringValue(str, ann) {
+  return { tag: "StringValue", str, ann };
+}
+function BooleanValue(bool, ann) {
+  return { tag: "BooleanValue", bool, ann };
+}
+function ErrorTerm(msg, ann) {
+  return { tag: "ErrorTerm", msg, ann };
+}
+function ValueTerm(value, ann) {
+  return { tag: "ValueTerm", value, ann };
+}
+function VariableTerm(variable, ann) {
+  return { tag: "VariableTerm", variable, ann };
+}
+function AssignmentTerm(lhs, rhs, ann) {
+  return { tag: "AssignmentTerm", lhs, rhs, ann };
+}
+function LambdaTerm(args, body, ann) {
+  return { tag: "LambdaTerm", args, body, ann };
+}
+function CallTerm(func, args, ann) {
+  return { tag: "CallTerm", func, args, ann };
+}
+function LetTerm(declarations, body, ann) {
+  return { tag: "LetTerm", declarations, body, ann };
+}
+function VariableDeclaration(variable, body, ann) {
+  return { tag: "VariableDeclaration", variable, body, ann };
+}
+function ParentheticalTerm(term, ann) {
+  return { tag: "ParentheticalTerm", term, ann };
+}
+function ArrayTerm(elements, ann) {
+  return { tag: "ArrayTerm", elements, ann };
+}
+function ObjectTerm(entries, ann) {
+  return { tag: "ObjectTerm", entries, ann };
+}
+function MemberAccessTerm(object, member, ann) {
+  return {
+    tag: "MemberAccessTerm",
+    object,
+    member,
+    ann
+  };
+}
+function IndexAccessTerm(array, index, ann) {
+  return { tag: "IndexAccessTerm", array, index, ann };
+}
+function DoTerm(block, ann) {
+  return { tag: "DoTerm", block, ann };
+}
+function ConditionalTerm(condition, body, branch, ann) {
+  return { tag: "ConditionalTerm", condition, body, branch, ann };
+}
+function ElifTerm(condition, body, branch, ann) {
+  return { tag: "ElifTerm", condition, body, branch, ann };
+}
+function ElseTerm(body, ann) {
+  return { tag: "ElseTerm", body, ann };
 }
 function AssignmentStatement(lhs, rhs, ann) {
   return { tag: "AssignmentStatement", lhs, rhs, ann };
 }
-function CallStatement(fn, args, ann) {
-  return { tag: "CallStatement", fn, args, ann };
-}
-function BlockStatement(statements, ann) {
-  return { tag: "BlockStatement", statements, ann };
+function CallStatement(func, args, ann) {
+  return { tag: "CallStatement", func, args, ann };
 }
 function ReturnStatement(result, ann) {
   return { tag: "ReturnStatement", result, ann };
 }
-function IfStatement(pred, body, branch, ann) {
-  return { tag: "IfStatement", ann, pred, body, branch };
+function BlockStatement(statements, ann) {
+  return { tag: "BlockStatement", statements, ann };
 }
-function ElifStatement(pred, body, branch) {
-  return { tag: "ElifStatement", pred, body, branch };
+function IfStatement(condition, body, branch, ann) {
+  return { tag: "IfStatement", condition, body, branch, ann };
 }
-function ElseStatement(body) {
-  return { tag: "ElseStatement", body };
+function ElifStatement(condition, body, branch, ann) {
+  return { tag: "ElifStatement", condition, body, branch, ann };
 }
-function WhileStatement(pred, body, ann) {
-  return { tag: "WhileStatement", ann, pred, body };
+function ElseStatement(body, ann) {
+  return { tag: "ElseStatement", body, ann };
 }
-function DoWhileStatement(body, pred, ann) {
-  return { tag: "DoWhileStatement", ann, body, pred };
+function WhileStatement(condition, body, ann) {
+  return { tag: "WhileStatement", condition, body, ann };
 }
-function ForStatement(init, pred, iter, body, ann) {
-  return { tag: "ForStatement", ann, init, pred, iter, body };
+function DoWhileStatement(body, condition, ann) {
+  return { tag: "DoWhileStatement", body, condition, ann };
 }
-var VNull;
+function ForStatement(declarations, condition, update, body, ann) {
+  return { tag: "ForStatement", declarations, condition, update, body, ann };
+}
+function VariableDeclaration2(lhs, rhs) {
+  return VariableDeclaration(lhs.text, rhs, {
+    span: Merge(lhs.span, rhs.ann.span)
+  });
+}
+function NullValue2(t) {
+  return NullValue({ span: t.span });
+}
+function NumberValue2(t) {
+  const num = parseFloat(t.text);
+  return NumberValue(num, { span: t.span });
+}
+function StringValue2(t) {
+  const sourceText = t.text;
+  const text = sourceText.substring(1, sourceText.length - 1);
+  return StringValue(text, { span: t.span });
+}
+function TrueValue(t) {
+  return BooleanValue(true, { span: t.span });
+}
+function FalseValue(t) {
+  return BooleanValue(false, { span: t.span });
+}
+function ErrorTerm2(msg, span) {
+  return ErrorTerm(msg, { span });
+}
+function ValueTerm2(value) {
+  return ValueTerm(value, { span: value.ann.span });
+}
+function VariableTerm2(variableToken) {
+  return VariableTerm(variableToken.text, { span: variableToken.span });
+}
+function AssignmentTerm2(lhs, rhs) {
+  return AssignmentTerm(lhs.text, rhs, {
+    span: Merge(lhs.span, rhs.ann.span)
+  });
+}
+function LambdaTerm2(args, body, span) {
+  return LambdaTerm(args, body, { span });
+}
+function CallTerm2(func, args, span) {
+  return CallTerm(func, args, { span });
+}
+function LetTerm2(declarations, body, span) {
+  return LetTerm(declarations, body, { span });
+}
+function ParentheticalTerm2(term, span) {
+  return ParentheticalTerm(term, { span });
+}
+function ArrayTerm2(elements, span) {
+  return ArrayTerm(elements, { span });
+}
+function ObjectTerm2(entries, span) {
+  return ObjectTerm(entries, { span });
+}
+function MemberAccessTerm2(object, memberToken) {
+  return MemberAccessTerm(object, memberToken.text, {
+    span: Merge(object.ann.span, memberToken.span)
+  });
+}
+function IndexAccessTerm2(array, index, span) {
+  return IndexAccessTerm(array, index, { span });
+}
+function DoTerm2(block, span) {
+  return DoTerm(block, { span });
+}
+function ConditionalTerm2(condition, body, branch, span) {
+  return ConditionalTerm(condition, body, branch, { span });
+}
+function ElifTerm2(condition, body, branch, span) {
+  return ElifTerm(condition, body, branch, { span });
+}
+function ElseTerm2(body, span) {
+  return ElseTerm(body, { span });
+}
+function AssignmentStatement2(lhs, rhs) {
+  return AssignmentStatement(lhs.text, rhs, {
+    span: Merge(lhs.span, rhs.ann.span)
+  });
+}
+function CallStatement2(func, args, span) {
+  return CallStatement(func, args, { span });
+}
+function ReturnStatement2(result, span) {
+  return ReturnStatement(result, { span });
+}
+function BlockStatement2(statements, span) {
+  return BlockStatement(statements, { span });
+}
+function IfStatement2(condition, body, branch, span) {
+  return IfStatement(condition, body, branch, { span });
+}
+function ElifStatement2(condition, body, branch, span) {
+  return ElifStatement(condition, body, branch, { span });
+}
+function ElseStatement2(body, span) {
+  return ElseStatement(body, { span });
+}
+function WhileStatement2(condition, body, span) {
+  return WhileStatement(condition, body, { span });
+}
+function DoWhileStatement2(body, condition, span) {
+  return DoWhileStatement(body, condition, { span });
+}
+function ForStatement2(declarations, condition, update, body, span) {
+  return ForStatement(declarations, condition, update, body, { span });
+}
 var init_lib = __esm({
-  "../syntax/lib/index.js"() {
-    VNull = { tag: "VNull" };
+  "../syntax-concrete/lib/index.js"() {
   }
 });
 var require_grammar = __commonJS({
@@ -1132,40 +1296,40 @@ var require_grammar = __commonJS({
         return x[0];
       }
       const moo = require_moo();
+      const { Token: Token2, Span: Span2, Merge: Merge2 } = (init_lib(), __toCommonJS(lib_exports));
       const {
-        VNull: VNull2,
-        VNumber: VNumber2,
-        VString: VString2,
-        VBool: VBool2,
-        TermBlock,
-        TmValue: TmValue2,
-        TmVar: TmVar2,
-        TmAssign: TmAssign2,
-        TmLam: TmLam2,
-        TmReturn,
-        TmCall: TmCall2,
-        TmLet: TmLet2,
-        Binding: Binding2,
-        TmParens: TmParens2,
-        TmArray: TmArray2,
-        TmObject: TmObject2,
-        TmGet: TmGet2,
-        TmGetI: TmGetI2,
-        TmDo: TmDo2,
-        TmIf: TmIf2,
-        ElifBranch: ElifBranch2,
-        ElseBranch: ElseBranch2,
-        AssignmentStatement: AssignmentStatement2,
-        CallStatement: CallStatement2,
-        ReturnStatement: ReturnStatement2,
-        BlockStatement: BlockStatement2,
-        IfStatement: IfStatement2,
+        NullValue: NullValue3,
+        NumberValue: NumberValue3,
+        StringValue: StringValue3,
+        TrueValue: TrueValue2,
+        FalseValue: FalseValue2,
+        ValueTerm: ValueTerm3,
+        VariableTerm: VariableTerm3,
+        AssignmentTerm: AssignmentTerm3,
+        LambdaTerm: LambdaTerm3,
+        CallTerm: CallTerm3,
+        LetTerm: LetTerm3,
+        VariableDeclaration: VariableDeclaration3,
+        ParentheticalTerm: ParentheticalTerm3,
+        ArrayTerm: ArrayTerm3,
+        ObjectTerm: ObjectTerm3,
+        MemberAccessTerm: MemberAccessTerm3,
+        IndexAccessTerm: IndexAccessTerm3,
+        DoTerm: DoTerm3,
+        ConditionalTerm: ConditionalTerm3,
+        ElifTerm: ElifTerm3,
+        ElseTerm: ElseTerm3,
+        AssignmentStatement: AssignmentStatement3,
+        CallStatement: CallStatement3,
+        ReturnStatement: ReturnStatement3,
+        BlockStatement: BlockStatement3,
+        IfStatement: IfStatement3,
         BranchStatement,
-        ElifStatement: ElifStatement2,
-        ElseStatement: ElseStatement2,
-        WhileStatement: WhileStatement2,
-        DoWhileStatement: DoWhileStatement2,
-        ForStatement: ForStatement2
+        ElifStatement: ElifStatement3,
+        ElseStatement: ElseStatement3,
+        WhileStatement: WhileStatement3,
+        DoWhileStatement: DoWhileStatement3,
+        ForStatement: ForStatement3
       } = (init_lib(), __toCommonJS(lib_exports));
       const lexer = moo.compile({
         ws: /[ \t\v\f]+/,
@@ -1191,6 +1355,14 @@ var require_grammar = __commonJS({
           ".",
           "+",
           "-",
+          "*",
+          "/",
+          "++",
+          "--",
+          "&&",
+          "||",
+          "==",
+          "!=",
           "(",
           ")",
           "[",
@@ -1216,137 +1388,160 @@ var require_grammar = __commonJS({
           { "name": "_", "symbols": ["_$ebnf$1"], "postprocess": null },
           { "name": "_", "symbols": ["_", lexer.has("comment") ? { type: "comment" } : comment, "_"], "postprocess": null },
           { "name": "_", "symbols": ["_", lexer.has("newline") ? { type: "newline" } : newline, "_"], "postprocess": null },
-          { "name": "id", "symbols": [lexer.has("identifier") ? { type: "identifier" } : identifier], "postprocess": ([i]) => i.value },
-          { "name": "varid", "symbols": ["id"], "postprocess": id },
-          { "name": "sign", "symbols": [{ "literal": "+" }], "postprocess": () => 1 },
-          { "name": "sign", "symbols": [{ "literal": "-" }], "postprocess": () => -1 },
-          { "name": "number", "symbols": [lexer.has("number") ? { type: "number" } : number], "postprocess": ([n]) => n.value },
-          { "name": "number", "symbols": [lexer.has("number") ? { type: "number" } : number, { "literal": "." }, lexer.has("number") ? { type: "number" } : number], "postprocess": ([n1, , n2]) => `${n1.value}.${n2.value}` },
-          { "name": "string", "symbols": [lexer.has("sqstring") ? { type: "sqstring" } : sqstring], "postprocess": ([t]) => t.value },
-          { "name": "string", "symbols": [lexer.has("dqstring") ? { type: "dqstring" } : dqstring], "postprocess": ([t]) => t.value },
-          { "name": "bool", "symbols": [{ "literal": "true" }], "postprocess": () => true },
-          { "name": "bool", "symbols": [{ "literal": "false" }], "postprocess": () => false },
-          { "name": "value", "symbols": ["vnull"], "postprocess": id },
-          { "name": "value", "symbols": ["vnumber"], "postprocess": id },
-          { "name": "value", "symbols": ["vbool"], "postprocess": id },
-          { "name": "value", "symbols": ["vstring"], "postprocess": id },
-          { "name": "vnull", "symbols": [{ "literal": "null" }], "postprocess": (_) => VNull2 },
-          { "name": "vnumber", "symbols": ["number"], "postprocess": ([n]) => VNumber2(n) },
-          { "name": "vstring", "symbols": ["string"], "postprocess": ([s]) => VString2(s.slice(1, -1)) },
-          { "name": "vbool", "symbols": ["bool"], "postprocess": ([b]) => VBool2(b) },
+          { "name": "identifier_token", "symbols": [lexer.has("identifier") ? { type: "identifier" } : identifier], "postprocess": ([i]) => Token2(i) },
+          { "name": "null_token", "symbols": [{ "literal": "null" }], "postprocess": ([t]) => Token2(t) },
+          { "name": "number_token", "symbols": [lexer.has("number") ? { type: "number" } : number], "postprocess": ([t]) => Token2(t) },
+          { "name": "number_token", "symbols": [lexer.has("number") ? { type: "number" } : number, { "literal": "." }, lexer.has("number") ? { type: "number" } : number], "postprocess": ([t12, t22, t3]) => Token2(t12, t22, t3) },
+          { "name": "string_token", "symbols": [lexer.has("sqstring") ? { type: "sqstring" } : sqstring], "postprocess": ([t]) => Token2(t) },
+          { "name": "string_token", "symbols": [lexer.has("dqstring") ? { type: "dqstring" } : dqstring], "postprocess": ([t]) => Token2(t) },
+          { "name": "true_token", "symbols": [{ "literal": "true" }], "postprocess": ([t]) => Token2(t) },
+          { "name": "false_token", "symbols": [{ "literal": "false" }], "postprocess": ([t]) => Token2(t) },
+          { "name": "value", "symbols": ["null_value"], "postprocess": id },
+          { "name": "value", "symbols": ["number_value"], "postprocess": id },
+          { "name": "value", "symbols": ["boolean_value"], "postprocess": id },
+          { "name": "value", "symbols": ["string_value"], "postprocess": id },
+          { "name": "null_value", "symbols": ["null_token"], "postprocess": ([t]) => NullValue3(t) },
+          { "name": "number_value", "symbols": ["number_token"], "postprocess": ([t]) => NumberValue3(t) },
+          { "name": "string_value", "symbols": ["string_token"], "postprocess": ([t]) => StringValue3(t) },
+          { "name": "boolean_value", "symbols": ["true_token"], "postprocess": ([t]) => TrueValue2(t) },
+          { "name": "boolean_value", "symbols": ["false_token"], "postprocess": ([t]) => FalseValue2(t) },
           { "name": "term", "symbols": ["cterm"], "postprocess": id },
-          { "name": "cterm", "symbols": ["tmlet"], "postprocess": id },
-          { "name": "cterm", "symbols": ["tmlam"], "postprocess": id },
-          { "name": "cterm", "symbols": ["tmdo"], "postprocess": id },
-          { "name": "cterm", "symbols": ["tmif"], "postprocess": id },
-          { "name": "cterm", "symbols": ["tmassign"], "postprocess": id },
+          { "name": "cterm", "symbols": ["let_term"], "postprocess": id },
+          { "name": "cterm", "symbols": ["lambda_term"], "postprocess": id },
+          { "name": "cterm", "symbols": ["do_term"], "postprocess": id },
+          { "name": "cterm", "symbols": ["conditional_term"], "postprocess": id },
+          { "name": "cterm", "symbols": ["assignment_term"], "postprocess": id },
           { "name": "cterm", "symbols": ["bterm"], "postprocess": id },
-          { "name": "bterm", "symbols": ["tmcall"], "postprocess": id },
-          { "name": "bterm", "symbols": ["tmget"], "postprocess": id },
-          { "name": "bterm", "symbols": ["tmgeti"], "postprocess": id },
+          { "name": "bterm", "symbols": ["call_term"], "postprocess": id },
+          { "name": "bterm", "symbols": ["member_access_term"], "postprocess": id },
+          { "name": "bterm", "symbols": ["index_access_term"], "postprocess": id },
           { "name": "bterm", "symbols": ["aterm"], "postprocess": id },
-          { "name": "aterm", "symbols": ["tmvalue"], "postprocess": id },
-          { "name": "aterm", "symbols": ["tmvar"], "postprocess": id },
-          { "name": "aterm", "symbols": ["tmparens"], "postprocess": id },
-          { "name": "aterm", "symbols": ["tmarray"], "postprocess": id },
-          { "name": "aterm", "symbols": ["tmobject"], "postprocess": id },
-          { "name": "tmvalue", "symbols": ["value"], "postprocess": ([v]) => TmValue2(v) },
-          { "name": "tmvar", "symbols": ["id"], "postprocess": ([n]) => TmVar2(n) },
-          { "name": "tmassign", "symbols": ["varid", "_", { "literal": "=" }, "_", "term"], "postprocess": ([v, , , , t]) => TmAssign2(v, t) },
-          { "name": "tmlam$ebnf$1", "symbols": [{ "literal": "," }], "postprocess": id },
-          { "name": "tmlam$ebnf$1", "symbols": [], "postprocess": function(d) {
-            return null;
+          { "name": "aterm", "symbols": ["value_term"], "postprocess": id },
+          { "name": "aterm", "symbols": ["variable_term"], "postprocess": id },
+          { "name": "aterm", "symbols": ["array_term"], "postprocess": id },
+          { "name": "aterm", "symbols": ["object_term"], "postprocess": id },
+          { "name": "aterm", "symbols": ["parenthetical_term"], "postprocess": id },
+          { "name": "value_term", "symbols": ["value"], "postprocess": ([v]) => ValueTerm3(v) },
+          { "name": "variable_term", "symbols": ["identifier_token"], "postprocess": ([t]) => VariableTerm3(t) },
+          { "name": "assignment_term", "symbols": ["identifier_token", "_", { "literal": "=" }, "_", "term"], "postprocess": ([v, , , , t]) => AssignmentTerm3(v, t) },
+          { "name": "lambda_term$ebnf$1", "symbols": [] },
+          { "name": "lambda_term$ebnf$1$subexpression$1", "symbols": [{ "literal": "," }, "_"] },
+          { "name": "lambda_term$ebnf$1", "symbols": ["lambda_term$ebnf$1", "lambda_term$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
           } },
-          { "name": "tmlam", "symbols": [{ "literal": "(" }, "_", "lam_args", "_", "tmlam$ebnf$1", "_", { "literal": ")" }, "_", { "literal": "=>" }, "_", "term"], "postprocess": ([, , vs, , , , , , , , t]) => TmLam2(vs, t) },
-          { "name": "lam_args", "symbols": ["varid"], "postprocess": ([v]) => [v] },
-          { "name": "lam_args", "symbols": ["lam_args", "_", { "literal": "," }, "_", "varid"], "postprocess": ([vs, , , , v]) => [...vs, v] },
-          { "name": "tmcall$ebnf$1", "symbols": [{ "literal": "," }], "postprocess": id },
-          { "name": "tmcall$ebnf$1", "symbols": [], "postprocess": function(d) {
-            return null;
+          { "name": "lambda_term", "symbols": [{ "literal": "(" }, "_", "lambda_arguments", "_", "lambda_term$ebnf$1", { "literal": ")" }, "_", { "literal": "=>" }, "_", "term"], "postprocess": ([t12, , args, , , , , , , body]) => LambdaTerm3(args, body, Merge2(Token2(t12).span, body.ann.span)) },
+          { "name": "lambda_arguments$ebnf$1", "symbols": [] },
+          { "name": "lambda_arguments$ebnf$1", "symbols": ["lambda_arguments$ebnf$1", "lambda_arguments_tail"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
           } },
-          { "name": "tmcall", "symbols": ["bterm", "_", { "literal": "(" }, "_", "call_args", "_", "tmcall$ebnf$1", "_", { "literal": ")" }], "postprocess": (d) => TmCall2(d[0], d[4]) },
-          { "name": "call_args", "symbols": ["bterm"], "postprocess": ([t]) => [t] },
-          { "name": "call_args", "symbols": ["call_args", "_", { "literal": "," }, "_", "bterm"], "postprocess": ([ts, , , , t]) => [...ts, t] },
-          { "name": "tmparens", "symbols": [{ "literal": "(" }, "_", "term", "_", { "literal": ")" }], "postprocess": ([, , t, ,]) => TmParens2(t) },
-          { "name": "tmarray", "symbols": [{ "literal": "[" }, "_", { "literal": "]" }], "postprocess": () => TmArray2() },
-          { "name": "tmarray$ebnf$1", "symbols": [{ "literal": "," }], "postprocess": id },
-          { "name": "tmarray$ebnf$1", "symbols": [], "postprocess": function(d) {
-            return null;
+          { "name": "lambda_arguments", "symbols": ["identifier_token", "lambda_arguments$ebnf$1"], "postprocess": ([v, vs]) => [v.text, ...vs] },
+          { "name": "lambda_arguments_tail", "symbols": ["_", { "literal": "," }, "_", "identifier_token"], "postprocess": ([, , , v]) => v.text },
+          { "name": "call_term$ebnf$1", "symbols": [] },
+          { "name": "call_term$ebnf$1$subexpression$1", "symbols": [{ "literal": "," }, "_"] },
+          { "name": "call_term$ebnf$1", "symbols": ["call_term$ebnf$1", "call_term$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
           } },
-          { "name": "tmarray", "symbols": [{ "literal": "[" }, "_", "tmarray_list", "_", "tmarray$ebnf$1", "_", { "literal": "]" }], "postprocess": (r) => TmArray2(r[2]) },
-          { "name": "tmarray_list", "symbols": ["term"], "postprocess": ([e]) => [e] },
-          { "name": "tmarray_list", "symbols": ["tmarray_list", "_", { "literal": "," }, "_", "term"], "postprocess": (r) => [...r[0], r[4]] },
-          { "name": "tmobject", "symbols": [{ "literal": "{" }, "_", { "literal": "}" }], "postprocess": () => TmObject2() },
-          { "name": "tmobject$ebnf$1", "symbols": [{ "literal": "," }], "postprocess": id },
-          { "name": "tmobject$ebnf$1", "symbols": [], "postprocess": function(d) {
-            return null;
+          { "name": "call_term", "symbols": ["bterm", "_", { "literal": "(" }, "_", "call_arguments", "_", "call_term$ebnf$1", { "literal": ")" }], "postprocess": (d) => CallTerm3(d[0], d[4], Merge2(d[0].ann.span, Token2(d[7]).span)) },
+          { "name": "call_arguments$ebnf$1", "symbols": [] },
+          { "name": "call_arguments$ebnf$1", "symbols": ["call_arguments$ebnf$1", "call_arguments_tail"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
           } },
-          { "name": "tmobject", "symbols": [{ "literal": "{" }, "_", "tmobject_entries", "_", "tmobject$ebnf$1", "_", { "literal": "}" }], "postprocess": (r) => TmObject2(Object.fromEntries(r[2])) },
-          { "name": "tmobject_entries", "symbols": ["tmobject_entry"], "postprocess": ([e]) => [e] },
-          { "name": "tmobject_entries", "symbols": ["tmobject_entries", "_", { "literal": "," }, "_", "tmobject_entry"], "postprocess": ([es, , , , e]) => [...es, e] },
-          { "name": "tmobject_entry", "symbols": ["id", "_", { "literal": ":" }, "_", "term"], "postprocess": ([k, , , , v]) => [k, v] },
-          { "name": "tmget", "symbols": ["bterm", "_", { "literal": "." }, "_", "id"], "postprocess": (d) => TmGet2(d[0], d[4]) },
-          { "name": "tmgeti", "symbols": ["bterm", "_", { "literal": "[" }, "_", "bterm", "_", { "literal": "]" }], "postprocess": (d) => TmGetI2(d[0], d[4]) },
-          { "name": "tmlet$ebnf$1", "symbols": [{ "literal": ";" }], "postprocess": id },
-          { "name": "tmlet$ebnf$1", "symbols": [], "postprocess": function(d) {
-            return null;
+          { "name": "call_arguments", "symbols": ["bterm", "call_arguments$ebnf$1"], "postprocess": ([t, ts]) => [t, ...ts] },
+          { "name": "call_arguments_tail", "symbols": ["_", { "literal": "," }, "_", "bterm"], "postprocess": ([, , , t]) => t },
+          { "name": "parenthetical_term", "symbols": [{ "literal": "(" }, "_", "term", "_", { "literal": ")" }], "postprocess": ([t12, , term, , t22]) => ParentheticalTerm3(term, Merge2(Token2(t12).span, Token2(t22).span)) },
+          { "name": "array_term", "symbols": [{ "literal": "[" }, "_", { "literal": "]" }], "postprocess": ([t12, , t22]) => ArrayTerm3([], Merge2(Token2(t12).span, Token2(t22).span)) },
+          { "name": "array_term$ebnf$1", "symbols": [] },
+          { "name": "array_term$ebnf$1$subexpression$1", "symbols": [{ "literal": "," }, "_"] },
+          { "name": "array_term$ebnf$1", "symbols": ["array_term$ebnf$1", "array_term$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
           } },
-          { "name": "tmlet", "symbols": [{ "literal": "let" }, "_", "let_binding_list", "_", "tmlet$ebnf$1", "_", { "literal": "in" }, "_", "term"], "postprocess": ([, , bs, , , , , , t]) => TmLet2(bs, t) },
-          { "name": "let_binding_list", "symbols": ["let_binding"], "postprocess": ([b]) => [b] },
-          { "name": "let_binding_list", "symbols": ["let_binding_list", "_", { "literal": ";" }, "_", "let_binding"], "postprocess": ([bs, , , , b]) => [...bs, b] },
-          { "name": "let_binding", "symbols": ["varid", "_", { "literal": "=" }, "_", "term"], "postprocess": ([v, , , , t]) => Binding2(v, t) },
-          { "name": "tmdo", "symbols": [{ "literal": "do" }, "_", "block_statement"], "postprocess": (r) => TmDo2(r[2]) },
-          { "name": "tmif$ebnf$1", "symbols": ["branch"], "postprocess": id },
-          { "name": "tmif$ebnf$1", "symbols": [], "postprocess": function(d) {
-            return null;
+          { "name": "array_term", "symbols": [{ "literal": "[" }, "_", "array_term_elements", "_", "array_term$ebnf$1", { "literal": "]" }], "postprocess": ([t12, , r, , , t22]) => ArrayTerm3(r, Merge2(Token2(t12).span, Token2(t22).span)) },
+          { "name": "array_term_elements$ebnf$1", "symbols": [] },
+          { "name": "array_term_elements$ebnf$1", "symbols": ["array_term_elements$ebnf$1", "array_term_elements_tail"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
           } },
-          { "name": "tmif", "symbols": [{ "literal": "if" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "term", "_", "tmif$ebnf$1"], "postprocess": (r) => TmIf2(r[4], r[8], r[10]) },
-          { "name": "branch$ebnf$1", "symbols": ["branch"], "postprocess": id },
-          { "name": "branch$ebnf$1", "symbols": [], "postprocess": function(d) {
-            return null;
+          { "name": "array_term_elements", "symbols": ["term", "array_term_elements$ebnf$1"], "postprocess": ([t, ts]) => [t, ...ts] },
+          { "name": "array_term_elements_tail", "symbols": ["_", { "literal": "," }, "_", "term"], "postprocess": ([, , , t]) => t },
+          { "name": "object_term", "symbols": [{ "literal": "{" }, "_", { "literal": "}" }], "postprocess": () => ObjectTerm3({}, Merge2(Token2(t1).span, Token2(t2).span)) },
+          { "name": "object_term$ebnf$1", "symbols": [] },
+          { "name": "object_term$ebnf$1$subexpression$1", "symbols": [{ "literal": "," }, "_"] },
+          { "name": "object_term$ebnf$1", "symbols": ["object_term$ebnf$1", "object_term$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
           } },
-          { "name": "branch", "symbols": [{ "literal": "elif" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "term", "_", "branch$ebnf$1"], "postprocess": (r) => ElifBranch2(r[4], r[8], r[10]) },
-          { "name": "branch", "symbols": [{ "literal": "else" }, "_", "term"], "postprocess": (r) => ElseBranch2(r[2]) },
-          { "name": "statement", "symbols": ["sassign"], "postprocess": id },
-          { "name": "statement", "symbols": ["scall"], "postprocess": id },
-          { "name": "statement", "symbols": ["sreturn"], "postprocess": id },
+          { "name": "object_term", "symbols": [{ "literal": "{" }, "_", "object_term_entries", "_", "object_term$ebnf$1", { "literal": "}" }], "postprocess": ([t12, , es, , , t22]) => ObjectTerm3(Object.fromEntries(es), Merge2(Token2(t12).span, Token2(t22).span)) },
+          { "name": "object_term_entries$ebnf$1", "symbols": [] },
+          { "name": "object_term_entries$ebnf$1", "symbols": ["object_term_entries$ebnf$1", "object_term_entries_tail"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
+          } },
+          { "name": "object_term_entries", "symbols": ["object_term_entry", "object_term_entries$ebnf$1"], "postprocess": ([e, es]) => [e, ...es] },
+          { "name": "object_term_entries_tail", "symbols": ["_", { "literal": "," }, "_", "object_term_entry"], "postprocess": ([, , , e]) => e },
+          { "name": "object_term_entry", "symbols": ["identifier_token", "_", { "literal": ":" }, "_", "term"], "postprocess": ([k, , , , t]) => [k.text, t] },
+          { "name": "member_access_term", "symbols": ["bterm", "_", { "literal": "." }, "_", "identifier_token"], "postprocess": (d) => MemberAccessTerm3(d[0], d[4]) },
+          { "name": "index_access_term", "symbols": ["bterm", "_", { "literal": "[" }, "_", "bterm", "_", { "literal": "]" }], "postprocess": ([a, , , , i, , t]) => IndexAccessTerm3(a, i, Merge2(a.ann.span, Token2(t).span)) },
+          { "name": "let_term$ebnf$1", "symbols": [] },
+          { "name": "let_term$ebnf$1$subexpression$1", "symbols": [{ "literal": ";" }, "_"] },
+          { "name": "let_term$ebnf$1", "symbols": ["let_term$ebnf$1", "let_term$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
+          } },
+          { "name": "let_term", "symbols": [{ "literal": "let" }, "_", "let_declarations", "_", "let_term$ebnf$1", { "literal": "in" }, "_", "term"], "postprocess": ([t12, , ds, , , , , body]) => LetTerm3(ds, body, Merge2(Token2(t12).span, body.ann.span)) },
+          { "name": "let_declarations$ebnf$1", "symbols": [] },
+          { "name": "let_declarations$ebnf$1", "symbols": ["let_declarations$ebnf$1", "let_declarations_tail"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
+          } },
+          { "name": "let_declarations", "symbols": ["declaration", "let_declarations$ebnf$1"], "postprocess": ([d, ds]) => [d, ...ds] },
+          { "name": "let_declarations_tail", "symbols": ["_", { "literal": ";" }, "_", "declaration"], "postprocess": ([, , , d]) => d },
+          { "name": "declaration", "symbols": ["variable_declaration"], "postprocess": id },
+          { "name": "variable_declaration", "symbols": ["identifier_token", "_", { "literal": "=" }, "_", "term"], "postprocess": ([v, , , , body]) => VariableDeclaration3(v, body) },
+          { "name": "do_term", "symbols": [{ "literal": "do" }, "_", "block_statement"], "postprocess": ([t12, , block]) => DoTerm3(block, Merge2(Token2(t12).span, block.ann.span)) },
+          { "name": "conditional_term", "symbols": [{ "literal": "if" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "term", "_", "branch_term"], "postprocess": ([t12, , , , condition, , , , body, , branch]) => ConditionalTerm3(condition, body, branch, Merge2(Token2(t12).span, branch.ann.span)) },
+          { "name": "branch_term", "symbols": [{ "literal": "elif" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "term", "_", "branch_term"], "postprocess": ([t12, , , , condition, , , , body, , branch]) => ElifTerm3(condition, body, branch, Merge2(Token2(t12).span, branch.ann.span)) },
+          { "name": "branch_term", "symbols": [{ "literal": "else" }, "_", "term"], "postprocess": ([t, , body]) => ElseTerm3(body, Merge2(Token2(t).span, body.ann.span)) },
+          { "name": "statement", "symbols": ["assignment_statement"], "postprocess": id },
+          { "name": "statement", "symbols": ["call_statement"], "postprocess": id },
+          { "name": "statement", "symbols": ["return_statement"], "postprocess": id },
           { "name": "statement", "symbols": ["block_statement"], "postprocess": id },
-          { "name": "statement", "symbols": ["sif"], "postprocess": id },
-          { "name": "statement", "symbols": ["swhile"], "postprocess": id },
-          { "name": "statement", "symbols": ["sdowhile"], "postprocess": id },
-          { "name": "statement", "symbols": ["sfor"], "postprocess": id },
-          { "name": "sassign", "symbols": ["id", "_", { "literal": "=" }, "_", "term"], "postprocess": (d) => AssignmentStatement2(d[0], d[4]) },
-          { "name": "scall$ebnf$1", "symbols": [{ "literal": "," }], "postprocess": id },
-          { "name": "scall$ebnf$1", "symbols": [], "postprocess": function(d) {
-            return null;
+          { "name": "statement", "symbols": ["if_statement"], "postprocess": id },
+          { "name": "statement", "symbols": ["while_statement"], "postprocess": id },
+          { "name": "statement", "symbols": ["do_while_statement"], "postprocess": id },
+          { "name": "statement", "symbols": ["for_statement"], "postprocess": id },
+          { "name": "assignment_statement", "symbols": ["identifier_token", "_", { "literal": "=" }, "_", "term"], "postprocess": ([lhs, , , , rhs]) => AssignmentStatement3(lhs, rhs) },
+          { "name": "call_statement$ebnf$1", "symbols": [] },
+          { "name": "call_statement$ebnf$1$subexpression$1", "symbols": [{ "literal": "," }, "_"] },
+          { "name": "call_statement$ebnf$1", "symbols": ["call_statement$ebnf$1", "call_statement$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
           } },
-          { "name": "scall", "symbols": ["aterm", "_", { "literal": "(" }, "_", "call_args", "_", "scall$ebnf$1", "_", { "literal": ")" }], "postprocess": (d) => CallStatement2(d[0], d[4]) },
-          { "name": "sreturn", "symbols": [{ "literal": "return" }, "_", "term"], "postprocess": ([, , t]) => ReturnStatement2(t) },
+          { "name": "call_statement", "symbols": ["aterm", "_", { "literal": "(" }, "_", "call_arguments", "_", "call_statement$ebnf$1", { "literal": ")" }], "postprocess": ([f, , , , args, , , t]) => CallStatement3(f, args, Merge2(f.ann.span, Token2(t).span)) },
+          { "name": "return_statement", "symbols": [{ "literal": "return" }, "_", "term"], "postprocess": ([t, , result]) => ReturnStatement3(result, Merge2(Token2(t).span, result.ann.span)) },
           { "name": "block_statement$ebnf$1", "symbols": ["statement_list"], "postprocess": id },
           { "name": "block_statement$ebnf$1", "symbols": [], "postprocess": function(d) {
             return null;
           } },
-          { "name": "block_statement$ebnf$2", "symbols": [{ "literal": ";" }], "postprocess": id },
-          { "name": "block_statement$ebnf$2", "symbols": [], "postprocess": function(d) {
+          { "name": "block_statement$ebnf$2", "symbols": [] },
+          { "name": "block_statement$ebnf$2$subexpression$1", "symbols": [{ "literal": ";" }, "_"] },
+          { "name": "block_statement$ebnf$2", "symbols": ["block_statement$ebnf$2", "block_statement$ebnf$2$subexpression$1"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
+          } },
+          { "name": "block_statement", "symbols": [{ "literal": "{" }, "_", "block_statement$ebnf$1", "_", "block_statement$ebnf$2", { "literal": "}" }], "postprocess": ([t12, , s, , , t22]) => BlockStatement3(s, Merge2(Token2(t12).span, Token2(t22).span)) },
+          { "name": "statement_list$ebnf$1", "symbols": [] },
+          { "name": "statement_list$ebnf$1", "symbols": ["statement_list$ebnf$1", "statement_list_tail"], "postprocess": function arrpush(d) {
+            return d[0].concat([d[1]]);
+          } },
+          { "name": "statement_list", "symbols": ["statement", "statement_list$ebnf$1"], "postprocess": ([stmt, stmts]) => [stmt, ...stmts] },
+          { "name": "statement_list_tail", "symbols": ["_", { "literal": ";" }, "_", "statement"], "postprocess": ([, , , s]) => s },
+          { "name": "if_statement$ebnf$1", "symbols": ["branch_statement"], "postprocess": id },
+          { "name": "if_statement$ebnf$1", "symbols": [], "postprocess": function(d) {
             return null;
           } },
-          { "name": "block_statement", "symbols": [{ "literal": "{" }, "_", "block_statement$ebnf$1", "_", "block_statement$ebnf$2", "_", { "literal": "}" }], "postprocess": (r) => BlockStatement2(r[2]) },
-          { "name": "statement_list", "symbols": ["statement"], "postprocess": ([t]) => [t] },
-          { "name": "statement_list", "symbols": ["statement_list", "_", { "literal": ";" }, "_", "statement"], "postprocess": ([blk, , , , t]) => [...blk, t] },
-          { "name": "sif$ebnf$1", "symbols": ["sbranch"], "postprocess": id },
-          { "name": "sif$ebnf$1", "symbols": [], "postprocess": function(d) {
+          { "name": "if_statement", "symbols": [{ "literal": "if" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "statement", "_", "if_statement$ebnf$1"], "postprocess": (r) => IfStatement3(r[4], r[8], r[10], Merge2(Token2(r[0]).span, r[10] ? r[10].ann.span : r[8].ann.span)) },
+          { "name": "branch_statement$ebnf$1", "symbols": ["branch_statement"], "postprocess": id },
+          { "name": "branch_statement$ebnf$1", "symbols": [], "postprocess": function(d) {
             return null;
           } },
-          { "name": "sif", "symbols": [{ "literal": "if" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "statement", "_", "sif$ebnf$1"], "postprocess": (r) => TmIf2(r[4], r[8], r[10]) },
-          { "name": "sbranch$ebnf$1", "symbols": ["sbranch"], "postprocess": id },
-          { "name": "sbranch$ebnf$1", "symbols": [], "postprocess": function(d) {
-            return null;
-          } },
-          { "name": "sbranch", "symbols": [{ "literal": "elif" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "statement", "_", "sbranch$ebnf$1"], "postprocess": (r) => ElifStatement2(r[4], r[8], r[10]) },
-          { "name": "sbranch", "symbols": [{ "literal": "else" }, "_", "term"], "postprocess": (r) => ElseStatement2(r[2]) },
-          { "name": "swhile", "symbols": [{ "literal": "while" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "statement"], "postprocess": (r) => WhileStatement2(r[4], r[8]) },
-          { "name": "sdowhile", "symbols": [{ "literal": "do" }, "_", "statement", "_", { "literal": "while" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }], "postprocess": (r) => DoWhileStatement2(r[2], r[8]) },
-          { "name": "sfor", "symbols": [{ "literal": "for" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ";" }, "_", "term", "_", { "literal": ";" }, "_", "term", "_", { "literal": ")" }, "_", "statement"], "postprocess": (r) => ForStatement2(r[4], r[8], r[12], r[16]) }
+          { "name": "branch_statement", "symbols": [{ "literal": "elif" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "statement", "_", "branch_statement$ebnf$1"], "postprocess": (r) => ElifStatement3(r[4], r[8], r[10], Merge2(Token2(r[0]).span, r[10] ? r[10].ann.span : r[8].ann.span)) },
+          { "name": "branch_statement", "symbols": [{ "literal": "else" }, "_", "term"], "postprocess": (r) => ElseStatement3(r[2], Merge2(Token2(r[0]).span, r[2].ann.span)) },
+          { "name": "while_statement", "symbols": [{ "literal": "while" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }, "_", "statement"], "postprocess": (r) => WhileStatement3(r[4], r[8], Merge2(Token2(r[0]).span, r[8].ann.span)) },
+          { "name": "do_while_statement", "symbols": [{ "literal": "do" }, "_", "statement", "_", { "literal": "while" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ")" }], "postprocess": (r) => DoWhileStatement3(r[2], r[8], Merge2(Token2(r[0]).span, Token2(r[10]).span)) },
+          { "name": "for_statement", "symbols": [{ "literal": "for" }, "_", { "literal": "(" }, "_", "term", "_", { "literal": ";" }, "_", "term", "_", { "literal": ";" }, "_", "term", "_", { "literal": ")" }, "_", "statement"], "postprocess": (r) => ForStatement3(r[4], r[8], r[12], r[16], Merge2(Token2(r[0]).span, r[16].ann.span)) }
         ],
         ParserStart: "main"
       };

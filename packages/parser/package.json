@@ -37,7 +37,7 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
-    "@coolscript/syntax": "^0.0.7",
+    "@coolscript/syntax-concrete": "^0.0.0",
     "@types/moo": "^0.5.5",
     "@types/nearley": "^2.11.2",
     "esbuild-plugin-nearley": "^1.0.3",

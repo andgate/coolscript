@@ -1,28 +1,28 @@
 @{%
 const moo = require("moo");
+const { Token, Span, Merge } = require("@coolscript/syntax-concrete");
 const {
-  VNull,
-  VNumber,
-  VString,
-  VBool,
-  TermBlock,
-  TmValue,
-  TmVar,
-  TmAssign,
-  TmLam,
-  TmReturn,
-  TmCall,
-  TmLet,
-  Binding,
-  TmParens,
-  TmArray,
-  TmObject,
-  TmGet,
-  TmGetI,
-  TmDo,
-  TmIf,
-  ElifBranch,
-  ElseBranch,
+  NullValue,
+  NumberValue,
+  StringValue,
+  TrueValue,
+  FalseValue,
+  ValueTerm,
+  VariableTerm,
+  AssignmentTerm,
+  LambdaTerm,
+  CallTerm,
+  LetTerm,
+  VariableDeclaration,
+  ParentheticalTerm,
+  ArrayTerm,
+  ObjectTerm,
+  MemberAccessTerm,
+  IndexAccessTerm,
+  DoTerm,
+  ConditionalTerm,
+  ElifTerm,
+  ElseTerm,
   AssignmentStatement,
   CallStatement,
   ReturnStatement,
@@ -33,8 +33,8 @@ const {
   ElseStatement,
   WhileStatement,
   DoWhileStatement,
-  ForStatement,
-} = require("@coolscript/syntax");
+  ForStatement
+} = require("@coolscript/syntax-concrete");
 
 const lexer = moo.compile({
   ws:         /[ \t\v\f]+/,
@@ -49,7 +49,8 @@ const lexer = moo.compile({
     "true", "false",
     "error", "let", "in", 
     "do", "if", "else", "elif", "while", "for",
-    ".", "+", "-",
+    ".", "+", "-", "*", "/", "++", "--",
+    "&&", "||", "==", "!=",
     "(", ")", "[", "]",
     "{", "}", ";", ":", ",",
     "=", "=>",
@@ -70,207 +71,226 @@ _ ->
   | _ %comment _ {% null %}
   | _ %newline _ {% null %}
 
-id -> %identifier {% ([i]) => i.value %}
-varid -> id {% id %}
+identifier_token -> %identifier {% ([i]) => Token(i) %}
 
-sign ->
-    "+" {% () =>  1 %}
-  | "-" {% () => -1 %}
+null_token -> "null" {% ([t]) => Token(t) %}
 
-number ->
+number_token ->
     %number            
-      {% ([n]) => n.value %}
+      {% ([t]) => Token(t) %}
   | %number "." %number
-      {% ([n1, ,n2]) => `${n1.value}.${n2.value}` %}
+      {% ([t1, t2, t3]) => Token(t1, t2, t3) %}
 
-string ->
-    %sqstring {% ([t]) => t.value %}
-  | %dqstring {% ([t]) => t.value %}
+string_token ->
+    %sqstring {% ([t]) => Token(t) %}
+  | %dqstring {% ([t]) => Token(t) %}
 
-bool ->
-    "true"  {% () => true %}
-  | "false" {% () => false %}
+true_token ->
+    "true"  {% ([t]) => Token(t) %}
+
+false_token ->
+    "false" {% ([t]) => Token(t) %}
 
 # Values
 value ->
-    vnull   {% id %}
-  | vnumber {% id %}
-  | vbool   {% id %}
-  | vstring {% id %}
+    null_value   {% id %}
+  | number_value {% id %}
+  | boolean_value {% id %}
+  | string_value {% id %}
 
-vnull   -> "null" {% _ => VNull %}
-vnumber -> number {% ([n]) => VNumber(n) %}
-vstring -> string {% ([s]) => VString(s.slice(1,-1)) %}
-vbool   -> bool   {% ([b]) => VBool(b) %}
+null_value   -> null_token {% ([t]) => NullValue(t) %}
+number_value -> number_token {% ([t]) => NumberValue(t) %}
+
+string_value -> string_token {% ([t]) => StringValue(t) %}
+
+boolean_value ->
+    true_token  {% ([t]) => TrueValue(t) %}
+  | false_token {% ([t]) => FalseValue(t) %}
 
 # Terms
 term  -> cterm {% id %}
 
 cterm ->
-    tmlet   {% id %}
-  | tmlam   {% id %}
-  | tmdo    {% id %}
-  | tmif    {% id %}
-  | tmassign {% id %}
-  | bterm   {% id %}
+    let_term            {% id %}
+  | lambda_term         {% id %}
+  | do_term             {% id %}
+  | conditional_term    {% id %}
+  | assignment_term     {% id %}
+  | bterm               {% id %}
 
 bterm ->
-    tmcall   {% id %}
-  | tmget    {% id %}
-  | tmgeti   {% id %}
-  | aterm    {% id %}
+    call_term           {% id %}
+  | member_access_term  {% id %}
+  | index_access_term   {% id %}
+  | aterm               {% id %}
 
 aterm -> 
-    tmvalue  {% id %}
-  | tmvar    {% id %}
-  | tmparens {% id %}
-  | tmarray  {% id %}
-  | tmobject {% id %}
+    value_term          {% id %}
+  | variable_term       {% id %}
+  | array_term          {% id %}
+  | object_term         {% id %}
+  | parenthetical_term  {% id %}
 
-tmvalue -> value {% ([v]) => TmValue(v) %}
+value_term -> value {% ([v]) => ValueTerm(v) %}
 
-tmvar -> id {% ([n]) => TmVar(n) %}
+variable_term -> identifier_token {% ([t]) => VariableTerm(t) %}
 
-tmassign ->
-    varid _ "=" _ term
-      {% ([v,,,,t]) => TmAssign(v, t) %}
+assignment_term ->
+    identifier_token _ "=" _ term
+      {% ([v,,,,t]) => AssignmentTerm(v, t) %}
 
-tmlam ->
-    "(" _ lam_args _ ",":? _ ")" _ "=>" _ term
-      {% ([,,vs,,,,,,,,t]) => TmLam(vs, t) %}
+lambda_term ->
+    "(" _ lambda_arguments _ ("," _):* ")" _ "=>" _ term
+      {% ([t1,,args,,,,,,,body]) => LambdaTerm(args, body, Merge(Token(t1).span, body.ann.span)) %}
 
-lam_args ->
-    varid
-      {% ([v]) => [v] %}
-  | lam_args _ "," _ varid
-      {% ([vs,,,,v]) => [...vs, v] %}
+lambda_arguments ->
+    identifier_token lambda_arguments_tail:*
+      {% ([v, vs]) => [v.text, ...vs] %}
 
-tmcall ->
-    bterm _ "(" _ call_args _ ",":? _ ")"
-      {% (d) => TmCall(d[0], d[4]) %}
+lambda_arguments_tail ->
+    _ "," _ identifier_token
+      {% ([,,,v]) => v.text %}
 
-call_args ->
-    bterm 
-      {% ([t]) => [t] %}
-  | call_args _ "," _ bterm
-      {% ([ts,,,,t]) => [...ts, t] %}
+call_term ->
+    bterm _ "(" _ call_arguments _ ("," _):* ")"
+      {% (d) => CallTerm(d[0], d[4], Merge(d[0].ann.span, Token(d[7]).span)) %}
 
-tmparens ->
+call_arguments ->
+    bterm call_arguments_tail:*
+      {% ([t, ts]) => [t, ...ts] %}
+
+call_arguments_tail ->
+    _ "," _ bterm
+      {% ([,,,t]) => t %}
+
+parenthetical_term ->
   "(" _ term _ ")"
-    {% ([,,t,,]) => TmParens(t) %}
+    {% ([t1,,term,,t2]) => ParentheticalTerm(term, Merge(Token(t1).span, Token(t2).span)) %}
 
-tmarray ->
+array_term ->
     "[" _ "]"
-      {% () => TmArray() %}
-  | "[" _ tmarray_list _ ",":? _  "]"
-      {% (r) => TmArray(r[2]) %}
+      {% ([t1,,t2]) => ArrayTerm([], Merge(Token(t1).span, Token(t2).span)) %}
+  | "[" _ array_term_elements _ ("," _):*  "]"
+      {% ([t1,,r,,,t2]) => ArrayTerm(r, Merge(Token(t1).span, Token(t2).span)) %}
 
-tmarray_list ->
-    term
-      {% ([e]) => [e] %}
-  | tmarray_list _ "," _ term
-      {% (r) => [...r[0], r[4]] %}
+array_term_elements ->
+    term array_term_elements_tail:*
+      {% ([t,ts]) => [t, ...ts] %}
 
-tmobject ->
+array_term_elements_tail -> 
+    _ "," _ term
+      {% ([,,,t]) => t %}
+
+object_term ->
     "{" _ "}"
-      {% () => TmObject() %}
-  | "{" _ tmobject_entries _ ",":? _ "}"
-      {% (r) => TmObject(Object.fromEntries(r[2])) %}
+      {% () => ObjectTerm({}, Merge(Token(t1).span, Token(t2).span)) %}
+  | "{" _ object_term_entries _ ("," _):* "}"
+      {% ([t1,,es,,,t2]) => ObjectTerm(Object.fromEntries(es), Merge(Token(t1).span, Token(t2).span)) %}
 
-tmobject_entries ->
-    tmobject_entry
-      {% ([e]) => [e] %}
-  | tmobject_entries _ "," _ tmobject_entry
-      {% ([es,,,,e]) => [...es, e] %}
+object_term_entries ->
+    object_term_entry object_term_entries_tail:*
+      {% ([e, es]) => [e, ...es] %}
 
-tmobject_entry ->
-    id _ ":" _ term {% ([k,,,,v]) => [k, v] %}
+object_term_entries_tail ->
+    _ "," _ object_term_entry
+      {% ([,,,e]) => e %}
 
-tmget ->
-    bterm _ "." _ id
-      {% (d) => TmGet(d[0], d[4]) %}
+object_term_entry ->
+    identifier_token _ ":" _ term {% ([k,,,,t]) => [k.text, t] %}
 
-tmgeti ->
+member_access_term ->
+    bterm _ "." _ identifier_token
+      {% (d) => MemberAccessTerm(d[0], d[4]) %}
+
+index_access_term ->
     bterm _ "[" _ bterm _ "]"
-      {% (d) => TmGetI(d[0], d[4]) %}
+      {% ([a,,,,i,,t]) => IndexAccessTerm(a, i, Merge(a.ann.span, Token(t).span)) %}
 
-tmlet ->
-    "let" _ let_binding_list _ ";":? _ "in" _ term
-      {% ([,,bs,,,,,,t]) => TmLet(bs, t) %}
+let_term ->
+    "let" _ let_declarations _ (";" _):* "in" _ term
+      {% ([t1,,ds,,,,,body]) => LetTerm(ds, body, Merge(Token(t1).span, body.ann.span)) %}
 
-let_binding_list ->
-    let_binding
-      {% ([b]) => [b] %}
-  | let_binding_list _ ";" _ let_binding
-      {% ([bs,,,,b]) => [...bs, b] %}
+let_declarations ->
+    declaration let_declarations_tail:*
+      {% ([d, ds]) => [d, ...ds] %}
 
-let_binding ->
-    varid _ "=" _ term
-      {% ([v,,,,t]) => Binding(v, t) %}
+let_declarations_tail ->
+    _ ";" _ declaration
+      {% ([,,,d]) => d %}
 
-tmdo ->
-  "do" _ block_statement
-    {% (r) => TmDo(r[2]) %}
+declaration ->
+    variable_declaration {% id %}
 
-tmif ->
-  "if" _ "(" _ term _ ")" _ term _ branch:?
-    {% (r) => TmIf(r[4], r[8], r[10]) %}
+variable_declaration ->
+    identifier_token _ "=" _ term
+      {% ([v,,,,body]) => VariableDeclaration(v, body) %}
 
-branch ->
-    "elif" _ "(" _ term _ ")" _ term _ branch:?
-    {% (r) => ElifBranch(r[4], r[8], r[10]) %}
+do_term ->
+    "do" _ block_statement
+      {% ([t1,,block]) => DoTerm(block, Merge(Token(t1).span, block.ann.span)) %}
+
+conditional_term ->
+    "if" _ "(" _ term _ ")" _ term _ branch_term
+      {% ([t1,,,,condition,,,,body,,branch]) => ConditionalTerm(condition, body, branch, Merge(Token(t1).span, branch.ann.span)) %}
+
+branch_term ->
+    "elif" _ "(" _ term _ ")" _ term _ branch_term
+      {% ([t1,,,,condition,,,,body,,branch]) => ElifTerm(condition, body, branch, Merge(Token(t1).span, branch.ann.span)) %}
   | "else" _ term
-    {% (r) => ElseBranch(r[2]) %}
+      {% ([t,,body]) => ElseTerm(body, Merge(Token(t).span, body.ann.span)) %}
 
 statement ->
-    sassign {% id %}
-  | scall   {% id %}
-  | sreturn {% id %}
-  | block_statement  {% id %}
-  | sif {% id %}
-  | swhile {% id %}
-  | sdowhile {% id %}
-  | sfor {% id %}
+    assignment_statement  {% id %}
+  | call_statement        {% id %}
+  | return_statement      {% id %}
+  | block_statement       {% id %}
+  | if_statement          {% id %}
+  | while_statement       {% id %}
+  | do_while_statement    {% id %}
+  | for_statement         {% id %}
 
-sassign ->
-    id _ "=" _ term {% (d) => AssignmentStatement(d[0], d[4]) %}
+assignment_statement ->
+    identifier_token _ "=" _ term
+      {% ([lhs,,,,rhs]) => AssignmentStatement(lhs, rhs) %}
 
-scall ->
-    aterm _ "(" _ call_args _ ",":? _ ")"
-      {% (d) => CallStatement(d[0], d[4]) %}
+call_statement ->
+    aterm _ "(" _ call_arguments _ ("," _):* ")"
+      {% ([f,,,,args,,,t]) => CallStatement(f, args, Merge(f.ann.span, Token(t).span)) %}
 
-sreturn ->
+return_statement ->
     "return" _ term
-      {% ([,,t]) => ReturnStatement(t) %}
+      {% ([t,,result]) => ReturnStatement(result, Merge(Token(t).span, result.ann.span)) %}
 
 block_statement ->
-    "{" _ statement_list:? _ ";":? _ "}"
-      {% (r) => BlockStatement(r[2]) %}
+    "{" _ statement_list:? _ (";" _):* "}"
+      {% ([t1,,s,,,t2]) => BlockStatement(s, Merge(Token(t1).span, Token(t2).span)) %}
   
 statement_list -> 
-    statement
-      {% ([t]) => [t] %}
-  | statement_list _ ";" _ statement
-      {% ([blk,,,,t]) => [...blk, t] %}
+    statement statement_list_tail:*
+      {% ([stmt, stmts]) => [stmt, ...stmts] %}
 
-sif ->
-  "if" _ "(" _ term _ ")" _ statement _ sbranch:?
-    {% (r) => TmIf(r[4], r[8], r[10]) %}
+statement_list_tail ->
+    _ ";" _ statement
+      {% ([,,,s]) => s %}
 
-sbranch ->
-    "elif" _ "(" _ term _ ")" _ statement _ sbranch:?
-    {% (r) => ElifStatement(r[4], r[8], r[10]) %}
+if_statement ->
+    "if" _ "(" _ term _ ")" _ statement _ branch_statement:?
+      {% (r) => IfStatement(r[4], r[8], r[10], Merge(Token(r[0]).span, r[10] ? r[10].ann.span : r[8].ann.span)) %}
+
+branch_statement ->
+    "elif" _ "(" _ term _ ")" _ statement _ branch_statement:?
+    {% (r) => ElifStatement(r[4], r[8], r[10], Merge(Token(r[0]).span, r[10] ? r[10].ann.span : r[8].ann.span)) %}
   | "else" _ term
-    {% (r) => ElseStatement(r[2]) %}
+    {% (r) => ElseStatement(r[2], Merge(Token(r[0]).span, r[2].ann.span)) %}
 
-swhile ->
+while_statement ->
   "while" _ "(" _ term _ ")" _ statement
-    {% (r) => WhileStatement(r[4], r[8]) %}
+    {% (r) => WhileStatement(r[4], r[8], Merge(Token(r[0]).span, r[8].ann.span)) %}
 
-sdowhile ->
+do_while_statement ->
    "do" _ statement _ "while" _ "(" _ term _ ")"
-    {% (r) => DoWhileStatement(r[2], r[8]) %}
+    {% (r) => DoWhileStatement(r[2], r[8], Merge(Token(r[0]).span, Token(r[10]).span)) %}
 
-sfor ->
+for_statement ->
   "for" _ "(" _ term _ ";" _ term _ ";" _ term _ ")" _ statement
-    {% (r) => ForStatement(r[4], r[8], r[12], r[16]) %}
+    {% (r) => ForStatement(r[4], r[8], r[12], r[16], Merge(Token(r[0]).span, r[16].ann.span)) %}

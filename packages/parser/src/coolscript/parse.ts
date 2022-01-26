@@ -1,5 +1,5 @@
 import * as nearley from 'nearley'
-import { Term } from '@coolscript/syntax'
+import { Term } from '@coolscript/syntax-concrete'
 import { coolscriptGrammar } from './grammar'
 
 export function parse(src: string): Term | null {

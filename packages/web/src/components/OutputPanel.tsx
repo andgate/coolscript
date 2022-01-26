@@ -123,14 +123,24 @@ export function OutputPanel() {
     () => parse(editorState.textContent),
     [editorState]
   )
-  const evalResult = useMemo<Value | null>(
-    () => (parseResult ? evaluate(parseResult) : null),
-    [parseResult]
-  )
-  const jsGenResult = useMemo<string | null>(
-    () => (parseResult ? generateJS(parseResult) : null),
-    [parseResult]
-  )
+  const evalResult = useMemo<Value | null>(() => {
+    if (!parseResult) return null
+    try {
+      return evaluate(parseResult)
+    } catch (e) {
+      console.error(e)
+      return null
+    }
+  }, [parseResult])
+  const jsGenResult = useMemo<string | null>(() => {
+    if (!parseResult) return null
+    try {
+      return generateJS(parseResult)
+    } catch (e) {
+      console.error(e)
+      return null
+    }
+  }, [parseResult])
   const jsEvalResult = useMemo<any | null>(() => {
     if (!jsGenResult) {
       return null

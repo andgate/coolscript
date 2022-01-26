@@ -3,12 +3,13 @@ let
   id = (x) => x;
   constant = (a, b) => a;
   createFoo = (x) => {
-    name: "Foo",
+    name: ["F", "o", "o", "b", "a", "r"],
     value: x
   };
   bar = 999;
 in do {
   baz = id(bar);
-  constant(bar, baz);
-  return createFoo(baz);
+  constant(baz, bar);
+  clientName = createFoo(baz).name;
+  return clientName;
 }

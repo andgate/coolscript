@@ -1,4 +1,4 @@
-import type { Term } from '@coolscript/syntax'
+import type { Term } from '@coolscript/syntax-concrete'
 import * as astring from 'astring'
 import type * as ES from 'estree'
 import { ScriptBuilder } from './ScriptBuilder'

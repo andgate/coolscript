@@ -1,464 +1,496 @@
-export type Var = string
+export type Variable = string
 
-export type ObjectF<T> = { [key: string]: T }
+export type Property<A> = {
+  tag: 'Property'
+  id: string
+  ann: A
+}
 
-// Values
-export type Value = AValue | VLam | VArray | VObject | VError
+export type ObjectMap<T> = { [key: string]: T }
 
 // Atomic Values
-export type AValue = VNull | VNumber | VString | VBool
+export type AtomicValue<A> =
+  | NullValue<A>
+  | NumberValue<A>
+  | StringValue<A>
+  | BooleanValue<A>
 
 // null value
-export type VNull = {
-  tag: 'VNull'
+export type NullValue<A> = {
+  tag: 'NullValue'
+  ann: A
 }
 
-export const VNull: VNull = { tag: 'VNull' }
+export function NullValue<A>(ann: A): NullValue<A> {
+  return { tag: 'NullValue', ann }
+}
 
 // Integer, double, etc.
-export type VNumber = {
-  tag: 'VNumber'
+export type NumberValue<A> = {
+  tag: 'NumberValue'
   num: number
+  ann: A
 }
 
-export function VNumber(num: number): VNumber {
-  return { tag: 'VNumber', num }
+export function NumberValue<A>(num: number, ann: A): NumberValue<A> {
+  return { tag: 'NumberValue', num, ann }
 }
 
 // Single, double, and quasi-quoted
-export type VString = {
-  tag: 'VString'
+export type StringValue<A> = {
+  tag: 'StringValue'
   str: string
+  ann: A
 }
 
-export function VString(str: string): VString {
-  return { tag: 'VString', str }
+export function StringValue<A>(str: string, ann: A): StringValue<A> {
+  return { tag: 'StringValue', str, ann }
 }
 
 // true, false (reserved words)
-export type VBool = {
-  tag: 'VBool'
+export type BooleanValue<A> = {
+  tag: 'BooleanValue'
   bool: boolean
+  ann: A
 }
 
-export function VBool(bool: boolean): VBool {
-  return { tag: 'VBool', bool }
+export function BooleanValue<A>(bool: boolean, ann: A): BooleanValue<A> {
+  return { tag: 'BooleanValue', bool, ann }
 }
 
-export type VLam = {
-  tag: 'VLam'
-  args: Var[]
-  body: Term
-}
+export type Term<A> =
+  | ErrorTerm<A>
+  | ValueTerm<A>
+  | VariableTerm<A>
+  | AssignmentTerm<A>
+  | LambdaTerm<A>
+  | CallTerm<A>
+  | ParentheticalTerm<A>
+  | ArrayTerm<A>
+  | ObjectTerm<A>
+  | MemberAccessTerm<A>
+  | IndexAccessTerm<A>
+  | LetTerm<A>
+  | DoTerm<A>
+  | ConditionalTerm<A>
 
-export function VLam(args: Var[], body: Term): VLam {
-  return { tag: 'VLam', args, body }
-}
-
-// [ x1, x2, ..., xn ]
-export type VArray = {
-  tag: 'VArray'
-  elements: Value[]
-}
-
-export function VArray(elements: Value[]): VArray {
-  return { tag: 'VArray', elements }
-}
-
-// { key1: value, key2: value, ...etc }
-export type VObject = {
-  tag: 'VObject'
-  obj: ObjectF<Value>
-}
-
-export function VObject(obj: ObjectF<Value>): VObject {
-  return { tag: 'VObject', obj }
-}
-
-// error 'message'
-export type VError = {
-  tag: 'VError'
-  err: string
-}
-
-export function VError(err: string): Value {
-  return { tag: 'VError', err }
-}
-
-export type Term =
-  | TmError
-  | TmValue
-  | TmVar
-  | TmAssign
-  | TmLam
-  | TmCall
-  | TmParens
-  | TmArray
-  | TmObject
-  | TmGet
-  | TmGetI
-  | TmLet
-  | TmDo
-  | TmIf
-
-export type TmError = {
-  tag: 'TmError'
-  ann?: any
+export type ErrorTerm<A> = {
+  tag: 'ErrorTerm'
   msg: string
+  ann: A
 }
 
-export function TmError(msg: string, ann?: any): TmError {
-  return { tag: 'TmError', ann, msg }
+export function ErrorTerm<A>(msg: string, ann: A): ErrorTerm<A> {
+  return { tag: 'ErrorTerm', msg, ann }
 }
 
-export type TmValue = {
-  tag: 'TmValue'
-  ann?: any
-  value: AValue
+export type ValueTerm<A> = {
+  tag: 'ValueTerm'
+  value: AtomicValue<A>
+  ann: A
 }
 
-export function TmValue(value: AValue, ann?: any): TmValue {
-  return { tag: 'TmValue', ann, value }
+export function ValueTerm<A>(value: AtomicValue<A>, ann: A): ValueTerm<A> {
+  return { tag: 'ValueTerm', value, ann }
 }
 
-export type TmVar = {
-  tag: 'TmVar'
-  ann?: any
-  variable: Var
+export type VariableTerm<A> = {
+  tag: 'VariableTerm'
+  variable: Variable
+  ann: A
 }
 
-export function TmVar(variable: Var, ann?: any): TmVar {
-  return { tag: 'TmVar', ann, variable }
+export function VariableTerm<A>(variable: Variable, ann: A): VariableTerm<A> {
+  return { tag: 'VariableTerm', variable, ann }
 }
 
 // x = t
-export type TmAssign = {
-  tag: 'TmAssign'
-  ann?: any
-  lhs: string
-  rhs: Term
+export type AssignmentTerm<A> = {
+  tag: 'AssignmentTerm'
+  lhs: Variable
+  rhs: Term<A>
+  ann: A
 }
 
-export function TmAssign(lhs: string, rhs: Term, ann?: any): TmAssign {
-  return { tag: 'TmAssign', ann, lhs, rhs }
+export function AssignmentTerm<A>(
+  lhs: Variable,
+  rhs: Term<A>,
+  ann: A
+): AssignmentTerm<A> {
+  return { tag: 'AssignmentTerm', lhs, rhs, ann }
 }
 
 // (x, y) => f(x, y)
-export type TmLam = {
-  tag: 'TmLam'
-  ann?: any
-  args: Var[]
-  body: Term
+export type LambdaTerm<A> = {
+  tag: 'LambdaTerm'
+  args: Array<Variable>
+  body: Term<A>
+  ann: A
 }
 
-export function TmLam(args: Var[], body: Term, ann?: any): TmLam {
-  return { tag: 'TmLam', ann, args, body }
+export function LambdaTerm<A>(
+  args: Array<Variable>,
+  body: Term<A>,
+  ann: A
+): LambdaTerm<A> {
+  return { tag: 'LambdaTerm', args, body, ann }
 }
 
 // f(x, y)
-export type TmCall = {
-  tag: 'TmCall'
-  ann?: any
-  caller: Term
-  args: Term[]
+export type CallTerm<A> = {
+  tag: 'CallTerm'
+  func: Term<A>
+  args: Array<Term<A>>
+  ann: A
 }
 
-export function TmCall(caller: Term, args: Term[], ann?: any): TmCall {
-  return { tag: 'TmCall', ann, caller, args }
+export function CallTerm<A>(
+  func: Term<A>,
+  args: Array<Term<A>>,
+  ann: A
+): CallTerm<A> {
+  return { tag: 'CallTerm', func, args, ann }
 }
 
 // let v = x; u = y in f(v, u)
 // let v = x; u = y do { ... }
-export type TmLet = {
-  tag: 'TmLet'
-  ann?: any
-  binders: Binding[]
-  body: Term
+export type LetTerm<A> = {
+  tag: 'LetTerm'
+  declarations: Array<Declaration<A>>
+  body: Term<A>
+  ann: A
 }
 
-export function TmLet(binders: Binding[], body: Term, ann?: any): TmLet {
-  return { tag: 'TmLet', ann, binders, body }
+export function LetTerm<A>(
+  declarations: Array<Declaration<A>>,
+  body: Term<A>,
+  ann: A
+): LetTerm<A> {
+  return { tag: 'LetTerm', declarations, body, ann }
 }
 
 // v = x
 // Definition, not assignment.
-export type Binding = {
-  variable: Var
-  body: Term
+export type Declaration<A> = VariableDeclaration<A>
+
+export type VariableDeclaration<A> = {
+  tag: 'VariableDeclaration'
+  variable: Variable
+  body: Term<A>
+  ann: A
 }
 
-export function Binding(variable: Var, body: Term): Binding {
-  return { variable, body }
+export function VariableDeclaration<A>(
+  variable: Variable,
+  body: Term<A>,
+  ann: A
+): VariableDeclaration<A> {
+  return { tag: 'VariableDeclaration', variable, body, ann }
 }
 
 // (t)
-export type TmParens = {
-  tag: 'TmParens'
-  ann?: any
-  term: Term
+export type ParentheticalTerm<A> = {
+  tag: 'ParentheticalTerm'
+  term: Term<A>
+  ann: A
 }
 
-export function TmParens(term: Term, ann?: any): TmParens {
-  return { tag: 'TmParens', ann, term }
+export function ParentheticalTerm<A>(
+  term: Term<A>,
+  ann: A
+): ParentheticalTerm<A> {
+  return { tag: 'ParentheticalTerm', term, ann }
 }
 
 // [ x1, x2, ..., xn ]
-export type TmArray = {
-  tag: 'TmArray'
-  ann?: any
-  elements: Term[]
+export type ArrayTerm<A> = {
+  tag: 'ArrayTerm'
+  elements: Term<A>[]
+  ann: A
 }
 
-export function TmArray(elements: Term[] = [], ann?: any): TmArray {
-  return { tag: 'TmArray', ann, elements }
+export function ArrayTerm<A>(elements: Term<A>[], ann: A): ArrayTerm<A> {
+  return { tag: 'ArrayTerm', elements, ann }
 }
 
 // { a1: x1, a2: x2, ..., an: xn }
-export type TmObject = {
-  tag: 'TmObject'
-  ann?: any
-  obj: ObjectF<Term>
+export type ObjectTerm<A> = {
+  tag: 'ObjectTerm'
+  entries: ObjectMap<Term<A>>
+  ann: A
 }
 
-export function TmObject(obj: ObjectF<Term> = {}, ann?: any): TmObject {
-  return { tag: 'TmObject', ann, obj }
+export function ObjectTerm<A>(
+  entries: ObjectMap<Term<A>>,
+  ann: A
+): ObjectTerm<A> {
+  return { tag: 'ObjectTerm', entries, ann }
 }
 
-export type TmGet = {
-  tag: 'TmGet'
-  ann?: any
-  parent: Term
-  child: Var
+export type MemberName = string
+
+export type MemberAccessTerm<A> = {
+  tag: 'MemberAccessTerm'
+  object: Term<A>
+  member: MemberName
+  ann: A
 }
 
 // t.m
-export function TmGet(parent: Term, child: Var, ann?: any): TmGet {
+export function MemberAccessTerm<A>(
+  object: Term<A>,
+  member: Variable,
+  ann: A
+): MemberAccessTerm<A> {
   return {
-    tag: 'TmGet',
-    ann,
-    parent,
-    child
+    tag: 'MemberAccessTerm',
+    object,
+    member,
+    ann
   }
 }
 
 // t[i]
-export type TmGetI = {
-  tag: 'TmGetI'
-  ann?: any
-  parent: Term
-  index: Term
+export type IndexAccessTerm<A> = {
+  tag: 'IndexAccessTerm'
+  array: Term<A>
+  index: Term<A>
+  ann: A
 }
 
-export function TmGetI(parent: Term, index: Term, ann?: any): TmGetI {
-  return { tag: 'TmGetI', ann, parent, index }
+export function IndexAccessTerm<A>(
+  array: Term<A>,
+  index: Term<A>,
+  ann: A
+): IndexAccessTerm<A> {
+  return { tag: 'IndexAccessTerm', array, index, ann }
 }
 
 // do { s1; s2; ...; sn; }
-export type TmDo = {
-  tag: 'TmDo'
-  ann?: any
-  block: BlockStatement
+export type DoTerm<A> = {
+  tag: 'DoTerm'
+  block: BlockStatement<A>
+  ann: A
 }
 
-export function TmDo(block: BlockStatement, ann?: any): TmDo {
-  return { tag: 'TmDo', ann, block }
+export function DoTerm<A>(block: BlockStatement<A>, ann: A): DoTerm<A> {
+  return { tag: 'DoTerm', block, ann }
 }
 
 // if (p) t
 // if (p) t1 else t2
 // if (p) t1 elif t2
 // if (p) t1 elif t2 else t3
-export type TmIf = {
-  tag: 'TmIf'
-  ann?: any
-  pred: Term
-  body: Term
-  branch: Branch
+export type ConditionalTerm<A> = {
+  tag: 'ConditionalTerm'
+  condition: Term<A>
+  body: Term<A>
+  branch: BranchTerm<A>
+  ann: A
 }
 
-export function TmIf(pred: Term, body: Term, branch: Branch, ann?: any): TmIf {
-  return { tag: 'TmIf', ann, pred, body, branch }
+export function ConditionalTerm<A>(
+  condition: Term<A>,
+  body: Term<A>,
+  branch: BranchTerm<A>,
+  ann: A
+): ConditionalTerm<A> {
+  return { tag: 'ConditionalTerm', condition, body, branch, ann }
 }
 
-export type Branch = ElifBranch | ElseBranch
+export type BranchTerm<A> = ElifTerm<A> | ElseTerm<A>
 
-export type ElifBranch = {
-  tag: 'Elif'
-  pred: Term
-  body: Term
-  branch: Branch
+export type ElifTerm<A> = {
+  tag: 'ElifTerm'
+  condition: Term<A>
+  body: Term<A>
+  branch: BranchTerm<A>
+  ann: A
 }
 
-export function ElifBranch(pred: Term, body: Term, branch: Branch): ElifBranch {
-  return { tag: 'Elif', pred, body, branch }
+export function ElifTerm<A>(
+  condition: Term<A>,
+  body: Term<A>,
+  branch: BranchTerm<A>,
+  ann: A
+): ElifTerm<A> {
+  return { tag: 'ElifTerm', condition, body, branch, ann }
 }
 
-export type ElseBranch = {
-  tag: 'Else'
-  body: Term
+export type ElseTerm<A> = {
+  tag: 'ElseTerm'
+  body: Term<A>
+  ann: A
 }
 
-export function ElseBranch(body: Term): ElseBranch {
-  return { tag: 'Else', body }
+export function ElseTerm<A>(body: Term<A>, ann: A): ElseTerm<A> {
+  return { tag: 'ElseTerm', body, ann }
 }
 
-export type Statement =
-  | AssignmentStatement
-  | CallStatement
-  | ReturnStatement
-  | BlockStatement
-  | IfStatement
-  | WhileStatement
-  | DoWhileStatement
-  | ForStatement
+export type Statement<A> =
+  | AssignmentStatement<A>
+  | CallStatement<A>
+  | ReturnStatement<A>
+  | BlockStatement<A>
+  | IfStatement<A>
+  | WhileStatement<A>
+  | DoWhileStatement<A>
+  | ForStatement<A>
 
-export type AssignmentStatement = {
+export type AssignmentStatement<A> = {
   tag: 'AssignmentStatement'
-  lhs: Var
-  rhs: Term
-  ann?: any
+  lhs: Variable
+  rhs: Term<A>
+  ann: A
 }
 
-export function AssignmentStatement(
-  lhs: Var,
-  rhs: Term,
-  ann?: any
-): AssignmentStatement {
+export function AssignmentStatement<A>(
+  lhs: Variable,
+  rhs: Term<A>,
+  ann: A
+): AssignmentStatement<A> {
   return { tag: 'AssignmentStatement', lhs, rhs, ann }
 }
 
-export type CallStatement = {
+export type CallStatement<A> = {
   tag: 'CallStatement'
-  fn: Term
-  args: Array<Term>
-  ann?: any
+  func: Term<A>
+  args: Array<Term<A>>
+  ann: A
 }
 
-export function CallStatement(
-  fn: Term,
-  args: Array<Term>,
-  ann?: any
-): CallStatement {
-  return { tag: 'CallStatement', fn, args, ann }
+export function CallStatement<A>(
+  func: Term<A>,
+  args: Array<Term<A>>,
+  ann: A
+): CallStatement<A> {
+  return { tag: 'CallStatement', func, args, ann }
 }
 
-export type BlockStatement = {
-  tag: 'BlockStatement'
-  statements: Array<Statement>
-  ann?: any
-}
-
-export function BlockStatement(
-  statements: Array<Statement>,
-  ann?: any
-): BlockStatement {
-  return { tag: 'BlockStatement', statements, ann }
-}
-
-export type ReturnStatement = {
+export type ReturnStatement<A> = {
   tag: 'ReturnStatement'
-  result: Term
-  ann?: any
+  result: Term<A>
+  ann: A
 }
 
-export function ReturnStatement(result: Term, ann?: any): ReturnStatement {
+export function ReturnStatement<A>(
+  result: Term<A>,
+  ann: A
+): ReturnStatement<A> {
   return { tag: 'ReturnStatement', result, ann }
+}
+
+export type BlockStatement<A> = {
+  tag: 'BlockStatement'
+  statements: Array<Statement<A>>
+  ann: A
+}
+
+export function BlockStatement<A>(
+  statements: Array<Statement<A>>,
+  ann: A
+): BlockStatement<A> {
+  return { tag: 'BlockStatement', statements, ann }
 }
 
 // if (t) s
 // if (t) s1 else s2
 // if (t1) s1 elif (t2) s2
 // if (t1) s1 elif (t2) s2 else t3
-export type IfStatement = {
+export type IfStatement<A> = {
   tag: 'IfStatement'
-  ann?: any
-  pred: Term
-  body: Statement
-  branch?: BranchStatement
-}
-export function IfStatement(
-  pred: Term,
-  body: Statement,
-  branch?: BranchStatement,
-  ann?: any
-): IfStatement {
-  return { tag: 'IfStatement', ann, pred, body, branch }
+  condition: Term<A>
+  body: Statement<A>
+  branch?: BranchStatement<A>
+  ann: A
 }
 
-export type BranchStatement = ElifStatement | ElseStatement
+export function IfStatement<A>(
+  condition: Term<A>,
+  body: Statement<A>,
+  branch: BranchStatement<A> | null,
+  ann: A
+): IfStatement<A> {
+  return { tag: 'IfStatement', condition, body, branch, ann }
+}
 
-export type ElifStatement = {
+export type BranchStatement<A> = ElifStatement<A> | ElseStatement<A>
+
+export type ElifStatement<A> = {
   tag: 'ElifStatement'
-  pred: Term
-  body: Statement
-  branch?: BranchStatement
+  condition: Term<A>
+  body: Statement<A>
+  branch?: BranchStatement<A>
+  ann: A
 }
 
-export function ElifStatement(
-  pred: Term,
-  body: Statement,
-  branch?: BranchStatement
-): ElifStatement {
-  return { tag: 'ElifStatement', pred, body, branch }
+export function ElifStatement<A>(
+  condition: Term<A>,
+  body: Statement<A>,
+  branch: BranchStatement<A> | null,
+  ann: A
+): ElifStatement<A> {
+  return { tag: 'ElifStatement', condition, body, branch, ann }
 }
 
-export type ElseStatement = {
+export type ElseStatement<A> = {
   tag: 'ElseStatement'
-  body: Statement
+  body: Statement<A>
+  ann: A
 }
 
-export function ElseStatement(body: Statement): ElseStatement {
-  return { tag: 'ElseStatement', body }
+export function ElseStatement<A>(body: Statement<A>, ann: A): ElseStatement<A> {
+  return { tag: 'ElseStatement', body, ann }
 }
 
 // while (t) s
-export type WhileStatement = {
+export type WhileStatement<A> = {
   tag: 'WhileStatement'
-  ann?: any
-  pred: Term
-  body: Statement
+  condition: Term<A>
+  body: Statement<A>
+  ann: A
 }
 
-export function WhileStatement(
-  pred: Term,
-  body: Statement,
-  ann?: any
-): WhileStatement {
-  return { tag: 'WhileStatement', ann, pred, body }
+export function WhileStatement<A>(
+  condition: Term<A>,
+  body: Statement<A>,
+  ann: A
+): WhileStatement<A> {
+  return { tag: 'WhileStatement', condition, body, ann }
 }
 
 // while (t) s
-export type DoWhileStatement = {
+export type DoWhileStatement<A> = {
   tag: 'DoWhileStatement'
-  ann?: any
-  body: Statement
-  pred: Term
+  body: Statement<A>
+  condition: Term<A>
+  ann: A
 }
 
-export function DoWhileStatement(
-  body: Statement,
-  pred: Term,
-  ann?: any
-): DoWhileStatement {
-  return { tag: 'DoWhileStatement', ann, body, pred }
+export function DoWhileStatement<A>(
+  body: Statement<A>,
+  condition: Term<A>,
+  ann: A
+): DoWhileStatement<A> {
+  return { tag: 'DoWhileStatement', body, condition, ann }
 }
 
 // for (t1; t2; t3) s
-export type ForStatement = {
+export type ForStatement<A> = {
   tag: 'ForStatement'
-  ann?: any
-  init: Term
-  pred: Term
-  iter: Term
-  body: Statement
+  declarations: Array<VariableDeclaration<A>>
+  condition: Term<A>
+  update: Term<A>
+  body: Statement<A>
+  ann: A
 }
 
-export function ForStatement(
-  init: Term,
-  pred: Term,
-  iter: Term,
-  body: Statement,
-  ann?: any
-): ForStatement {
-  return { tag: 'ForStatement', ann, init, pred, iter, body }
+export function ForStatement<A>(
+  declarations: Array<VariableDeclaration<A>>,
+  condition: Term<A>,
+  update: Term<A>,
+  body: Statement<A>,
+  ann: A
+): ForStatement<A> {
+  return { tag: 'ForStatement', declarations, condition, update, body, ann }
 }

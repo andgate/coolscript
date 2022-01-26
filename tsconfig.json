@@ -5,10 +5,13 @@
     "paths": {
       "@coolscript/backend-js": ["backend-js/src"],
       "@coolscript/syntax": ["syntax/src"],
+      "@coolscript/syntax-concrete": ["syntax-concrete/src"],
+      "@coolscript/syntax-scoped": ["syntax-scoped/src"],
       "@coolscript/parser": ["parser/src"],
       "@coolscript/eval": ["eval/src"],
       "@coolscript/cli": ["cli/src"],
-      "coolscript": ["coolscript/src"]
+      "coolscript": ["coolscript/src"],
+      "esbuild-plugin-coolscript": ["coolscript/src"]
     }
   }
 }

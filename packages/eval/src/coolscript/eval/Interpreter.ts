@@ -1,114 +1,106 @@
 import {
-  Binding,
-  Branch,
-  ElifBranch,
-  TmArray,
-  TmCall,
-  TmDo,
-  TmIf,
-  TmLet,
-  TmObject,
-  VArray,
-  VBool,
-  VObject,
+  scopeTerm,
+  Scope,
   Term,
-  TmAssign,
-  Value,
-  Var,
-  VError,
-  VLam,
+  AssignmentTerm,
+  CallTerm,
+  DoTerm,
+  ConditionalTerm,
+  BranchTerm,
+  ElifTerm,
+  LetTerm,
+  ArrayTerm,
+  ObjectTerm,
+  MemberAccessTerm,
+  IndexAccessTerm,
   Statement,
   AssignmentStatement,
   CallStatement,
   ReturnStatement,
   BlockStatement,
-  VNull,
-  TmGet,
-  TmGetI,
-  VNumber,
-  WhileStatement,
-  ForStatement,
   IfStatement,
   BranchStatement,
-  ElifStatement,
-  DoWhileStatement
-} from '@coolscript/syntax'
+  WhileStatement,
+  DoWhileStatement,
+  ForStatement,
+  Variable,
+  Declaration
+} from '@coolscript/syntax-scoped'
+import * as Core from '@coolscript/syntax'
+import * as Concrete from '@coolscript/syntax-concrete'
+import * as V from './Value'
 import { MemorySpace } from './MemorySpace'
-import { ReturnValue } from './ReturnValue'
-import { Scope } from './Scope'
-import { scopeTerm } from './ScopedTerm'
 
 export class Interpreter {
-  sharedReturnValue: ReturnValue = ReturnValue()
   rootScope: Scope // root space (filled by parser)
   globals: MemorySpace = new MemorySpace() // global memory
   currentSpace: MemorySpace = this.globals
   stack: MemorySpace[] = [this.currentSpace] // call stack
 
-  interpret(tm: Term): Value | null {
+  interpret(tm: Concrete.Term): V.Value | null {
     this.rootScope = new Scope()
     const stm = scopeTerm(tm, this.rootScope)
     let result
     try {
       result = this.exec(stm)
     } catch (r) {
-      return r as Value
+      return r as V.Value
     }
     return result
   }
 
-  exec(tm: Term): Value | null {
+  exec(tm: Term): V.Value | null {
     switch (tm.tag) {
-      case 'TmError':
-        return VError(tm.msg)
-      case 'TmValue':
+      case 'ErrorTerm':
+        return V.ErrorValue(tm.msg)
+      case 'ValueTerm':
         return tm.value
-      case 'TmVar':
-        return this.load(tm.variable)
-      case 'TmAssign':
-        return this.assign(tm)
-      case 'TmLam':
-        return VLam(tm.args, tm.body)
-      case 'TmCall':
-        return this.call(tm)
-      case 'TmParens':
+      case 'VariableTerm':
+        return this.loadVariable(tm.variable)
+      case 'AssignmentTerm':
+        return this.execAssignmentTerm(tm)
+      case 'LambdaTerm':
+        return V.LambdaValue(tm.args, tm.body) // TODO store closure
+      case 'CallTerm':
+        return this.execCallTerm(tm)
+      case 'ParentheticalTerm':
         return this.exec(tm.term)
-      case 'TmArray':
-        return this.makeArray(tm)
-      case 'TmObject':
-        return this.makeObject(tm)
-      case 'TmGet':
-        return this.execGet(tm)
-      case 'TmGetI':
-        return this.execGetI(tm)
-      case 'TmLet':
-        return this.execLet(tm)
-      case 'TmDo':
-        return this.execDo(tm)
-      case 'TmIf':
-        return this.execIf(tm)
+      case 'ArrayTerm':
+        return this.execArrayTerm(tm)
+      case 'ObjectTerm':
+        return this.execObjectTerm(tm)
+      case 'MemberAccessTerm':
+        return this.execMemberAccessTerm(tm)
+      case 'IndexAccessTerm':
+        return this.execIndexAccessTerm(tm)
+      case 'LetTerm':
+        return this.execLetTerm(tm)
+      case 'DoTerm':
+        return this.execDoTerm(tm)
+      case 'ConditionalTerm':
+        return this.execConditionalTerm(tm)
       default:
         break
     }
     return null
   }
 
-  load(id: Var): Value {
+  loadVariable(id: Variable): V.Value {
     const s: MemorySpace = this.getSpaceWithSymbol(id)
     if (s != null) {
       return s.get(id)
     }
-    return VError(`No such variable "${id}".`)
+    return V.ErrorValue(`No such variable "${id}".`)
   }
 
-  assign(tm: TmAssign): Value {
+  execAssignmentTerm(tm: AssignmentTerm): V.Value {
     const value = this.exec(tm.rhs)
     let space: MemorySpace = this.getSpaceWithSymbol(tm.lhs)
     if (space == null) {
       space = this.currentSpace // create in current space
     }
     space.put(tm.lhs, value) // store
-    return this.load(tm.lhs)
+    return this.loadVariable(tm.lhs)
   }
 
   getSpaceWithSymbol(id: string): MemorySpace | null {
@@ -124,15 +116,10 @@ export class Interpreter {
     return null // nowhere
   }
 
-  ret(result: Term) {
-    this.sharedReturnValue.value = this.exec(result)
-    throw this.sharedReturnValue
-  }
-
-  call(tm: TmCall): Value {
-    const fn = this.exec(tm.caller)
-    if (fn.tag != 'VLam') {
-      return VError(`Cannot call non-function: ${JSON.stringify(fn)}`)
+  execCallTerm(tm: CallTerm): V.Value {
+    const fn = this.exec(tm.func)
+    if (fn.tag != 'LambdaValue') {
+      return V.ErrorValue(`Cannot call non-function: ${JSON.stringify(fn)}`)
     }
     const args = tm.args.map((x) => this.exec(x))
 
@@ -144,14 +131,16 @@ export class Interpreter {
     // Check for argument length mismatch
     const argCount = args.length
     if (argCount != fn.args.length) {
-      return VError(`Function argument mismatch in call ${JSON.stringify(tm)}`)
+      return V.ErrorValue(
+        `Function argument mismatch in call ${JSON.stringify(tm)}`
+      )
     }
     // Define arguments in function space
     for (let i = 0; i < argCount; i++) {
       fspace.put(fn.args[i], args[i])
     }
     // Execute function body
-    let result: Value = null
+    let result: V.Value = null
     this.stack.push(fspace)
     try {
       result = this.exec(fn.body)
@@ -164,44 +153,47 @@ export class Interpreter {
     return result
   }
 
-  makeArray(tm: TmArray): Value {
+  execArrayTerm(tm: ArrayTerm): V.Value {
     const elements = tm.elements.map((x) => this.exec(x))
-    return VArray(elements)
+    return V.ArrayValue(elements)
   }
 
-  makeObject(tm: TmObject): Value {
-    const entries = Object.entries(tm.obj).map(([n, t]) => [n, this.exec(t)])
+  execObjectTerm(tm: ObjectTerm): V.Value {
+    const entries = Object.entries(tm.entries).map(([n, t]) => [
+      n,
+      this.exec(t)
+    ])
     const obj = Object.fromEntries(entries)
-    return VObject(obj)
+    return V.ObjectValue(obj)
   }
 
-  execGet(tm: TmGet): Value {
-    const parentValue = this.exec(tm.parent) as VObject
-    return parentValue.obj[tm.child] || VNull
+  execMemberAccessTerm(tm: MemberAccessTerm): V.Value {
+    const parentValue = this.exec(tm.object) as V.ObjectValue
+    return parentValue.entries[tm.member] || V.NullValue()
   }
 
-  execGetI(tm: TmGetI): Value {
-    const parentValue = this.exec(tm.parent) as VArray
-    const indexValue = this.exec(tm.index) as VNumber
-    return parentValue.elements[indexValue.num] || VNull
+  execIndexAccessTerm(tm: IndexAccessTerm): V.Value {
+    const parentValue = this.exec(tm.array) as V.ArrayValue
+    const indexValue = this.exec(tm.index) as V.NumberValue
+    return parentValue.elements[indexValue.num] || V.NullValue()
   }
 
-  execLet(tm: TmLet): Value | null {
+  execLetTerm(tm: LetTerm): V.Value | null {
     // Create a new local memory space to bind too
     const localSpace = new MemorySpace()
     const saveSpace = this.currentSpace
     this.currentSpace = localSpace
 
     // Store bindings in new local memory space
-    let binding: Binding
-    let bindingBody: Value
-    for (let i = 0; i < tm.binders.length; i++) {
-      binding = tm.binders[i]
-      bindingBody = this.exec(binding.body)
-      localSpace.put(binding.variable, bindingBody)
+    let decl: Declaration
+    let declBody: V.Value
+    for (let i = 0; i < tm.declarations.length; i++) {
+      decl = tm.declarations[i]
+      declBody = this.exec(decl.body)
+      localSpace.put(decl.variable, declBody)
     }
 
-    let result: Value
+    let result: V.Value
     this.stack.push(localSpace)
     result = this.exec(tm.body)
     this.stack.pop()
@@ -210,38 +202,38 @@ export class Interpreter {
     return result
   }
 
-  execDo(tm: TmDo): Value {
+  execDoTerm(tm: DoTerm): V.Value {
     try {
       this.execBlockStatement(tm.block)
     } catch (r) {
       return r
     }
-    return VNull
+    return V.NullValue()
   }
 
-  execIf(tm: TmIf): Value {
-    const pred: VBool = this.exec(tm.pred) as VBool
-    if (pred.bool) {
+  execConditionalTerm(tm: ConditionalTerm): V.Value {
+    const cond: V.BooleanValue = this.exec(tm.condition) as V.BooleanValue
+    if (cond.bool) {
       return this.exec(tm.body)
     }
-    return this.branch(tm.branch)
+    return this.execBranchTerm(tm.branch)
   }
 
-  branch(br: Branch): Value {
+  execBranchTerm(br: BranchTerm): V.Value {
     switch (br.tag) {
-      case 'Elif':
-        return this.branchElif(br)
-      case 'Else':
+      case 'ElifTerm':
+        return this.execElifTerm(br)
+      case 'ElseTerm':
         return this.exec(br.body)
     }
   }
 
-  branchElif(br: ElifBranch): Value {
-    const pred: VBool = this.exec(br.pred) as VBool
-    if (pred.bool) {
-      return this.exec(br.body)
+  execElifTerm(tm: ElifTerm): V.Value {
+    const cond: V.BooleanValue = this.exec(tm.condition) as V.BooleanValue
+    if (cond.bool) {
+      return this.exec(tm.body)
     }
-    return this.branch(br.branch)
+    return this.execBranchTerm(tm.branch)
   }
 
   execStatement(s: Statement) {
@@ -285,11 +277,11 @@ export class Interpreter {
   }
 
   execAssignmentStatement(s: AssignmentStatement) {
-    this.assign(TmAssign(s.lhs, s.rhs))
+    this.execAssignmentTerm(Core.AssignmentTerm(s.lhs, s.rhs, s.ann))
   }
 
   execCallStatement(s: CallStatement) {
-    this.call(TmCall(s.fn, s.args))
+    this.execCallTerm(Core.CallTerm(s.func, s.args, s.ann))
   }
 
   execReturnStatement(s: ReturnStatement) {
@@ -305,8 +297,8 @@ export class Interpreter {
   }
 
   execIfStatement(s: IfStatement) {
-    const pred: VBool = this.exec(s.pred) as VBool
-    if (pred.bool) {
+    const cond: V.BooleanValue = this.exec(s.condition) as V.BooleanValue
+    if (cond.bool) {
       return this.execStatement(s.body)
     }
     return this.execBranchStatement(s.branch)
@@ -315,37 +307,41 @@ export class Interpreter {
   execBranchStatement(br: BranchStatement) {
     switch (br.tag) {
       case 'ElifStatement':
-        return this.execIfStatement(IfStatement(br.pred, br.body, br.branch))
+        return this.execIfStatement(
+          Core.IfStatement(br.condition, br.body, br.branch, br.ann)
+        )
       case 'ElseStatement':
         return this.execStatement(br.body)
     }
   }
 
   execWhileStatement(s: WhileStatement) {
-    let pred: VBool = this.exec(s.pred) as VBool
-    while (pred) {
+    let cond: V.BooleanValue = this.exec(s.condition) as V.BooleanValue
+    while (cond) {
       this.execStatement(s.body)
-      pred = this.exec(s.pred) as VBool
+      cond = this.exec(s.condition) as V.BooleanValue
     }
     return null
   }
 
   execDoWhileStatement(s: DoWhileStatement) {
-    let pred: VBool
+    let cond: V.BooleanValue
     do {
       this.execStatement(s.body)
-      pred = this.exec(s.pred) as VBool
-    } while (pred)
+      cond = this.exec(s.condition) as V.BooleanValue
+    } while (cond)
     return null
   }
 
   execForStatement(tm: ForStatement) {
-    this.exec(tm.init)
-    let pred: VBool = this.exec(tm.pred) as VBool
-    while (pred) {
+    tm.declarations.forEach((d) =>
+      this.execAssignmentTerm(Core.AssignmentTerm(d.variable, d.body, d.ann))
+    )
+    let cond: V.BooleanValue = this.exec(tm.condition) as V.BooleanValue
+    while (cond) {
       this.execStatement(tm.body)
-      this.exec(tm.iter)
-      pred = this.exec(tm.pred) as VBool
+      this.exec(tm.update)
+      cond = this.exec(tm.condition) as V.BooleanValue
     }
     return null
   }

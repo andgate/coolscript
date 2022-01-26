@@ -1,16 +1,14 @@
 {
-  "name": "@coolscript/backend-js",
-  "version": "0.0.1",
-  "description": "Coolscript programming language javascript backend.",
-  "author": "Gabriel Anderson",
-  "license": "MIT",
+  "name": "@coolscript/syntax-concrete",
+  "version": "0.0.0",
+  "description": "Coolscript programming language concrete syntax.",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "publishConfig": {
     "main": "./lib/index.js",
     "module": "./lib/index.js",
-    "typings": "lib/index.d.ts",
+    "typings": "./lib/index.d.ts",
     "access": "public"
   },
   "files": [
@@ -27,7 +25,7 @@
     "watch": "concurrently \"pnpm:watch:*\"",
     "watch:js": "node build.js --watch",
     "watch:ts": "tsc --project tsconfig.build.json --watch",
-    "check": "tsc --noEmit",
+    "check": "tsc",
     "prettier": "prettier --check src/ tests/",
     "prettier:fix": "prettier --write src/ tests/",
     "lint": "eslint src/** tests/** --ext .ts,.tsx",
@@ -36,13 +34,9 @@
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
     "test": "jest"
   },
+  "author": "Gabriel Anderson",
+  "license": "MIT",
   "devDependencies": {
-    "@types/estree": "^0.0.50",
-    "astring": "^1.8.1",
-    "source-map": "^0.7.3"
-  },
-  "dependencies": {
-    "@coolscript/syntax": "^0.0.7",
-    "@coolscript/syntax-concrete": "^0.0.0"
+    "@coolscript/syntax": "0.0.7"
   }
 }

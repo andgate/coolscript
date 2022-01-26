@@ -1,4 +1,4 @@
-import { Value } from '@coolscript/syntax'
+import { Value } from './Value'
 
 export class MemorySpace {
   members: Map<string, Value> = new Map()

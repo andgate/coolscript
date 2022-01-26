@@ -1,5 +1,7 @@
 import type { SymbolCS } from './SymbolCS'
 
+export type Scoped = { scope: Scope }
+
 export class Scope {
   enclosingScope: Scope | null
   symbols: Map<string, SymbolCS> = new Map()
