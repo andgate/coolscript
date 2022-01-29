@@ -1,5 +1,5 @@
-import { EditorPage } from './components/EditorPage'
+import { Layout } from './components/Layout'
 
 export function App() {
-  return <EditorPage />
+  return <Layout />
 }

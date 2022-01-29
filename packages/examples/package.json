@@ -1,0 +1,11 @@
+{
+  "name": "@coolscript/examples",
+  "version": "0.0.0",
+  "description": "Coolscript programming language examples.",
+  "files": [
+    "examples/",
+    "LICENSE"
+  ],
+  "author": "Gabriel Anderson",
+  "license": "MIT"
+}

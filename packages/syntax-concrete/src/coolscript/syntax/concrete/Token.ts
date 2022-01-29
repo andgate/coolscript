@@ -8,16 +8,15 @@ export type Token = {
 
 export type SourceToken = {
   text: string
-  lineBreaks: number
   line: number
-  column: number
+  col: number
 }
 
 export function SourceToken(source: SourceToken): Token {
   const text = source.text
   if (text.length == 0) {
     const l = source.line
-    const c = source.column
+    const c = source.col
     return {
       type: 'Token',
       text: '',
@@ -27,15 +26,17 @@ export function SourceToken(source: SourceToken): Token {
 
   const n = text.length - 1
   const lineStart = source.line
-  const lineEnd = source.line + source.lineBreaks
-  const columnStart = source.column
+  const columnStart = source.col
 
-  let columnEnd = source.column
-  for (let i = n; i >= 0; i--) {
-    if (text[i] == '\n') {
-      columnEnd = n - i
-      break
+  let lineEnd = lineStart
+  let columnEnd = columnStart
+  for (let i = 0; i < n; i++) {
+    if (text.charAt(i) == '\n') {
+      columnEnd = 1
+      ++lineEnd
+      continue
     }
+    ++columnEnd
   }
 
   return {

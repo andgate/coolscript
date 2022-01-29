@@ -1,11 +1,11 @@
 import { media, style } from 'typestyle'
 import * as csstips from 'csstips'
-import { EditorTextArea } from './EditorTextArea'
 import { px } from 'csx'
-import { EditorStateContextProvider } from '../contexts/EditorContext'
+import { EditorPanel } from './EditorPanel'
 import { OutputPanel } from './OutputPanel'
+import { PlaygroundProvider } from './PlaygroundProvider'
 
-const editorRoot = style(
+const playgroundRoot = style(
   csstips.fillParent,
   {
     paddingLeft: px(8),
@@ -19,13 +19,13 @@ const editorRoot = style(
   )
 )
 
-export function Editor() {
+export function Playground() {
   return (
-    <div className={editorRoot}>
-      <EditorStateContextProvider>
-        <EditorTextArea />
-        <OutputPanel />
-      </EditorStateContextProvider>
+    <div className={playgroundRoot}>
+      <PlaygroundProvider>
+        <EditorPanel></EditorPanel>
+        <OutputPanel></OutputPanel>
+      </PlaygroundProvider>
     </div>
   )
 }

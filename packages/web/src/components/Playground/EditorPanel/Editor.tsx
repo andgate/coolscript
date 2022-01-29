@@ -2,9 +2,9 @@ import { useContext } from 'react'
 import { media, style } from 'typestyle'
 import * as csstips from 'csstips'
 import { color, percent, px, viewHeight } from 'csx'
-import { EditorContext } from '../contexts/EditorContext'
+import { PlaygroundContext } from '../PlaygroundContext'
 
-const editorTextAreaRoot = style(csstips.flex)
+const editorRoot = style(csstips.flex)
 
 const editorTextArea = style(
   media({ maxWidth: px(699) }, { height: viewHeight(70) }),
@@ -21,17 +21,17 @@ const editorTextArea = style(
   }
 )
 
-export function EditorTextArea() {
-  const { editorState, setEditorState } = useContext(EditorContext)
+export function Editor() {
+  const { store, setEditorText } = useContext(PlaygroundContext)
 
   const onChange = (e) => {
-    setEditorState({ textContent: e.target.value })
+    setEditorText(e.target.value)
   }
 
   return (
-    <div className={editorTextAreaRoot}>
+    <div className={editorRoot}>
       <textarea
-        value={editorState.textContent}
+        value={store.editorText}
         className={editorTextArea}
         onChange={onChange}></textarea>
     </div>

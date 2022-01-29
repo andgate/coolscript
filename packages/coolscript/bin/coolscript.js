@@ -1043,7 +1043,7 @@ function SourceToken(source) {
   const text = source.text;
   if (text.length == 0) {
     const l = source.line;
-    const c = source.column;
+    const c = source.col;
     return {
       type: "Token",
       text: "",
@@ -1052,14 +1052,16 @@ function SourceToken(source) {
   }
   const n = text.length - 1;
   const lineStart = source.line;
-  const lineEnd = source.line + source.lineBreaks;
-  const columnStart = source.column;
-  let columnEnd = source.column;
-  for (let i = n; i >= 0; i--) {
-    if (text[i] == "\n") {
-      columnEnd = n - i;
-      break;
+  const columnStart = source.col;
+  let lineEnd = lineStart;
+  let columnEnd = columnStart;
+  for (let i = 0; i < n; i++) {
+    if (text.charAt(i) == "\n") {
+      columnEnd = 1;
+      ++lineEnd;
+      continue;
     }
+    ++columnEnd;
   }
   return {
     type: "Token",
@@ -1557,19 +1559,36 @@ var nearley = __toESM(require_nearley());
 var import_nearley = __toESM(require_nearley());
 var import_grammar = __toESM(require_grammar());
 var coolscriptGrammar = import_nearley.Grammar.fromCompiled(import_grammar.default);
+function ParseSuccess(term, warnings) {
+  return { term, warnings };
+}
+function ParseFail(warnings, ...errors) {
+  return { term: null, errors, warnings };
+}
 function parse(src) {
   const parser = new nearley.Parser(coolscriptGrammar);
+  const warnings = [];
   try {
     parser.feed(src);
-  } catch (e) {
-    console.error(e);
-    return null;
+  } catch (error) {
+    let errorMsg = "";
+    if (error && error.stack && error.message) {
+      errorMsg = ` Error message: ${error.message}`;
+    }
+    const msg = `Parser failed!${errorMsg}`;
+    const parserFailedError = new Error(msg);
+    return ParseFail(warnings, parserFailedError);
+  }
+  if (!parser.results || !Array.isArray(parser.results) || parser.results.length == 0) {
+    const noParseResultsError = new Error("No parse results were recovered.");
+    return ParseFail(warnings, noParseResultsError);
   }
   if (parser.results.length > 1) {
-    console.error("Ambiguous grammar encountered! Resolving first result.");
-    return parser.results[1];
+    const ambiguousGrammarWarning = new Error("Ambiguous grammar encountered! Resolving first result.");
+    warnings.push(ambiguousGrammarWarning);
   }
-  return parser.results[0];
+  const term = parser.results[0];
+  return ParseSuccess(term, warnings);
 }
 
 // ../cli/lib/index.js

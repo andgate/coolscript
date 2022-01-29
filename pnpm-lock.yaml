@@ -13,6 +13,7 @@ specifiers:
   eslint-plugin-html: ^6.2.0
   eslint-plugin-prettier: ^4.0.0
   eslint-plugin-react: ^7.28.0
+  eslint-plugin-react-hooks: ^4.3.0
   favicons: ^6.2.2
   favicons-webpack-plugin: ^5.0.2
   html-webpack-plugin: ^5.5.0
@@ -42,6 +43,7 @@ devDependencies:
   eslint-plugin-html: 6.2.0
   eslint-plugin-prettier: 4.0.0_4660519532e4c3b0a9e5bb6623cfedf6
   eslint-plugin-react: 7.28.0_eslint@8.7.0
+  eslint-plugin-react-hooks: 4.3.0_eslint@8.7.0
   favicons: 6.2.2
   favicons-webpack-plugin: 5.0.2_favicons@6.2.2+webpack@5.67.0
   html-webpack-plugin: 5.5.0_webpack@5.67.0
@@ -4269,6 +4271,15 @@ packages:
       eslint-config-prettier: 8.3.0_eslint@8.7.0
       prettier: 2.5.1
       prettier-linter-helpers: 1.0.0
+    dev: true
+
+  /eslint-plugin-react-hooks/4.3.0_eslint@8.7.0:
+    resolution: {integrity: sha512-XslZy0LnMn+84NEG9jSGR6eGqaZB3133L8xewQo3fQagbQuGt7a63gf+P1NGKZavEYEC3UXaWEAA/AqDkuN6xA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
+    dependencies:
+      eslint: 8.7.0
     dev: true
 
   /eslint-plugin-react/7.28.0_eslint@8.7.0:

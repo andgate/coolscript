@@ -46,7 +46,7 @@ module.exports = (env, argv) => {
           }
         },
         {
-          test: /\.cool$/i,
+          test: /\.(cool|cs)$/i,
           type: 'asset/source'
         },
         {
