@@ -10,7 +10,7 @@
       "@coolscript/parser": ["parser/src"],
       "@coolscript/eval": ["eval/src"],
       "@coolscript/cli": ["cli/src"],
-      "@coolscript/examples": ["examples/examples"],
+      "@coolscript/examples": ["examples/src"],
       "coolscript": ["coolscript/src"],
       "esbuild-plugin-coolscript": ["coolscript/src"]
     }

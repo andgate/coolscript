@@ -14,18 +14,20 @@ if (watch) {
 const shared = {
   entryPoints: ['src/index.ts'],
   outdir: 'lib/',
-  target: 'es7',
-  loader: { '.cs': 'text' },
+  target: 'es6',
   sourcemap: true,
   bundle: true,
+  minify: false,
   tsconfig: 'tsconfig.build.json',
+  loader: { '.cs': 'text' },
   watch
 }
 
 esbuild
   .build({
     ...shared,
-    format: 'esm'
+    format: 'esm',
+    splitting: true
   })
   .catch(() => process.exit(1))
 

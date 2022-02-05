@@ -13,11 +13,13 @@ if (watch) {
 }
 
 const shared = {
-  target: 'es6',
   entryPoints: ['src/index.ts'],
+  outdir: 'lib/',
+  target: 'es6',
   sourcemap: true,
   bundle: true,
   minify: false,
+  tsconfig: 'tsconfig.build.json',
   plugins: [NearleyPlugin.default],
   watch
 }
@@ -25,9 +27,15 @@ const shared = {
 esbuild
   .build({
     ...shared,
-    outdir: 'lib/',
-    tsconfig: 'tsconfig.build.json',
     format: 'esm',
     splitting: true
+  })
+  .catch(() => process.exit(1))
+
+esbuild
+  .build({
+    ...shared,
+    format: 'cjs',
+    outExtension: { '.js': '.cjs' }
   })
   .catch(() => process.exit(1))

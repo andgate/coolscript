@@ -1,16 +1,11 @@
 module.exports = {
   roots: ['<rootDir>/src', '<rootDir>/tests'],
   transform: {
-    '^.+\\.ts$': 'ts-jest'
+    '^.+\\.tsx?$': 'esbuild-jest'
   },
   testRegex: '(/tests/.*.(test|spec)).(jsx?|tsx?)$',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   collectCoverage: true,
   coveragePathIgnorePatterns: ['(tests/.*.mock).(jsx?|tsx?)$'],
-  verbose: true,
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.json'
-    }
-  }
+  verbose: true
 }

@@ -2,11 +2,11 @@
   "name": "@coolscript/syntax-concrete",
   "version": "0.0.0",
   "description": "Coolscript programming language concrete syntax.",
-  "main": "./lib/index.js",
+  "main": "./lib/index.cjs",
   "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "publishConfig": {
-    "main": "./lib/index.js",
+    "main": "./lib/index.cjs",
     "module": "./lib/index.js",
     "typings": "./lib/index.d.ts",
     "access": "public"

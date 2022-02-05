@@ -4,6 +4,7 @@ specifiers:
   '@types/moo': ^0.5.5
   '@types/nearley': ^2.11.2
   esbuild-plugin-nearley: ^1.0.3
+  jest-transform-nearley: ^2.0.0
   moo: ^0.5.1
   nearley: ^2.20.1
 
@@ -11,6 +12,7 @@ devDependencies:
   '@types/moo': 0.5.5
   '@types/nearley': 2.11.2
   esbuild-plugin-nearley: 1.0.3_nearley@2.20.1
+  jest-transform-nearley: 2.0.0_nearley@2.20.1
   moo: 0.5.1
   nearley: 2.20.1
 
@@ -37,6 +39,14 @@ packages:
     engines: {node: '>=16', npm: '>=8', pnpm: '>=6'}
     peerDependencies:
       esbuild: ^0.14
+      nearley: ^2
+    dependencies:
+      nearley: 2.20.1
+    dev: true
+
+  /jest-transform-nearley/2.0.0_nearley@2.20.1:
+    resolution: {integrity: sha512-tjLgaASIKmB0zVFdSyQoJZQDmcyIpExkWF8O+0ph9nWE+3a3YsWTDTC0Uuc20Erz8QJ8RcL2U0c+USr696K4HQ==}
+    peerDependencies:
       nearley: ^2
     dependencies:
       nearley: 2.20.1
