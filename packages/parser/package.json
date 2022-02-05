@@ -1,6 +1,6 @@
 {
   "name": "@coolscript/parser",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "Coolscript programming language parser.",
   "main": "./lib/index.cjs",
   "module": "./lib/index.js",
@@ -37,12 +37,12 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
-    "@coolscript/syntax-concrete": "0.0.0",
-    "@coolscript/examples": "0.0.0",
+    "@coolscript/examples": "^0.1.0",
+    "@coolscript/syntax-concrete": "^0.1.0",
     "@types/moo": "^0.5.5",
     "@types/nearley": "^2.11.2",
-    "jest-transform-nearley": "^2.0.0",
     "esbuild-plugin-nearley": "^1.0.3",
+    "jest-transform-nearley": "^2.0.0",
     "moo": "^0.5.1",
     "nearley": "^2.20.1"
   },

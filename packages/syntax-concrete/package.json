@@ -1,6 +1,6 @@
 {
   "name": "@coolscript/syntax-concrete",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Coolscript programming language concrete syntax.",
   "main": "./lib/index.cjs",
   "module": "./lib/index.js",
@@ -37,6 +37,6 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
-    "@coolscript/syntax": "0.0.7"
+    "@coolscript/syntax": "^0.1.0"
   }
 }
