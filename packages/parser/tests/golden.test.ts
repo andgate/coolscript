@@ -1,8 +1,9 @@
 import { examples } from '@coolscript/examples'
 import { parse } from '@coolscript/parser'
 
-test('Example 1', () => {
-  const parseResult = parse(examples[0])
-  const resultJSON = JSON.stringify(parseResult)
-  expect(resultJSON).toMatchSnapshot()
+describe('Parser Golden Test Suite', () => {
+  test.each(examples)('Example %#', (example) => {
+    const parseResult = parse(example)
+    expect(parseResult).toMatchSnapshot()
+  })
 })

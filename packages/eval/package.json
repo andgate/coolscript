@@ -4,11 +4,11 @@
   "description": "Coolscript programming language evaluator.",
   "author": "Gabriel Anderson",
   "license": "MIT",
-  "main": "./lib/index.js",
+  "main": "./lib/index.cjs",
   "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "publishConfig": {
-    "main": "./lib/index.js",
+    "main": "./lib/index.cjs",
     "module": "./lib/index.js",
     "typings": "lib/index.d.ts",
     "access": "public"
