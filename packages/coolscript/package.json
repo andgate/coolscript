@@ -29,6 +29,6 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
-    "@coolscript/cli": "^0.0.7"
+    "@coolscript/cli": "0.0.7"
   }
 }
