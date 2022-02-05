@@ -6,6 +6,7 @@ import { OutputPanel } from './OutputPanel'
 import { PlaygroundProvider } from './PlaygroundProvider'
 
 const playgroundRoot = style(
+  csstips.flex,
   csstips.fillParent,
   {
     paddingLeft: px(8),

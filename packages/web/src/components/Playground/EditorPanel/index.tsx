@@ -3,7 +3,7 @@ import { style } from 'typestyle'
 import { Editor } from './Editor'
 import { EditorMenuBar } from './EditorMenuBar'
 
-const editorPanelRoot = style(csstips.fillParent, csstips.vertical)
+const editorPanelRoot = style(csstips.flex1, csstips.vertical)
 const editorPanelMenuBar = style(csstips.content)
 const editorPanelBody = style(csstips.flex)
 

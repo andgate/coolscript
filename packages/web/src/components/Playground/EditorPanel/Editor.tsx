@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { ChangeEventHandler, useContext } from 'react'
 import { media, style } from 'typestyle'
 import * as csstips from 'csstips'
 import { color, percent, px, viewHeight } from 'csx'
@@ -24,7 +24,7 @@ const editorTextArea = style(
 export function Editor() {
   const { store, setEditorText } = useContext(PlaygroundContext)
 
-  const onChange = (e) => {
+  const onChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setEditorText(e.target.value)
   }
 

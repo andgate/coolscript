@@ -10,13 +10,13 @@ import * as CoolScript from '@coolscript/parser'
 import { generateJS, JsGenResult } from '@coolscript/backend-js'
 import { EvalResult, evaluate } from '@coolscript/eval'
 import { Term } from '@coolscript/syntax-concrete'
-import codeSample from '@coolscript/examples/examples/1.cs'
+import { examples } from '@coolscript/examples'
 import { ParseResult } from '@coolscript/parser'
 import { PlaygroundAPI } from './PlaygroundAPI'
 
 export const PlaygroundProvider = (props) => {
   const [results, setResults] = useState<PlaygroundResults>({})
-  const [editorText, setEditorText] = useState<string>(codeSample)
+  const [editorText, setEditorText] = useState<string>(examples[0])
   const [scriptText, setScriptText] = useState<string>(null)
 
   const runScript: () => void = useCallback(

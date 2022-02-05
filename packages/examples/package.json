@@ -2,10 +2,37 @@
   "name": "@coolscript/examples",
   "version": "0.0.0",
   "description": "Coolscript programming language examples.",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "publishConfig": {
+    "main": "./lib/index.cjs",
+    "module": "./lib/index.js",
+    "typings": "./lib/index.d.ts",
+    "access": "public"
+  },
   "files": [
-    "examples/",
+    "lib/",
     "LICENSE"
   ],
   "author": "Gabriel Anderson",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "start": "pnpm watch",
+    "build": "pnpm build:lib",
+    "build:lib": "pnpm clean && pnpm build:ts && pnpm build:js",
+    "build:js": "node build.js",
+    "build:ts": "tsc --project tsconfig.build.json",
+    "clean": "rimraf lib/ *.tsbuildinfo",
+    "watch": "concurrently \"pnpm:watch:*\"",
+    "watch:js": "node build.js --watch",
+    "watch:ts": "tsc --project tsconfig.build.json --watch",
+    "check": "tsc",
+    "prettier": "prettier --check src/",
+    "prettier:fix": "prettier --write src/",
+    "lint": "eslint src/** --ext .ts,.tsx",
+    "lint:fix": "pnpm lint --fix",
+    "verify": "pnpm prettier && pnpm lint",
+    "verify:fix": "pnpm prettier:fix && pnpm lint:fix"
+  }
 }
