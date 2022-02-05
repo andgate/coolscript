@@ -16,7 +16,7 @@ import { PlaygroundAPI } from './PlaygroundAPI'
 
 export const PlaygroundProvider = (props) => {
   const [results, setResults] = useState<PlaygroundResults>({})
-  const [editorText, setEditorText] = useState<string>(examples[0])
+  const [editorText, setEditorText] = useState<string>(examples.example1)
   const [scriptText, setScriptText] = useState<string>(null)
 
   const runScript: () => void = useCallback(
