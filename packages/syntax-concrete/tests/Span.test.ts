@@ -1,7 +1,7 @@
 import { Span, Merge } from '@coolscript/syntax-concrete'
 import * as fc from 'fast-check'
 
-const aSpan = (): fc.Arbitrary<Span> =>
+const ArbitrarySpan = (): fc.Arbitrary<Span> =>
   fc
     .tuple(fc.nat(), fc.nat(), fc.nat(), fc.nat())
     .map(([n1, n2, n3, n4]) => Span(n1, n1 + n2, n3, n3 + n4))
@@ -88,10 +88,34 @@ test('Merge(Span(1, 2, 3, 4), Span(5, 6, 7, 8)) == Span(1, 6, 3, 8)', () => {
   expect(Merge(s1, s2)).toStrictEqual(s3)
 })
 
-test('Merge(s, s) == s', () => {
+test('Merge(s1, s2).line.start == s1.line.start', () => {
   fc.assert(
-    fc.property(aSpan(), (s) => {
-      return JSON.stringify(Merge(s, s)) == JSON.stringify(s)
+    fc.property(ArbitrarySpan(), ArbitrarySpan(), (s1, s2) => {
+      return Merge(s1, s2).line.start == s1.line.start
+    })
+  )
+})
+
+test('Merge(s1, s2).line.end == s2.line.end', () => {
+  fc.assert(
+    fc.property(ArbitrarySpan(), ArbitrarySpan(), (s1, s2) => {
+      return Merge(s1, s2).line.end == s2.line.end
+    })
+  )
+})
+
+test('Merge(s1, s2).column.start == s1.column.start', () => {
+  fc.assert(
+    fc.property(ArbitrarySpan(), ArbitrarySpan(), (s1, s2) => {
+      return Merge(s1, s2).column.start == s1.column.start
+    })
+  )
+})
+
+test('Merge(s1, s2).column.end == s2.column.end', () => {
+  fc.assert(
+    fc.property(ArbitrarySpan(), ArbitrarySpan(), (s1, s2) => {
+      return Merge(s1, s2).column.end == s2.column.end
     })
   )
 })
