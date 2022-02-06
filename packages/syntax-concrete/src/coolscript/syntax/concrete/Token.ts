@@ -50,7 +50,7 @@ export function Token(
   firstSource: SourceToken,
   ...otherSources: SourceToken[]
 ): Token {
-  let token = SourceToken(firstSource)
+  const token = SourceToken(firstSource)
   const n = otherSources.length
   if (otherSources && otherSources.length <= 0) {
     return token
