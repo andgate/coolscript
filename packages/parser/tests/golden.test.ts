@@ -7,6 +7,6 @@ describe('Parser Golden Test Suite', () => {
   test.each(exampleKeys)('Parse example %p', (exampleKey) => {
     const example = examples[exampleKey]
     const parseResult = parse(example)
-    expect(parseResult).toMatchSnapshot()
+    expect(parseResult).toMatchSnapshot(exampleKey)
   })
 })

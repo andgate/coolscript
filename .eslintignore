@@ -3,3 +3,5 @@
 packages/*/dist
 packages/*/lib
 .parcel-cache
+jest.config.js
+build.js

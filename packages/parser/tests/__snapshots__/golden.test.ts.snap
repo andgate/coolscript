@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Parser Golden Test Suite Parse example "example1" 1`] = `
+exports[`Parser Golden Test Suite Parse example "example1": example1 1`] = `
 Object {
   "term": Object {
     "ann": Object {
@@ -761,7 +761,7 @@ Object {
 }
 `;
 
-exports[`Parser Golden Test Suite Parse example "example2" 1`] = `
+exports[`Parser Golden Test Suite Parse example "example2": example2 1`] = `
 Object {
   "errors": Array [
     [Error: Parser failed! Error message: Syntax error at line 12 col 18:
@@ -979,7 +979,365 @@ A ";" based on:
 }
 `;
 
-exports[`Parser Golden Test Suite Parse example "number1" 1`] = `
+exports[`Parser Golden Test Suite Parse example "let1": let1 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 14,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "body": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 14,
+            "start": 14,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "tag": "VariableTerm",
+      "variable": "x",
+    },
+    "declarations": Array [
+      Object {
+        "ann": Object {
+          "span": Object {
+            "column": Object {
+              "end": 9,
+              "start": 5,
+            },
+            "line": Object {
+              "end": 1,
+              "start": 1,
+            },
+            "type": "Span",
+          },
+        },
+        "body": Object {
+          "ann": Object {
+            "span": Object {
+              "column": Object {
+                "end": 9,
+                "start": 9,
+              },
+              "line": Object {
+                "end": 1,
+                "start": 1,
+              },
+              "type": "Span",
+            },
+          },
+          "tag": "ValueTerm",
+          "value": Object {
+            "ann": Object {
+              "span": Object {
+                "column": Object {
+                  "end": 9,
+                  "start": 9,
+                },
+                "line": Object {
+                  "end": 1,
+                  "start": 1,
+                },
+                "type": "Span",
+              },
+            },
+            "num": 1,
+            "tag": "NumberValue",
+          },
+        },
+        "tag": "VariableDeclaration",
+        "variable": "x",
+      },
+    ],
+    "tag": "LetTerm",
+  },
+  "warnings": Array [],
+}
+`;
+
+exports[`Parser Golden Test Suite Parse example "let2": let2 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 15,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "body": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 15,
+            "start": 15,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "tag": "VariableTerm",
+      "variable": "x",
+    },
+    "declarations": Array [
+      Object {
+        "ann": Object {
+          "span": Object {
+            "column": Object {
+              "end": 9,
+              "start": 5,
+            },
+            "line": Object {
+              "end": 1,
+              "start": 1,
+            },
+            "type": "Span",
+          },
+        },
+        "body": Object {
+          "ann": Object {
+            "span": Object {
+              "column": Object {
+                "end": 9,
+                "start": 9,
+              },
+              "line": Object {
+                "end": 1,
+                "start": 1,
+              },
+              "type": "Span",
+            },
+          },
+          "tag": "ValueTerm",
+          "value": Object {
+            "ann": Object {
+              "span": Object {
+                "column": Object {
+                  "end": 9,
+                  "start": 9,
+                },
+                "line": Object {
+                  "end": 1,
+                  "start": 1,
+                },
+                "type": "Span",
+              },
+            },
+            "num": 1,
+            "tag": "NumberValue",
+          },
+        },
+        "tag": "VariableDeclaration",
+        "variable": "x",
+      },
+    ],
+    "tag": "LetTerm",
+  },
+  "warnings": Array [],
+}
+`;
+
+exports[`Parser Golden Test Suite Parse example "let3": let3 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 27,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "body": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 27,
+            "start": 22,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "elements": Array [
+        Object {
+          "ann": Object {
+            "span": Object {
+              "column": Object {
+                "end": 23,
+                "start": 23,
+              },
+              "line": Object {
+                "end": 1,
+                "start": 1,
+              },
+              "type": "Span",
+            },
+          },
+          "tag": "VariableTerm",
+          "variable": "x",
+        },
+        Object {
+          "ann": Object {
+            "span": Object {
+              "column": Object {
+                "end": 26,
+                "start": 26,
+              },
+              "line": Object {
+                "end": 1,
+                "start": 1,
+              },
+              "type": "Span",
+            },
+          },
+          "tag": "VariableTerm",
+          "variable": "y",
+        },
+      ],
+      "tag": "ArrayTerm",
+    },
+    "declarations": Array [
+      Object {
+        "ann": Object {
+          "span": Object {
+            "column": Object {
+              "end": 9,
+              "start": 5,
+            },
+            "line": Object {
+              "end": 1,
+              "start": 1,
+            },
+            "type": "Span",
+          },
+        },
+        "body": Object {
+          "ann": Object {
+            "span": Object {
+              "column": Object {
+                "end": 9,
+                "start": 9,
+              },
+              "line": Object {
+                "end": 1,
+                "start": 1,
+              },
+              "type": "Span",
+            },
+          },
+          "tag": "ValueTerm",
+          "value": Object {
+            "ann": Object {
+              "span": Object {
+                "column": Object {
+                  "end": 9,
+                  "start": 9,
+                },
+                "line": Object {
+                  "end": 1,
+                  "start": 1,
+                },
+                "type": "Span",
+              },
+            },
+            "num": 1,
+            "tag": "NumberValue",
+          },
+        },
+        "tag": "VariableDeclaration",
+        "variable": "x",
+      },
+      Object {
+        "ann": Object {
+          "span": Object {
+            "column": Object {
+              "end": 16,
+              "start": 12,
+            },
+            "line": Object {
+              "end": 1,
+              "start": 1,
+            },
+            "type": "Span",
+          },
+        },
+        "body": Object {
+          "ann": Object {
+            "span": Object {
+              "column": Object {
+                "end": 16,
+                "start": 16,
+              },
+              "line": Object {
+                "end": 1,
+                "start": 1,
+              },
+              "type": "Span",
+            },
+          },
+          "tag": "ValueTerm",
+          "value": Object {
+            "ann": Object {
+              "span": Object {
+                "column": Object {
+                  "end": 16,
+                  "start": 16,
+                },
+                "line": Object {
+                  "end": 1,
+                  "start": 1,
+                },
+                "type": "Span",
+              },
+            },
+            "num": 2,
+            "tag": "NumberValue",
+          },
+        },
+        "tag": "VariableDeclaration",
+        "variable": "y",
+      },
+    ],
+    "tag": "LetTerm",
+  },
+  "warnings": Array [],
+}
+`;
+
+exports[`Parser Golden Test Suite Parse example "number1": number1 1`] = `
 Object {
   "term": Object {
     "ann": Object {
@@ -1018,7 +1376,7 @@ Object {
 }
 `;
 
-exports[`Parser Golden Test Suite Parse example "number2" 1`] = `
+exports[`Parser Golden Test Suite Parse example "number2": number2 1`] = `
 Object {
   "term": Object {
     "ann": Object {
@@ -1057,7 +1415,7 @@ Object {
 }
 `;
 
-exports[`Parser Golden Test Suite Parse example "number3" 1`] = `
+exports[`Parser Golden Test Suite Parse example "number3": number3 1`] = `
 Object {
   "term": Object {
     "ann": Object {
@@ -1090,6 +1448,240 @@ Object {
       },
       "num": 1234567890.0123458,
       "tag": "NumberValue",
+    },
+  },
+  "warnings": Array [],
+}
+`;
+
+exports[`Parser Golden Test Suite Parse example "string1": string1 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 2,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "tag": "ValueTerm",
+    "value": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 2,
+            "start": 1,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "str": "",
+      "tag": "StringValue",
+    },
+  },
+  "warnings": Array [],
+}
+`;
+
+exports[`Parser Golden Test Suite Parse example "string2": string2 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 2,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "tag": "ValueTerm",
+    "value": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 2,
+            "start": 1,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "str": "",
+      "tag": "StringValue",
+    },
+  },
+  "warnings": Array [],
+}
+`;
+
+exports[`Parser Golden Test Suite Parse example "string3": string3 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 14,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "tag": "ValueTerm",
+    "value": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 14,
+            "start": 1,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "str": "Hello world!",
+      "tag": "StringValue",
+    },
+  },
+  "warnings": Array [],
+}
+`;
+
+exports[`Parser Golden Test Suite Parse example "string4": string4 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 14,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "tag": "ValueTerm",
+    "value": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 14,
+            "start": 1,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "str": "Hello World!",
+      "tag": "StringValue",
+    },
+  },
+  "warnings": Array [],
+}
+`;
+
+exports[`Parser Golden Test Suite Parse example "string5": string5 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 48,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "tag": "ValueTerm",
+    "value": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 48,
+            "start": 1,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "str": "The quick brown fox jumps 'over' the lazy dog.",
+      "tag": "StringValue",
+    },
+  },
+  "warnings": Array [],
+}
+`;
+
+exports[`Parser Golden Test Suite Parse example "string6": string6 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 48,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "tag": "ValueTerm",
+    "value": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 48,
+            "start": 1,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "str": "The quick brown fox \\"jumps\\" over the lazy dog.",
+      "tag": "StringValue",
     },
   },
   "warnings": Array [],
