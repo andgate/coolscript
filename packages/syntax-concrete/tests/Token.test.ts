@@ -31,3 +31,16 @@ test('SourceToken(t).span.column.start == t.col', () => {
     })
   )
 })
+
+test('Token(t1, ...tn).text == [t1.text, ...tn.text].join("")', () => {
+  fc.assert(
+    fc.property(
+      ArbitrarySourceToken(),
+      fc.array(ArbitrarySourceToken(), { minLength: 0, maxLength: 10 }),
+      (token, tokens) => {
+        const expectedText = [token, ...tokens].map((t) => t.text).join('')
+        return Token(token, ...tokens).text == expectedText
+      }
+    )
+  )
+})
