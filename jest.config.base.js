@@ -1,7 +1,7 @@
 module.exports = {
-  roots: ['<rootDir>/src', '<rootDir>/tests'],
+  moduleDirectories: ['<rootDir>/node_modules'],
   transform: {
-    '^.+\\.tsx?$': 'esbuild-jest'
+    '^.+\\.tsx?$': 'es-jest'
   },
   testRegex: '(/tests/.*.(test|spec)).(jsx?|tsx?)$',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],

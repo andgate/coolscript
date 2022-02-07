@@ -4,4 +4,5 @@ packages/*/dist
 packages/*/lib
 .parcel-cache
 jest.config.js
+jest.config.base.js
 build.js

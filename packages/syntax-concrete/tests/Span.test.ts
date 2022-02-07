@@ -1,5 +1,5 @@
-import { Span, Merge } from '@coolscript/syntax-concrete'
 import * as fc from 'fast-check'
+import { Span, Merge } from '@coolscript/syntax-concrete'
 
 const ArbitrarySpan = (): fc.Arbitrary<Span> =>
   fc

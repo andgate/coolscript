@@ -1,4 +1,4 @@
-import { Span, Merge } from './Span'
+import { Span, Merge, TextSpan } from './Span'
 
 export type Token = {
   type: 'Token'
@@ -14,35 +14,12 @@ export type SourceToken = {
 
 export function SourceToken(source: SourceToken): Token {
   const text = source.text
-  if (text.length == 0) {
-    const l = source.line
-    const c = source.col
-    return {
-      type: 'Token',
-      text: '',
-      span: Span(l, l, c, c)
-    }
-  }
-
-  const n = text.length - 1
-  const lineStart = source.line
-  const columnStart = source.col
-
-  let lineEnd = lineStart
-  let columnEnd = columnStart
-  for (let i = 0; i < n; i++) {
-    if (text.charAt(i) == '\n') {
-      columnEnd = 1
-      ++lineEnd
-      continue
-    }
-    ++columnEnd
-  }
-
+  const line = source.line
+  const col = source.col
   return {
     type: 'Token',
-    text: source.text,
-    span: Span(lineStart, lineEnd, columnStart, columnEnd)
+    text,
+    span: TextSpan(text, line, col)
   }
 }
 
@@ -52,7 +29,7 @@ export function Token(
 ): Token {
   const token = SourceToken(firstSource)
   const n = otherSources.length
-  if (otherSources && otherSources.length <= 0) {
+  if (n <= 0) {
     return token
   }
 

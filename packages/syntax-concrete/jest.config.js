@@ -5,7 +5,6 @@ module.exports = {
   ...base,
   name: packageName,
   displayName: packageName,
-  moduleNameMapper: {
-    '^@coolscript/syntax-concrete$': '<rootDir>/src'
-  }
+  rootDir: './',
+  moduleNameMapper: { '^@coolscript\/syntax-concrete$': '<rootDir>/src' }
 }

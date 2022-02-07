@@ -5,8 +5,9 @@ module.exports = {
   ...base,
   name: packageName,
   displayName: packageName,
+  rootDir: './',
   moduleNameMapper: {
-    '^@coolscript/parser$': '<rootDir>/src'
+    '^@coolscript\/parser$': `<rootDir>/src`
   },
   transform: {
     ...base.transform,
