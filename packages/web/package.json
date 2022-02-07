@@ -20,10 +20,10 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
-    "@coolscript/backend-js": "^0.1.0",
+    "@coolscript/codegen-js": "^0.1.0",
     "@coolscript/eval": "^0.1.0",
+    "@coolscript/eval-js": "^0.1.0",
     "@coolscript/examples": "^0.1.0",
-    "@coolscript/parser": "^0.1.0",
     "@coolscript/syntax": "^0.1.0",
     "@coolscript/syntax-concrete": "^0.1.0",
     "@types/react": "^17.0.38",

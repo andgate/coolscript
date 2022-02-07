@@ -1,3 +1,4 @@
+import { parse } from '@coolscript/parser'
 import { Term } from '@coolscript/syntax-concrete'
 import { Value } from './Value'
 export * from './Value'
@@ -25,7 +26,16 @@ function EvalFailedError(error: any): Error {
   return new Error(msg)
 }
 
-export function evaluate(tm: Term): EvalResult {
+export function evaluate(source: string): EvalResult {
+  const parseResult = parse(source)
+  if (parseResult.errors || !parseResult.term) {
+    return EvalFail(...parseResult.errors)
+  }
+
+  return evaluateTerm(parseResult.term)
+}
+
+export function evaluateTerm(tm: Term): EvalResult {
   const interpreter = new Interpreter()
   let value: Value
   try {

@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react'
-import { PlaygroundAPI } from './PlaygroundAPI'
+import { PlaygroundStore } from './PlaygroundStore'
 
-export const PlaygroundContext = createContext<PlaygroundAPI>(undefined)
+export const PlaygroundContext = createContext<PlaygroundStore>(undefined)
 
-export function usePlaygroundContext(): PlaygroundAPI {
-  return useContext<PlaygroundAPI>(PlaygroundContext)
+export function usePlaygroundStore(): PlaygroundStore {
+  return useContext<PlaygroundStore>(PlaygroundContext)
 }

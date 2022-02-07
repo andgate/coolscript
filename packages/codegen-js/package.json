@@ -1,7 +1,7 @@
 {
-  "name": "@coolscript/eval",
+  "name": "@coolscript/codegen-js",
   "version": "0.1.0",
-  "description": "Coolscript programming language evaluator.",
+  "description": "Coolscript programming language javascript generator.",
   "author": "Gabriel Anderson",
   "license": "MIT",
   "main": "./lib/index.cjs",
@@ -37,9 +37,9 @@
     "test": "jest"
   },
   "dependencies": {
+    "@coolscript/backend-js": "^0.1.0",
     "@coolscript/parser": "^0.1.0",
     "@coolscript/syntax": "^0.1.0",
-    "@coolscript/syntax-concrete": "^0.1.0",
-    "@coolscript/syntax-scoped": "^0.1.0"
+    "@coolscript/syntax-concrete": "^0.1.0"
   }
 }

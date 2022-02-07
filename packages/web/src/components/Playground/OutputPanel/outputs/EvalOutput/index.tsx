@@ -1,7 +1,7 @@
 import { EvalOutputView } from './EvalOutputView'
-import { usePlaygroundContext } from '../../../PlaygroundContext'
+import { usePlaygroundStore } from '../../../PlaygroundContext'
 
 export function EvalOutput() {
-  const { store } = usePlaygroundContext()
-  return <EvalOutputView result={store.results.eval} />
+  const { evalResult } = usePlaygroundStore()
+  return <EvalOutputView result={evalResult} />
 }

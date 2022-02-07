@@ -1,7 +1,7 @@
 {
-  "name": "@coolscript/eval",
+  "name": "@coolscript/eval-js",
   "version": "0.1.0",
-  "description": "Coolscript programming language evaluator.",
+  "description": "Coolscript programming language evaluator, powered by a javascript backend.",
   "author": "Gabriel Anderson",
   "license": "MIT",
   "main": "./lib/index.cjs",
@@ -37,9 +37,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@coolscript/parser": "^0.1.0",
-    "@coolscript/syntax": "^0.1.0",
-    "@coolscript/syntax-concrete": "^0.1.0",
-    "@coolscript/syntax-scoped": "^0.1.0"
+    "@coolscript/codegen-js": "^0.1.0"
   }
 }

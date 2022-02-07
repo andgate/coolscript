@@ -1,7 +1,7 @@
 import { style } from 'typestyle'
 import * as csstips from 'csstips'
 import { TabbedPanel, Tab } from './TabbedPanel'
-import { ParserOutput, EvalOutput, JsEvalOutput, JsOutput } from './outputs'
+import { EvalOutput, JsEvalOutput, JsOutput } from './outputs'
 
 const outputPanelRoot = style(csstips.flex1)
 
@@ -9,7 +9,6 @@ export function OutputPanel() {
   const outputTabs = [
     Tab('js', <JsOutput />),
     Tab('js-eval', <JsEvalOutput />),
-    Tab('parser', <ParserOutput />),
     Tab('eval', <EvalOutput />)
   ]
 

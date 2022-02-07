@@ -1,21 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  evaluateJavascript,
-  JsEvalResult,
-  PlaygroundResults,
-  PlaygroundStore
-} from './PlaygroundStore'
+import { useCallback, useMemo, useState } from 'react'
 import { PlaygroundContext } from './PlaygroundContext'
-import * as CoolScript from '@coolscript/parser'
-import { generateJS, JsGenResult } from '@coolscript/backend-js'
+import { codegenJS, CodegenJSResult } from '@coolscript/codegen-js'
 import { EvalResult, evaluate } from '@coolscript/eval'
-import { Term } from '@coolscript/syntax-concrete'
+import { EvalJSResult, evalCS } from '@coolscript/eval-js'
 import { examples } from '@coolscript/examples'
-import { ParseResult } from '@coolscript/parser'
-import { PlaygroundAPI } from './PlaygroundAPI'
 
 export const PlaygroundProvider = (props) => {
-  const [results, setResults] = useState<PlaygroundResults>({})
   const [editorText, setEditorText] = useState<string>(examples.example1)
   const [scriptText, setScriptText] = useState<string>(null)
 
@@ -24,49 +14,31 @@ export const PlaygroundProvider = (props) => {
     [editorText]
   )
 
-  useEffect(() => {
-    const parseResult: ParseResult | null = scriptText
-      ? CoolScript.parse(scriptText)
-      : null
+  const evalResult: EvalResult | null = useMemo(
+    () => (scriptText ? evaluate(scriptText) : null),
+    [scriptText]
+  )
 
-    const parseResultTerm: Term | null = parseResult ? parseResult.term : null
+  const codegenJSResult: CodegenJSResult | null = useMemo(
+    () => (scriptText ? codegenJS(scriptText) : null),
+    [scriptText]
+  )
 
-    const evalResult: EvalResult | null = parseResultTerm
-      ? evaluate(parseResultTerm)
-      : null
-
-    const jsGenResult: JsGenResult | null = parseResultTerm
-      ? generateJS(parseResultTerm)
-      : null
-
-    const jsEvalResult: JsEvalResult | null =
-      jsGenResult && jsGenResult.source
-        ? evaluateJavascript(jsGenResult.source)
-        : null
-
-    setResults({
-      parse: parseResult,
-      eval: evalResult,
-      jsGen: jsGenResult,
-      jsEval: jsEvalResult
-    })
-  }, [scriptText])
-
-  const store = useMemo<PlaygroundStore>(() => {
-    return { editorText, results }
-  }, [editorText, results])
-
-  const api: PlaygroundAPI = useMemo<PlaygroundAPI>(
-    () => ({
-      store,
-      setEditorText,
-      runScript
-    }),
-    [store, runScript]
+  const evalJSResult: EvalJSResult | null = useMemo(
+    () => (scriptText ? evalCS(scriptText) : null),
+    [scriptText]
   )
 
   return (
-    <PlaygroundContext.Provider value={api}>
+    <PlaygroundContext.Provider
+      value={{
+        codegenJSResult,
+        evalResult,
+        evalJSResult,
+        editorText,
+        setEditorText,
+        runScript
+      }}>
       {props.children}
     </PlaygroundContext.Provider>
   )

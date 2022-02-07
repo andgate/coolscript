@@ -7,6 +7,6 @@ module.exports = {
   displayName: packageName,
   rootDir: './',
   moduleNameMapper: {
-    '^@coolscript\/eval$': `<rootDir>/src`
+    '^@coolscript\/eval-js$': `<rootDir>/src`
   }
 }

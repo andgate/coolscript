@@ -1,10 +1,10 @@
 import { style } from 'typestyle'
-import { usePlaygroundContext } from '../PlaygroundContext'
+import { usePlaygroundStore } from '../PlaygroundContext'
 
 const editorMenuBarRoot = style({})
 
 export function EditorMenuBar() {
-  const { runScript } = usePlaygroundContext()
+  const { runScript } = usePlaygroundStore()
   return (
     <div className={editorMenuBarRoot}>
       <button onClick={() => runScript()}>Run</button>

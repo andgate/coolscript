@@ -1,8 +1,8 @@
-import { JsEvalResult } from '../../../PlaygroundStore'
+import { EvalJSResult } from '@coolscript/eval-js'
 import { ErrorOutput } from '../ErrorOutput'
 
 export type JsEvalOutputViewProps = {
-  result?: JsEvalResult
+  result?: EvalJSResult
 }
 
 export function JsEvalOutputView(props: JsEvalOutputViewProps) {
