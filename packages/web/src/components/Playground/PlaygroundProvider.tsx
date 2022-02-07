@@ -1,8 +1,5 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { PlaygroundContext } from './PlaygroundContext'
-import { codegenJS, CodegenJSResult } from '@coolscript/codegen-js'
-import { EvalResult, evaluate } from '@coolscript/eval'
-import { EvalJSResult, evalCS } from '@coolscript/eval-js'
 import { examples } from '@coolscript/examples'
 
 export const PlaygroundProvider = (props) => {
@@ -14,29 +11,12 @@ export const PlaygroundProvider = (props) => {
     [editorText]
   )
 
-  const evalResult: EvalResult | null = useMemo(
-    () => (scriptText ? evaluate(scriptText) : null),
-    [scriptText]
-  )
-
-  const codegenJSResult: CodegenJSResult | null = useMemo(
-    () => (scriptText ? codegenJS(scriptText) : null),
-    [scriptText]
-  )
-
-  const evalJSResult: EvalJSResult | null = useMemo(
-    () => (scriptText ? evalCS(scriptText) : null),
-    [scriptText]
-  )
-
   return (
     <PlaygroundContext.Provider
       value={{
-        codegenJSResult,
-        evalResult,
-        evalJSResult,
         editorText,
         setEditorText,
+        scriptText,
         runScript
       }}>
       {props.children}
