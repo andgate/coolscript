@@ -52,6 +52,40 @@ Object {
 }
 `;
 
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "call1": call1 1`] = `
+Object {
+  "value": Object {
+    "ann": Object {
+      "scope": Scope {
+        "enclosingScope": Scope {
+          "enclosingScope": null,
+          "symbols": Map {},
+        },
+        "symbols": Map {
+          "f" => Object {
+            "id": "f",
+            "scope": [Circular],
+          },
+        },
+      },
+      "span": Object {
+        "column": Object {
+          "end": 24,
+          "start": 23,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "num": 1,
+    "tag": "NumberValue",
+  },
+}
+`;
+
 exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "example1": example1 1`] = `
 Object {
   "value": Object {

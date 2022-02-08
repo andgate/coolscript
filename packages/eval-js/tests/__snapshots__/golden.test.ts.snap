@@ -12,6 +12,12 @@ Object {
 }
 `;
 
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "call1": call1 1`] = `
+Object {
+  "value": 1,
+}
+`;
+
 exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "example1": example1 1`] = `
 Object {
   "value": Array [
