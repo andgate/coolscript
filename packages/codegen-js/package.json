@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@coolscript/backend-js": "^0.1.0",
+    "@coolscript/examples": "^0.1.0",
     "@coolscript/parser": "^0.1.0",
     "@coolscript/syntax": "^0.1.0",
     "@coolscript/syntax-concrete": "^0.1.0"

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { generateJS } from '@coolscript/backend-js'
 import { parse } from '@coolscript/parser'
 
@@ -11,7 +10,7 @@ function CodegenJSFail(...errors: Error[]): CodegenJSResult {
   return { source: null, errors }
 }
 
-function CodegenJSSuccess(source: any): CodegenJSResult {
+function CodegenJSSuccess(source: string): CodegenJSResult {
   return { source }
 }
 
