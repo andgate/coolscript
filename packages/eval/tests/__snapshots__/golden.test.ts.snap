@@ -1,5 +1,57 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "bool1": bool1 1`] = `
+Object {
+  "value": Object {
+    "ann": Object {
+      "scope": Scope {
+        "enclosingScope": null,
+        "symbols": Map {},
+      },
+      "span": Object {
+        "column": Object {
+          "end": 5,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "bool": true,
+    "tag": "BooleanValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "bool2": bool2 1`] = `
+Object {
+  "value": Object {
+    "ann": Object {
+      "scope": Scope {
+        "enclosingScope": null,
+        "symbols": Map {},
+      },
+      "span": Object {
+        "column": Object {
+          "end": 6,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "bool": false,
+    "tag": "BooleanValue",
+  },
+}
+`;
+
 exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "example1": example1 1`] = `
 Object {
   "value": Object {
@@ -521,6 +573,46 @@ A ";" based on:
 }
 `;
 
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "lambda1": lambda1 1`] = `
+Object {
+  "value": Object {
+    "args": Array [
+      "x",
+    ],
+    "body": Object {
+      "ann": Object {
+        "scope": Scope {
+          "enclosingScope": Scope {
+            "enclosingScope": null,
+            "symbols": Map {},
+          },
+          "symbols": Map {
+            "x" => Object {
+              "id": "x",
+              "scope": [Circular],
+            },
+          },
+        },
+        "span": Object {
+          "column": Object {
+            "end": 9,
+            "start": 8,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "tag": "VariableTerm",
+      "variable": "x",
+    },
+    "tag": "LambdaValue",
+  },
+}
+`;
+
 exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "let1": let1 1`] = `
 Object {
   "value": Object {
@@ -661,6 +753,40 @@ Object {
       },
     ],
     "tag": "ArrayValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "null1": null1 1`] = `
+Object {
+  "errors": Array [
+    [Error: No parse results were recovered.],
+  ],
+  "value": null,
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "null2": null2 1`] = `
+Object {
+  "value": Object {
+    "ann": Object {
+      "scope": Scope {
+        "enclosingScope": null,
+        "symbols": Map {},
+      },
+      "span": Object {
+        "column": Object {
+          "end": 5,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "tag": "NullValue",
   },
 }
 `;
@@ -857,7 +983,7 @@ Object {
       },
       "span": Object {
         "column": Object {
-          "end": 49,
+          "end": 47,
           "start": 1,
         },
         "line": Object {
@@ -867,7 +993,7 @@ Object {
         "type": "Span",
       },
     },
-    "str": "The quick brown fox jumps 'over' the lazy dog.",
+    "str": "The quick brown fox jumps over the lazy dog.",
     "tag": "StringValue",
   },
 }
@@ -883,7 +1009,7 @@ Object {
       },
       "span": Object {
         "column": Object {
-          "end": 49,
+          "end": 47,
           "start": 1,
         },
         "line": Object {
@@ -893,7 +1019,7 @@ Object {
         "type": "Span",
       },
     },
-    "str": "The quick brown fox \\"jumps\\" over the lazy dog.",
+    "str": "The quick brown fox jumps over the lazy dog.",
     "tag": "StringValue",
   },
 }

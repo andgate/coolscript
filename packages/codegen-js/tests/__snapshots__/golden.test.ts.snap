@@ -1,5 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "bool1": bool1 1`] = `
+Object {
+  "source": "true;
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "bool2": bool2 1`] = `
+Object {
+  "source": "false;
+",
+}
+`;
+
 exports[`CoolScript JS Codegen Golden Test Suite Generating example "example1": example1 1`] = `
 Object {
   "source": "(function () {
@@ -244,6 +258,15 @@ A ";" based on:
 }
 `;
 
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "lambda1": lambda1 1`] = `
+Object {
+  "source": "(function (x) {
+  return x;
+});
+",
+}
+`;
+
 exports[`CoolScript JS Codegen Golden Test Suite Generating example "let1": let1 1`] = `
 Object {
   "source": "(function () {
@@ -271,6 +294,22 @@ Object {
   const y = 2;
   return [x, y];
 })();
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "null1": null1 1`] = `
+Object {
+  "errors": Array [
+    [Error: No parse results were recovered.],
+  ],
+  "source": null,
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "null2": null2 1`] = `
+Object {
+  "source": "null;
 ",
 }
 `;
@@ -326,14 +365,14 @@ Object {
 
 exports[`CoolScript JS Codegen Golden Test Suite Generating example "string5": string5 1`] = `
 Object {
-  "source": "\\"The quick brown fox jumps 'over' the lazy dog.\\";
+  "source": "\\"The quick brown fox jumps over the lazy dog.\\";
 ",
 }
 `;
 
 exports[`CoolScript JS Codegen Golden Test Suite Generating example "string6": string6 1`] = `
 Object {
-  "source": "\\"The quick brown fox \\\\\\"jumps\\\\\\" over the lazy dog.\\";
+  "source": "\\"The quick brown fox jumps over the lazy dog.\\";
 ",
 }
 `;

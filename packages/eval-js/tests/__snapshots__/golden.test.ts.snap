@@ -1,5 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "bool1": bool1 1`] = `
+Object {
+  "value": true,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "bool2": bool2 1`] = `
+Object {
+  "value": false,
+}
+`;
+
 exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "example1": example1 1`] = `
 Object {
   "value": Array [
@@ -230,6 +242,12 @@ A ";" based on:
 }
 `;
 
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "lambda1": lambda1 1`] = `
+Object {
+  "value": [Function],
+}
+`;
+
 exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "let1": let1 1`] = `
 Object {
   "value": 1,
@@ -248,6 +266,21 @@ Object {
     1,
     2,
   ],
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "null1": null1 1`] = `
+Object {
+  "errors": Array [
+    [Error: No parse results were recovered.],
+  ],
+  "value": null,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "null2": null2 1`] = `
+Object {
+  "value": null,
 }
 `;
 
@@ -295,12 +328,12 @@ Object {
 
 exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "string5": string5 1`] = `
 Object {
-  "value": "The quick brown fox jumps 'over' the lazy dog.",
+  "value": "The quick brown fox jumps over the lazy dog.",
 }
 `;
 
 exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "string6": string6 1`] = `
 Object {
-  "value": "The quick brown fox \\"jumps\\" over the lazy dog.",
+  "value": "The quick brown fox jumps over the lazy dog.",
 }
 `;

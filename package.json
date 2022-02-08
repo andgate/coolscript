@@ -20,6 +20,7 @@
     "build:lib": "pnpm build:plugin && lerna run build:lib",
     "build:plugin": "lerna run build:plugin",
     "test": "jest",
+    "test:update": "jest -u",
     "clean": "pnpm clean:build && pnpm clean:etc && pnpm clean:node_modules",
     "clean:all": "pnpm run clean && rimraf node_modules",
     "clean:docs": "rimraf docs/",

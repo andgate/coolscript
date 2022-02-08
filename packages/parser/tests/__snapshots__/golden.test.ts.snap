@@ -1,5 +1,87 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Parser Golden Test Suite Parse example "bool1": bool1 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 5,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "tag": "ValueTerm",
+    "value": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 5,
+            "start": 1,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "bool": true,
+      "tag": "BooleanValue",
+    },
+  },
+  "warnings": Array [
+    [Error: Ambiguous grammar encountered! Resolving first result.],
+  ],
+}
+`;
+
+exports[`Parser Golden Test Suite Parse example "bool2": bool2 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 6,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "tag": "ValueTerm",
+    "value": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 6,
+            "start": 1,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "bool": false,
+      "tag": "BooleanValue",
+    },
+  },
+  "warnings": Array [
+    [Error: Ambiguous grammar encountered! Resolving first result.],
+  ],
+}
+`;
+
 exports[`Parser Golden Test Suite Parse example "example1": example1 1`] = `
 Object {
   "term": Object {
@@ -979,6 +1061,48 @@ A ";" based on:
 }
 `;
 
+exports[`Parser Golden Test Suite Parse example "lambda1": lambda1 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 9,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "args": Array [
+      "x",
+    ],
+    "body": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 9,
+            "start": 8,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "tag": "VariableTerm",
+      "variable": "x",
+    },
+    "tag": "LambdaTerm",
+  },
+  "warnings": Array [],
+}
+`;
+
 exports[`Parser Golden Test Suite Parse example "let1": let1 1`] = `
 Object {
   "term": Object {
@@ -1337,6 +1461,56 @@ Object {
 }
 `;
 
+exports[`Parser Golden Test Suite Parse example "null1": null1 1`] = `
+Object {
+  "errors": Array [
+    [Error: No parse results were recovered.],
+  ],
+  "term": null,
+  "warnings": Array [],
+}
+`;
+
+exports[`Parser Golden Test Suite Parse example "null2": null2 1`] = `
+Object {
+  "term": Object {
+    "ann": Object {
+      "span": Object {
+        "column": Object {
+          "end": 5,
+          "start": 1,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+    },
+    "tag": "ValueTerm",
+    "value": Object {
+      "ann": Object {
+        "span": Object {
+          "column": Object {
+            "end": 5,
+            "start": 1,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+      },
+      "tag": "NullValue",
+    },
+  },
+  "warnings": Array [
+    [Error: Ambiguous grammar encountered! Resolving first result.],
+  ],
+}
+`;
+
 exports[`Parser Golden Test Suite Parse example "number1": number1 1`] = `
 Object {
   "term": Object {
@@ -1616,7 +1790,7 @@ Object {
     "ann": Object {
       "span": Object {
         "column": Object {
-          "end": 49,
+          "end": 47,
           "start": 1,
         },
         "line": Object {
@@ -1631,7 +1805,7 @@ Object {
       "ann": Object {
         "span": Object {
           "column": Object {
-            "end": 49,
+            "end": 47,
             "start": 1,
           },
           "line": Object {
@@ -1641,7 +1815,7 @@ Object {
           "type": "Span",
         },
       },
-      "str": "The quick brown fox jumps 'over' the lazy dog.",
+      "str": "The quick brown fox jumps over the lazy dog.",
       "tag": "StringValue",
     },
   },
@@ -1655,7 +1829,7 @@ Object {
     "ann": Object {
       "span": Object {
         "column": Object {
-          "end": 49,
+          "end": 47,
           "start": 1,
         },
         "line": Object {
@@ -1670,7 +1844,7 @@ Object {
       "ann": Object {
         "span": Object {
           "column": Object {
-            "end": 49,
+            "end": 47,
             "start": 1,
           },
           "line": Object {
@@ -1680,7 +1854,7 @@ Object {
           "type": "Span",
         },
       },
-      "str": "The quick brown fox \\"jumps\\" over the lazy dog.",
+      "str": "The quick brown fox jumps over the lazy dog.",
       "tag": "StringValue",
     },
   },
