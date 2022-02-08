@@ -1,5 +1,5 @@
 import { examples } from '@coolscript/examples'
-import { evaluate } from '@coolscript/eval'
+import { evaluate } from '@coolscript/eval-standard'
 
 const exampleKeys: string[] = Object.keys(examples)
 

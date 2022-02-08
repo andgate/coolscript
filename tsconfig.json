@@ -12,6 +12,7 @@
       "@coolscript/parser": ["parser/src"],
       "@coolscript/eval": ["eval/src"],
       "@coolscript/eval-js": ["eval-js/src"],
+      "@coolscript/eval-standard": ["eval-standard/src"],
       "@coolscript/examples": ["examples/src"],
       "coolscript": ["coolscript/src"],
       "esbuild-plugin-coolscript": ["coolscript/src"]

@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
-import { EvalJSResult, evalCS } from '@coolscript/eval-js'
+import { EvalResult, evalCS } from '@coolscript/eval'
 import { usePlaygroundStore } from '../../PlaygroundContext'
 import { ErrorOutput } from './ErrorOutput'
 
 export function EvalJSOutput() {
   const { scriptText } = usePlaygroundStore()
-  const result: EvalJSResult | null = useMemo(
-    () => (scriptText ? evalCS(scriptText) : null),
+  const result: EvalResult | null = useMemo(
+    () => (scriptText ? evalCS(scriptText, { backend: 'js' }) : null),
     [scriptText]
   )
 

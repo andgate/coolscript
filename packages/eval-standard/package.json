@@ -1,7 +1,7 @@
 {
-  "name": "@coolscript/eval",
+  "name": "@coolscript/eval-standard",
   "version": "0.1.0",
-  "description": "CoolScript evaluator for javascript.",
+  "description": "The gold-standard CoolScript programming language evaluator.",
   "author": "Gabriel Anderson",
   "license": "MIT",
   "main": "./lib/index.cjs",
@@ -36,11 +36,7 @@
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
     "test": "jest"
   },
-  "devDependencies": {
-    "@coolscript/codegen-js": "^0.1.0",
-    "@coolscript/backend-js": "^0.1.0",
-    "@coolscript/eval-standard": "^0.1.0",
-    "@coolscript/eval-js": "^0.1.0",
+  "dependencies": {
     "@coolscript/examples": "^0.1.0",
     "@coolscript/parser": "^0.1.0",
     "@coolscript/syntax": "^0.1.0",

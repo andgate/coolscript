@@ -36,7 +36,7 @@
     "verify:fix": "pnpm prettier:fix && pnpm lint:fix",
     "test": "jest"
   },
-  "dependencies": {
+  "devDependencies": {
     "@coolscript/backend-js": "^0.1.0",
     "@coolscript/examples": "^0.1.0",
     "@coolscript/parser": "^0.1.0",

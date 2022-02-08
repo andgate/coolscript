@@ -1,47 +1,61 @@
-import { parse } from '@coolscript/parser'
-import { Term } from '@coolscript/syntax-concrete'
-import { Value } from './Value'
-export * from './Value'
-import { Interpreter } from './Interpreter'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { generateJS } from '@coolscript/backend-js'
+import * as JS from '@coolscript/eval-js'
+import * as Standard from '@coolscript/eval-standard'
+import * as Core from '@coolscript/syntax'
+import * as Concrete from '@coolscript/syntax-concrete'
 
 export type EvalResult = {
-  value: Value | null
+  value: any | null
   errors?: Error[]
+}
+
+export type EvalBackend = 'js' | 'standard'
+
+export const defaultEvalBackend: EvalBackend = 'standard'
+
+export type EvalOptions = {
+  backend?: EvalBackend
 }
 
 function EvalFail(...errors: Error[]): EvalResult {
   return { value: null, errors }
 }
 
-function EvalSuccess(value: Value): EvalResult {
+function EvalSuccess(value: any): EvalResult {
   return { value }
 }
 
-function EvalFailedError(error: any): Error {
-  let errorMsg = ''
-  if (error && error.stack && error.message) {
-    errorMsg = ` Error message: ${error.message}`
+export function evalCS(source: string, options: EvalOptions): EvalResult {
+  const backend: EvalBackend = options.backend
+    ? options.backend
+    : defaultEvalBackend
+  switch (backend) {
+    case 'standard': {
+      return standardEvalCS(source)
+    }
+    case 'js':
+      return JS.evalCS(source)
   }
-  const msg = `Evaluation failed!${errorMsg}`
-  return new Error(msg)
 }
 
-export function evaluate(source: string): EvalResult {
-  const parseResult = parse(source)
-  if (parseResult.errors || !parseResult.term) {
-    return EvalFail(...parseResult.errors)
+function standardEvalCS(source: string): EvalResult {
+  const evalResult = Standard.evaluate(source)
+  if (evalResult.errors || !evalResult.value) {
+    return EvalFail(...evalResult.errors)
   }
-
-  return evaluateTerm(parseResult.term)
-}
-
-export function evaluateTerm(tm: Term): EvalResult {
-  const interpreter = new Interpreter()
-  let value: Value
+  const value: Standard.Value = evalResult.value
+  const tm: Core.Term<unknown> = Standard.ValueToTerm(value)
+  const jsResult = generateJS(tm as Concrete.Term)
+  if (jsResult.errors || !jsResult.source) {
+    return EvalFail(...jsResult.errors)
+  }
+  const js = jsResult.source
+  let result = null
   try {
-    value = interpreter.interpret(tm)
-  } catch (e) {
-    return EvalFail(EvalFailedError(e))
+    result = eval(js)
+  } catch (error) {
+    return EvalFail(error)
   }
-  return EvalSuccess(value)
+  return EvalSuccess(result)
 }

@@ -73,3 +73,32 @@ export function ObjectValue(entries: ObjectMap<Value>): ObjectValue {
 export function ErrorValue(err: string): ErrorValue {
   return { tag: 'ErrorValue', err }
 }
+
+export function ValueToTerm(value: Value): Core.Term<unknown> {
+  switch (value.tag) {
+    case 'NullValue':
+    case 'BooleanValue':
+    case 'NumberValue':
+    case 'StringValue':
+      return Core.ValueTerm(value, {})
+    case 'ArrayValue': {
+      const elements = value.elements.map((v) => ValueToTerm(v))
+      return Core.ArrayTerm(elements, {})
+    }
+    case 'ObjectValue': {
+      const entries = Object.entries(value.entries).map(([k, v]) => [
+        k,
+        ValueToTerm(v)
+      ])
+      const objectMap = Object.fromEntries(entries)
+      return Core.ObjectTerm(objectMap, {})
+    }
+    case 'LambdaValue': {
+      const args = value.args
+      const body: Core.Term<unknown> = value.body as Core.Term<unknown>
+      return Core.LambdaTerm(args, body, {})
+    }
+    case 'ErrorValue':
+      return Core.ErrorTerm(value.err, {})
+  }
+}
