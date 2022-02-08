@@ -1,21 +1,17 @@
 import * as fc from 'fast-check'
-import { Token, SourceToken } from '@coolscript/syntax-concrete'
+import { Token, SourceToken, lines } from '@coolscript/syntax-concrete'
 
 const arbMultiLineString = (): fc.Arbitrary<string> =>
   fc
     .array(fc.string(), { minLength: 2, maxLength: 10 })
     .map((a) => a.join('\n'))
 
-const ArbitrarySourceToken = (): fc.Arbitrary<SourceToken> =>
-  fc.tuple(fc.string(), fc.nat(), fc.nat()).map(([text, line, col]) => ({
-    text,
-    line,
-    col
-  }))
+const arbSourceString = (multiline?: boolean): fc.Arbitrary<string> =>
+  multiline ? arbMultiLineString() : fc.string()
 
-const MultiLineSourceToken = (): fc.Arbitrary<SourceToken> =>
+const ArbitrarySourceToken = (multiline?: boolean): fc.Arbitrary<SourceToken> =>
   fc
-    .tuple(arbMultiLineString(), fc.nat(), fc.nat())
+    .tuple(arbSourceString(multiline), fc.nat(), fc.nat())
     .map(([text, line, col]) => ({
       text,
       line,
@@ -102,6 +98,140 @@ test('Token(t1, ...tn).text == [t1.text, ...tn.text].join("")', () => {
       (token, tokens) => {
         const expectedText = [token, ...tokens].map((t) => t.text).join('')
         return Token(token, ...tokens).text == expectedText
+      }
+    )
+  )
+})
+
+test('Token(t1, t2).text == SourceToken(t1).text + SourceToken(t2).text', () => {
+  fc.assert(
+    fc.property(ArbitrarySourceToken(), ArbitrarySourceToken(), (t1, t2) => {
+      const text1 = Token(t1, t2).text
+      const text2 = SourceToken(t1).text + SourceToken(t2).text
+      return text1 == text2
+    })
+  )
+})
+
+test('Token(t1, t2, t3).text == SourceToken(t1).text + SourceToken(t2).text + SourceToken(t3).text', () => {
+  fc.assert(
+    fc.property(
+      ArbitrarySourceToken(),
+      ArbitrarySourceToken(),
+      ArbitrarySourceToken(),
+      (t1, t2, t3) => {
+        const text1 = Token(t1, t2, t3).text
+        const text2 =
+          SourceToken(t1).text + SourceToken(t2).text + SourceToken(t3).text
+        return text1 == text2
+      }
+    )
+  )
+})
+
+test('Token(t1, t2, t3).span.line.start == SourceToken(t1).span.line.start', () => {
+  fc.assert(
+    fc.property(
+      ArbitrarySourceToken(),
+      ArbitrarySourceToken(),
+      ArbitrarySourceToken(),
+      (t1, t2, t3) => {
+        const n1 = Token(t1, t2, t3).span.line.start
+        const n2 = SourceToken(t1).span.line.start
+        return n1 == n2
+      }
+    )
+  )
+})
+
+test('Token(t1, t2, t3).span.column.start == SourceToken(t1).span.column.start', () => {
+  fc.assert(
+    fc.property(
+      ArbitrarySourceToken(),
+      ArbitrarySourceToken(),
+      ArbitrarySourceToken(),
+      (t1, t2, t3) => {
+        const n1 = Token(t1, t2, t3).span.column.start
+        const n2 = SourceToken(t1).span.column.start
+        return n1 == n2
+      }
+    )
+  )
+})
+
+test('Token(t1, t2, t3).span.line.end == SourceToken(t3).span.line.end', () => {
+  fc.assert(
+    fc.property(
+      ArbitrarySourceToken(),
+      ArbitrarySourceToken(),
+      ArbitrarySourceToken(),
+      (t1, t2, t3) => {
+        const n1 = Token(t1, t2, t3).span.line.end
+        const n2 = SourceToken(t3).span.line.end
+        return n1 == n2
+      }
+    )
+  )
+})
+
+test('lines("") == [""]', () => {
+  expect(lines('')).toEqual([''])
+})
+
+test('lines("\n") == ["", ""]', () => {
+  expect(lines('\n')).toEqual(['', ''])
+})
+
+test('lines("a") == ["a"]', () => {
+  expect(lines('a')).toEqual(['a'])
+})
+
+test('lines("a\n") == ["a", ""]', () => {
+  expect(lines('a\n')).toEqual(['a', ''])
+})
+
+test('lines("a\nb\nc").length == 3', () => {
+  expect(lines('a\nb\nc').length).toBe(3)
+})
+
+test('lines("a\nb\nc") == ["a", "b", "c"]', () => {
+  expect(lines('a\nb\nc')).toEqual(['a', 'b', 'c'])
+})
+
+test('lines("a\nb\nc").length == 3', () => {
+  expect(lines('a\nb\nc').length).toBe(3)
+})
+
+test('SourceToken(t).span.line.end == t.line + lineCount(t.text)', () => {
+  fc.assert(
+    fc.property(ArbitrarySourceToken(true), (t) => {
+      const n1 = SourceToken(t).span.line.end
+      const n2 = t.line + lines(t.text).length - 1
+      return n1 == n2
+    })
+  )
+})
+
+test('Token(t).span.line.end == t.line + lineCount(t.text)', () => {
+  fc.assert(
+    fc.property(ArbitrarySourceToken(true), (t) => {
+      const n1 = Token(t).span.line.end
+      const n2 = t.line + lines(t.text).length - 1
+      return n1 == n2
+    })
+  )
+})
+
+test('Token(t1, t2, t3).span.column.end == SourceToken(t3).span.column.end', () => {
+  fc.assert(
+    fc.property(
+      ArbitrarySourceToken(),
+      ArbitrarySourceToken(),
+      ArbitrarySourceToken(),
+      (t1, t2, t3) => {
+        const n1 = Token(t1, t2, t3).span.column.end
+        const n2 = SourceToken(t3).span.column.end
+        return n1 == n2
       }
     )
   )
