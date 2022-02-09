@@ -212,11 +212,22 @@ test('SourceToken(t).span.line.end == t.line + lineCount(t.text)', () => {
   )
 })
 
-test('Token(t).span.line.end == t.line + lineCount(t.text)', () => {
+test('Token(t).span.line.end == t.line + lines(t.text).length - 1', () => {
   fc.assert(
     fc.property(ArbitrarySourceToken(true), (t) => {
       const n1 = Token(t).span.line.end
       const n2 = t.line + lines(t.text).length - 1
+      return n1 == n2
+    })
+  )
+})
+
+test('Token(t).span.column.end == t.col + lines[lines.length - 1].length - 1', () => {
+  fc.assert(
+    fc.property(ArbitrarySourceToken(true), (t) => {
+      const ls = lines(t.text)
+      const n1 = Token(t).span.column.end
+      const n2 = t.col + ls[ls.length - 1].length
       return n1 == n2
     })
   )
