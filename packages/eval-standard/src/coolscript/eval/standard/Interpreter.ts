@@ -1,6 +1,4 @@
 import {
-  ScopeBuilder,
-  Scope,
   Term,
   AssignmentTerm,
   LambdaTerm,
@@ -24,7 +22,10 @@ import {
   WhileStatement,
   DoWhileStatement,
   ForStatement,
-  Declaration
+  Declaration,
+  resolveFree,
+  ValueTerm,
+  ErrorTerm
 } from '@coolscript/syntax'
 import { MemoryManager } from './MemoryManager'
 import * as V from './heap/HeapValue'
@@ -32,11 +33,10 @@ import * as V from './heap/HeapValue'
 export class Interpreter {
   memory: MemoryManager = new MemoryManager()
 
-  interpret(tm: Concrete.Term): V.HeapValue | null {
-    const stm = scopeTerm(tm, new Scope())
+  interpret(tm: Term): V.HeapValue | null {
     let result
     try {
-      result = this.exec(stm)
+      result = this.exec(tm)
     } catch (r) {
       result = r as V.HeapValue
     }
@@ -87,7 +87,7 @@ export class Interpreter {
 
   execLambdaTerm(tm: LambdaTerm): V.HeapValue {
     // need to get free variables from tm.body,
-    const fvs = getFreeVars(tm.body, new Set())
+    const fvs = resolveFree(tm.body)
     const closure: V.HeapClosure = fvs.map((v) => [v, this.memory.resolve(v)])
     return V.LambdaValue(closure, tm.args, tm.body)
   }
@@ -248,11 +248,11 @@ export class Interpreter {
   }
 
   execAssignmentStatement(s: AssignmentStatement) {
-    this.execAssignmentTerm(Core.AssignmentTerm(s.lhs, s.rhs, s.ann))
+    this.execAssignmentTerm(AssignmentTerm(s.lhs, s.rhs, s.span))
   }
 
   execCallStatement(s: CallStatement) {
-    this.execCallTerm(Core.CallTerm(s.func, s.args, s.ann))
+    this.execCallTerm(CallTerm(s.func, s.args, s.span))
   }
 
   execReturnStatement(s: ReturnStatement) {
@@ -279,7 +279,7 @@ export class Interpreter {
     switch (br.tag) {
       case 'ElifStatement':
         return this.execIfStatement(
-          Core.IfStatement(br.condition, br.body, br.branch, br.ann)
+          IfStatement(br.condition, br.body, br.branch, br.span)
         )
       case 'ElseStatement':
         return this.execStatement(br.body)
@@ -306,7 +306,7 @@ export class Interpreter {
 
   execForStatement(tm: ForStatement) {
     tm.declarations.forEach((d) =>
-      this.execAssignmentTerm(Core.AssignmentTerm(d.variable, d.body, d.ann))
+      this.execAssignmentTerm(AssignmentTerm(d.variable, d.body, d.span))
     )
     let cond: V.BooleanValue = this.exec(tm.condition) as V.BooleanValue
     while (cond) {
@@ -317,18 +317,18 @@ export class Interpreter {
     return null
   }
 
-  loadTerm(value: V.HeapValue): Core.Term<unknown> {
+  loadTerm(value: V.HeapValue): Term {
     switch (value.tag) {
       case 'NullValue':
       case 'BooleanValue':
       case 'NumberValue':
       case 'StringValue':
-        return Core.ValueTerm(value, {})
+        return ValueTerm(value)
       case 'ReferenceValue':
         throw new Error('Unimplemented!')
       case 'ArrayValue': {
         const elements = value.elements.map((v) => this.loadTerm(v))
-        return Core.ArrayTerm(elements, {})
+        return ArrayTerm(elements)
       }
       case 'ObjectValue': {
         const entries = Object.entries(value.entries).map(([k, v]) => [
@@ -336,15 +336,15 @@ export class Interpreter {
           this.loadTerm(v)
         ])
         const objectMap = Object.fromEntries(entries)
-        return Core.ObjectTerm(objectMap, {})
+        return ObjectTerm(objectMap)
       }
       case 'LambdaValue': {
         const args = value.args
-        const body: Core.Term<unknown> = value.body as Core.Term<unknown>
-        return Core.LambdaTerm(args, body, {})
+        const body = value.body
+        return LambdaTerm(args, body)
       }
       case 'ErrorValue':
-        return Core.ErrorTerm(value.err, {})
+        return ErrorTerm(value.err)
     }
   }
 }

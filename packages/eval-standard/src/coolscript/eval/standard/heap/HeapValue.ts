@@ -85,3 +85,32 @@ export function ObjectValue(entries: ObjectMap<HeapValue>): ObjectValue {
 export function ErrorValue(err: string): ErrorValue {
   return { tag: 'ErrorValue', err }
 }
+
+export function ValueToTerm(value: HeapValue): Syntax.Term {
+  switch (value.tag) {
+    case 'NullValue':
+    case 'BooleanValue':
+    case 'NumberValue':
+    case 'StringValue':
+      return Syntax.ValueTerm(value)
+    case 'ArrayValue': {
+      const elements = value.elements.map((v) => ValueToTerm(v))
+      return Syntax.ArrayTerm(elements)
+    }
+    case 'ObjectValue': {
+      const entries = Object.entries(value.entries).map(([k, v]) => [
+        k,
+        ValueToTerm(v)
+      ])
+      const objectMap = Object.fromEntries(entries)
+      return Syntax.ObjectTerm(objectMap)
+    }
+    case 'LambdaValue': {
+      const args = value.args
+      const body: Syntax.Term = value.body as Syntax.Term
+      return Syntax.LambdaTerm(args, body)
+    }
+    case 'ErrorValue':
+      return Syntax.ErrorTerm(value.err)
+  }
+}

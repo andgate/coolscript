@@ -37,14 +37,12 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@coolscript/codegen-js": "^0.1.0",
-    "@coolscript/backend-js": "^0.1.0",
-    "@coolscript/eval-standard": "^0.1.0",
-    "@coolscript/eval-js": "^0.1.0",
-    "@coolscript/examples": "^0.1.0",
-    "@coolscript/parser": "^0.1.0",
-    "@coolscript/syntax": "^0.1.0",
-    "@coolscript/syntax-concrete": "^0.1.0",
-    "@coolscript/syntax-scoped": "^0.1.0"
+    "@coolscript/codegen-js": "workspace:*",
+    "@coolscript/backend-js": "workspace:*",
+    "@coolscript/eval-standard": "workspace:*",
+    "@coolscript/eval-js": "workspace:*",
+    "@coolscript/examples": "workspace:*",
+    "@coolscript/parser": "workspace:*",
+    "@coolscript/syntax": "workspace:*"
   }
 }

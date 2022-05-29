@@ -37,10 +37,11 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
-    "@coolscript/examples": "^0.1.0",
-    "@coolscript/syntax": "^0.1.0",
+    "@coolscript/examples": "workspace:*",
+    "@coolscript/syntax": "workspace:*",
     "@types/moo": "^0.5.5",
     "@types/nearley": "^2.11.2",
+    "esbuild": "^0.14.42",
     "esbuild-plugin-nearley": "^1.0.3",
     "jest-transform-nearley": "^2.0.0",
     "moo": "^0.5.1",

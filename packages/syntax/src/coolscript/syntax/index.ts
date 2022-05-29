@@ -1,3 +1,3 @@
 export * from './resolve-free'
 export * from './span'
-export * from './types'
+export * from './syntax-types'

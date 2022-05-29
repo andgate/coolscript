@@ -1,7 +1,7 @@
 export * from './heap/HeapValue'
 
 import { parse } from '@coolscript/parser'
-import { Term } from '@coolscript/syntax-concrete'
+import { Term } from '@coolscript/syntax'
 import { HeapValue } from './heap/HeapValue'
 import { Interpreter } from './Interpreter'
 

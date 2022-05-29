@@ -1,5 +1,5 @@
 import { isStatement, isTerm } from './common'
-import { Statement, Term, Variable } from './types'
+import { Statement, Term, Variable } from './syntax-types'
 
 export function resolveFree(termOrStatement: Term | Statement): Variable[] {
   const scope = emptyScope()

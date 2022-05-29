@@ -20,9 +20,9 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
-    "@coolscript/codegen-js": "^0.1.0",
-    "@coolscript/eval": "^0.1.0",
-    "@coolscript/examples": "^0.1.0",
+    "@coolscript/codegen-js": "workspace:*",
+    "@coolscript/eval": "workspace:*",
+    "@coolscript/examples": "workspace:*",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
     "@types/react-router-dom": "^5.3.3",
