@@ -1,0 +1,286 @@
+import * as Core from '@coolscript/syntax'
+import * as Scoped from '../../../../syntax-scoped/src/coolscript/syntax/scoped/types'
+import type { Variable } from '../../../../syntax-scoped/src/coolscript/syntax/scoped/types'
+
+export class ScopeBuilder {
+  free: Set<Variable>
+  free_stack: Set<Variable>[]
+
+  build<A>(tm: Core.Term<A>): Scoped.Term<A> {
+    return this.buildTerm(tm)
+  }
+
+  buildTerm<A>(tm: Core.Term<A>): Scoped.Term<A> {
+    switch (tm.tag) {
+      case 'ErrorTerm':
+        return Scoped.ErrorTerm(tm.msg, tm.ann)
+      case 'ValueTerm': {
+        const value = this.buildValue(tm.value)
+        return Scoped.ValueTerm(value, tm.ann)
+      }
+      case 'VariableTerm':
+        return Scoped.VariableTerm(tm.variable, tm.ann)
+      case 'AssignmentTerm': {
+        const rhs = this.buildTerm(tm.rhs)
+        return Scoped.AssignmentTerm(tm.lhs, rhs, tm.ann)
+      }
+      case 'LambdaTerm': {
+        const body = this.buildTerm(tm.body)
+        const scope = { free: Array.from(this.free) }
+        return Scoped.LambdaTerm(scope, tm.args, body, tm.ann)
+      }
+      case 'CallTerm': {
+        const func = this.buildTerm(tm.func)
+        const args = tm.args.map((t) => this.buildTerm(t))
+        return Scoped.CallTerm(func, args, tm.ann)
+      }
+      case 'ParentheticalTerm':
+        return Scoped.ParentheticalTerm(this.buildTerm(tm.term), tm.ann)
+      case 'ArrayTerm': {
+        const elements = tm.elements.map((e) => this.buildTerm(e))
+        return Scoped.ArrayTerm(elements, tm.ann)
+      }
+      case 'ObjectTerm': {
+        const entries = Object.entries(tm.entries)
+        const object = Object.fromEntries(
+          entries.map(([k, t]) => [k, this.buildTerm(t)])
+        )
+        return Scoped.ObjectTerm(object, tm.ann)
+      }
+      case 'MemberAccessTerm': {
+        const object = this.buildTerm(tm.object)
+        return Scoped.MemberAccessTerm(object, tm.member, tm.ann)
+      }
+      case 'IndexAccessTerm': {
+        const array = this.buildTerm(tm.array)
+        const index = this.buildTerm(tm.index)
+        return Scoped.IndexAccessTerm(array, index, tm.ann)
+      }
+      case 'LetTerm': {
+        const declarations = tm.declarations.map((d) =>
+          this.buildDeclaration(d)
+        )
+        const body = this.buildTerm(tm.body)
+        return Scoped.LetTerm(declarations, body, tm.ann)
+      }
+      case 'DoTerm': {
+        const block = this.buildBlock(tm.block)
+        return Scoped.DoTerm(block, tm.ann)
+      }
+      case 'ConditionalTerm': {
+        const cond = this.buildTerm(tm.condition)
+        const body = this.buildTerm(tm.body)
+        const branch = this.buildBranchTerm(tm.branch)
+        return Scoped.ConditionalTerm(cond, body, branch, tm.ann)
+      }
+      default: {
+        throw Error(
+          `scopedTerm: Unrecognized term tag encountered: ${JSON.stringify(tm)}`
+        )
+      }
+    }
+  }
+
+  buildValue<A>(value: Core.AtomicValue<A>): Scoped.AtomicValue<A> {
+    switch (value.tag) {
+      case 'NullValue':
+        return Scoped.NullValue(value.ann)
+      case 'NumberValue':
+        return Scoped.NumberValue(value.num, value.ann)
+      case 'StringValue':
+        return Scoped.StringValue(value.str, value.ann)
+      case 'BooleanValue':
+        return Scoped.BooleanValue(value.bool, value.ann)
+    }
+  }
+
+  buildDeclaration<A>(declaration: Core.Declaration<A>): Scoped.Declaration<A> {
+    switch (declaration.tag) {
+      case 'VariableDeclaration': {
+        const body = this.buildTerm(declaration.body)
+        return Scoped.VariableDeclaration(
+          declaration.variable,
+          body,
+          declaration.ann
+        )
+      }
+    }
+  }
+
+  buildBranchTerm<A>(branch?: Core.BranchTerm<A>): Scoped.BranchTerm<A> {
+    switch (branch.tag) {
+      case 'ElseTerm': {
+        const body = this.buildTerm(branch.body)
+        return Scoped.ElseTerm(body, branch.ann)
+      }
+      case 'ElifTerm': {
+        const condition = this.buildTerm(branch.condition)
+        const body = this.buildTerm(branch.body)
+        const childBranch = this.buildBranchTerm(branch.branch)
+        return Scoped.ElifTerm(condition, body, childBranch, branch.ann)
+      }
+    }
+  }
+
+  buildBlock<A>(block: Core.BlockStatement<A>): Scoped.BlockStatement<A> {
+    const statements = block.statements.map((s) => this.buildStatement(s))
+    return Scoped.BlockStatement(statements, block.ann)
+  }
+
+  buildStatement<A>(s: Core.Statement<A>): Scoped.Statement<A> {
+    switch (s.tag) {
+      case 'AssignmentStatement': {
+        const rhs = this.buildTerm(s.rhs)
+        return Scoped.AssignmentStatement(s.lhs, rhs, s.ann)
+      }
+      case 'CallStatement': {
+        const func = this.buildTerm(s.func)
+        const args = s.args.map((t) => this.buildTerm(t))
+        return Scoped.CallStatement(func, args, s.ann)
+      }
+      case 'ReturnStatement': {
+        const result = this.buildTerm(s.result)
+        return Scoped.ReturnStatement(result, s.ann)
+      }
+      case 'BlockStatement': {
+        return this.buildBlock(s)
+      }
+      case 'IfStatement': {
+        const condition = this.buildTerm(s.condition)
+        const body = this.buildStatement(s.body)
+        const branch = this.buildBranchStatement(s.branch)
+        return Scoped.IfStatement(condition, body, branch, s.ann)
+      }
+      case 'WhileStatement': {
+        const condition = this.buildTerm(s.condition)
+        const body = this.buildStatement(s.body)
+        return Scoped.WhileStatement(condition, body, s.ann)
+      }
+      case 'DoWhileStatement': {
+        const body = this.buildStatement(s.body)
+        const condition = this.buildTerm(s.condition)
+        return Scoped.DoWhileStatement(body, condition, s.ann)
+      }
+      case 'ForStatement': {
+        const declarations = s.declarations.map((d) =>
+          this.buildVariableDeclaration(d)
+        )
+        const condition = this.buildTerm(s.condition)
+        const update = this.buildTerm(s.update)
+        const body = this.buildStatement(s.body)
+        return Scoped.ForStatement(declarations, condition, update, body, s.ann)
+      }
+    }
+  }
+
+  buildVariableDeclaration<A>(
+    d: Core.VariableDeclaration<A>
+  ): Scoped.VariableDeclaration<A> {
+    const body = this.buildTerm(d.body)
+    return Scoped.VariableDeclaration(d.variable, body, d.ann)
+  }
+
+  buildBranchStatement<A>(
+    branch?: Core.BranchStatement<A>
+  ): Scoped.BranchStatement<A> | null {
+    if (!branch) {
+      return null
+    }
+    switch (branch.tag) {
+      case 'ElseStatement': {
+        const body = this.buildStatement(branch.body)
+        return Scoped.ElseStatement(body, branch.ann)
+      }
+      case 'ElifStatement': {
+        const condition = this.buildTerm(branch.condition)
+        const body = this.buildStatement(branch.body)
+        const childBranch = this.buildBranchStatement(branch.branch)
+        return Scoped.ElifStatement(condition, body, childBranch, branch.ann)
+      }
+    }
+  }
+
+  resolveFree<A>(tm: Scoped.Term<A>, scope: Scope): Variable[] {
+    switch (tm.tag) {
+      case 'ErrorTerm':
+        return []
+      case 'ValueTerm':
+        return []
+      case 'VariableTerm': {
+        const v = tm.variable
+        if (!scope.has(v)) {
+          return [v]
+        }
+        return []
+      }
+      case 'AssignmentTerm': {
+        const lhs = tm.lhs
+        if (!scope.has(lhs)) {
+          scope.add(lhs)
+        }
+        const vs = this.resolveFree(tm.rhs, scope)
+        return vs
+      }
+      case 'LambdaTerm': {
+        const funcScope = new Set<string>()
+        tm.args.forEach((arg) => funcScope.add(arg))
+        return this.resolveFree(tm.body, funcScope)
+      }
+      case 'CallTerm': {
+        const terms = [tm.func, ...tm.args]
+        return terms.flatMap((tm) => this.resolveFree(tm, scope))
+      }
+      case 'ParentheticalTerm':
+        return this.resolveFree(tm.term, scope)
+      case 'ArrayTerm':
+        return tm.elements.flatMap((e) => this.resolveFree(e, scope))
+      case 'ObjectTerm': {
+        const values = Object.values(tm.entries)
+        return values.flatMap((v) => this.resolveFree(v, scope))
+      }
+      case 'MemberAccessTerm': {
+        return this.resolveFree(tm.object, scope)
+      }
+      case 'IndexAccessTerm': {
+        const vs1 = this.resolveFree(tm.array, scope)
+        const vs2 = this.resolveFree(tm.index, scope)
+        return [...vs1, ...vs2]
+      }
+      case 'LetTerm': {
+        // Build inner scope.
+        const innerScope = new Set<string>(scope)
+        const declarations = tm.declarations
+        declarations.forEach((d) => {
+          innerScope.add(d.variable)
+        })
+        // Query children with completed inner scope.
+        const vs1 = declarations.flatMap((d) =>
+          this.resolveFree(d.body, innerScope)
+        )
+        const vs2 = this.resolveFree(tm.body, innerScope)
+        return [...vs1, ...vs2]
+      }
+      case 'DoTerm': {
+        return execDoTerm(tm)
+      }
+      case 'ConditionalTerm': {
+        return execConditionalTerm(tm)
+      }
+      default:
+        throw new Error('Unrecognized term tag.')
+    }
+  }
+
+  store(v: Variable) {
+    this.free.add(v)
+  }
+
+  enterScope() {
+    this.stack.push(this.free)
+    this.free = new Set<Variable>()
+  }
+
+  exitScope() {
+    this.free = this.stack.pop()
+  }
+}

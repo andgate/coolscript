@@ -1,8 +1,9 @@
 import {
-  scopeTerm,
+  ScopeBuilder,
   Scope,
   Term,
   AssignmentTerm,
+  LambdaTerm,
   CallTerm,
   DoTerm,
   ConditionalTerm,
@@ -23,44 +24,37 @@ import {
   WhileStatement,
   DoWhileStatement,
   ForStatement,
-  Variable,
   Declaration
-} from '@coolscript/syntax-scoped'
-import * as Core from '@coolscript/syntax'
-import * as Concrete from '@coolscript/syntax-concrete'
-import * as V from './Value'
-import { MemorySpace } from './MemorySpace'
+} from '@coolscript/syntax'
+import { MemoryManager } from './MemoryManager'
+import * as V from './heap/HeapValue'
 
 export class Interpreter {
-  rootScope: Scope // root space (filled by parser)
-  globals: MemorySpace = new MemorySpace() // global memory
-  currentSpace: MemorySpace = this.globals
-  stack: MemorySpace[] = [this.currentSpace] // call stack
+  memory: MemoryManager = new MemoryManager()
 
-  interpret(tm: Concrete.Term): V.Value | null {
-    this.rootScope = new Scope()
-    const stm = scopeTerm(tm, this.rootScope)
+  interpret(tm: Concrete.Term): V.HeapValue | null {
+    const stm = scopeTerm(tm, new Scope())
     let result
     try {
       result = this.exec(stm)
     } catch (r) {
-      return r as V.Value
+      result = r as V.HeapValue
     }
     return result
   }
 
-  exec(tm: Term): V.Value | null {
+  exec(tm: Term): V.HeapValue | null {
     switch (tm.tag) {
       case 'ErrorTerm':
         return V.ErrorValue(tm.msg)
       case 'ValueTerm':
         return tm.value
       case 'VariableTerm':
-        return this.loadVariable(tm.variable)
+        return this.memory.load(tm.variable)
       case 'AssignmentTerm':
         return this.execAssignmentTerm(tm)
       case 'LambdaTerm':
-        return V.LambdaValue(tm.args, tm.body) // TODO store closure
+        return this.execLambdaTerm(tm)
       case 'CallTerm':
         return this.execCallTerm(tm)
       case 'ParentheticalTerm':
@@ -85,48 +79,28 @@ export class Interpreter {
     return null
   }
 
-  loadVariable(id: Variable): V.Value {
-    const s: MemorySpace = this.getSpaceWithSymbol(id)
-    if (s != null) {
-      return s.get(id)
-    }
-    return V.ErrorValue(`No such variable "${id}".`)
-  }
-
-  execAssignmentTerm(tm: AssignmentTerm): V.Value {
+  execAssignmentTerm(tm: AssignmentTerm): V.HeapValue {
     const value = this.exec(tm.rhs)
-    let space: MemorySpace = this.getSpaceWithSymbol(tm.lhs)
-    if (space == null) {
-      space = this.currentSpace // create in current space
-    }
-    space.put(tm.lhs, value) // store
-    return this.loadVariable(tm.lhs)
+    const heapId = this.memory.store(tm.lhs, value)
+    return V.ReferenceValue(heapId)
   }
 
-  getSpaceWithSymbol(id: string): MemorySpace | null {
-    // On top of the stack?
-    const top = this.stack.length - 1
-    if (this.stack.length > 0 && this.stack[top].get(id) != null) {
-      return this.stack[top]
-    }
-    // in globals?
-    if (this.globals.get(id) != null) {
-      return this.globals
-    }
-    return null // nowhere
+  execLambdaTerm(tm: LambdaTerm): V.HeapValue {
+    // need to get free variables from tm.body,
+    const fvs = getFreeVars(tm.body, new Set())
+    const closure: V.HeapClosure = fvs.map((v) => [v, this.memory.resolve(v)])
+    return V.LambdaValue(closure, tm.args, tm.body)
   }
 
-  execCallTerm(tm: CallTerm): V.Value {
+  execCallTerm(tm: CallTerm): V.HeapValue {
+    // Execute function head
     const fn = this.exec(tm.func)
     if (fn.tag != 'LambdaValue') {
       return V.ErrorValue(`Cannot call non-function: ${JSON.stringify(fn)}`)
     }
-    const args = tm.args.map((x) => this.exec(x))
 
-    // Create new memory space for stack.
-    const fspace = new MemorySpace()
-    const saveSpace = this.currentSpace
-    this.currentSpace = fspace
+    // Execute arguments
+    const args = tm.args.map((x) => this.exec(x))
 
     // Check for argument length mismatch
     const argCount = args.length
@@ -135,30 +109,33 @@ export class Interpreter {
         `Function argument mismatch in call ${JSON.stringify(tm)}`
       )
     }
-    // Define arguments in function space
+
+    // Create new root scope.
+    this.memory.pushScope()
+
+    // Define arguments in new root scope space
     for (let i = 0; i < argCount; i++) {
-      fspace.put(fn.args[i], args[i])
+      this.memory.store(fn.args[i], args[i])
     }
+
     // Execute function body
-    let result: V.Value = null
-    this.stack.push(fspace)
+    let result: V.HeapValue = null
     try {
       result = this.exec(fn.body)
     } catch (r) {
       // catch return values
       result = r.value
     }
-    this.stack.pop()
-    this.currentSpace = saveSpace
+    this.memory.popScope()
     return result
   }
 
-  execArrayTerm(tm: ArrayTerm): V.Value {
+  execArrayTerm(tm: ArrayTerm): V.HeapValue {
     const elements = tm.elements.map((x) => this.exec(x))
     return V.ArrayValue(elements)
   }
 
-  execObjectTerm(tm: ObjectTerm): V.Value {
+  execObjectTerm(tm: ObjectTerm): V.HeapValue {
     const entries = Object.entries(tm.entries).map(([n, t]) => [
       n,
       this.exec(t)
@@ -167,42 +144,36 @@ export class Interpreter {
     return V.ObjectValue(obj)
   }
 
-  execMemberAccessTerm(tm: MemberAccessTerm): V.Value {
+  execMemberAccessTerm(tm: MemberAccessTerm): V.HeapValue {
     const parentValue = this.exec(tm.object) as V.ObjectValue
     return parentValue.entries[tm.member] || V.NullValue()
   }
 
-  execIndexAccessTerm(tm: IndexAccessTerm): V.Value {
+  execIndexAccessTerm(tm: IndexAccessTerm): V.HeapValue {
     const parentValue = this.exec(tm.array) as V.ArrayValue
     const indexValue = this.exec(tm.index) as V.NumberValue
     return parentValue.elements[indexValue.num] || V.NullValue()
   }
 
-  execLetTerm(tm: LetTerm): V.Value | null {
+  execLetTerm(tm: LetTerm): V.HeapValue | null {
     // Create a new local memory space to bind too
-    const localSpace = new MemorySpace()
-    const saveSpace = this.currentSpace
-    this.currentSpace = localSpace
+    this.memory.enterScope()
 
     // Store bindings in new local memory space
     let decl: Declaration
-    let declBody: V.Value
+    let declBody: V.HeapValue
     for (let i = 0; i < tm.declarations.length; i++) {
       decl = tm.declarations[i]
       declBody = this.exec(decl.body)
-      localSpace.put(decl.variable, declBody)
+      this.memory.store(decl.variable, declBody)
     }
 
-    let result: V.Value
-    this.stack.push(localSpace)
-    result = this.exec(tm.body)
-    this.stack.pop()
-    this.currentSpace = saveSpace
-
+    const result: V.HeapValue = this.exec(tm.body)
+    this.memory.exitScope()
     return result
   }
 
-  execDoTerm(tm: DoTerm): V.Value {
+  execDoTerm(tm: DoTerm): V.HeapValue {
     try {
       this.execBlockStatement(tm.block)
     } catch (r) {
@@ -211,7 +182,7 @@ export class Interpreter {
     return V.NullValue()
   }
 
-  execConditionalTerm(tm: ConditionalTerm): V.Value {
+  execConditionalTerm(tm: ConditionalTerm): V.HeapValue {
     const cond: V.BooleanValue = this.exec(tm.condition) as V.BooleanValue
     if (cond.bool) {
       return this.exec(tm.body)
@@ -219,7 +190,7 @@ export class Interpreter {
     return this.execBranchTerm(tm.branch)
   }
 
-  execBranchTerm(br: BranchTerm): V.Value {
+  execBranchTerm(br: BranchTerm): V.HeapValue {
     switch (br.tag) {
       case 'ElifTerm':
         return this.execElifTerm(br)
@@ -228,7 +199,7 @@ export class Interpreter {
     }
   }
 
-  execElifTerm(tm: ElifTerm): V.Value {
+  execElifTerm(tm: ElifTerm): V.HeapValue {
     const cond: V.BooleanValue = this.exec(tm.condition) as V.BooleanValue
     if (cond.bool) {
       return this.exec(tm.body)
@@ -286,7 +257,7 @@ export class Interpreter {
 
   execReturnStatement(s: ReturnStatement) {
     const result = this.exec(s.result)
-    this.stack.pop()
+    this.memory.popScope()
     throw result
   }
 
@@ -344,5 +315,36 @@ export class Interpreter {
       cond = this.exec(tm.condition) as V.BooleanValue
     }
     return null
+  }
+
+  loadTerm(value: V.HeapValue): Core.Term<unknown> {
+    switch (value.tag) {
+      case 'NullValue':
+      case 'BooleanValue':
+      case 'NumberValue':
+      case 'StringValue':
+        return Core.ValueTerm(value, {})
+      case 'ReferenceValue':
+        throw new Error('Unimplemented!')
+      case 'ArrayValue': {
+        const elements = value.elements.map((v) => this.loadTerm(v))
+        return Core.ArrayTerm(elements, {})
+      }
+      case 'ObjectValue': {
+        const entries = Object.entries(value.entries).map(([k, v]) => [
+          k,
+          this.loadTerm(v)
+        ])
+        const objectMap = Object.fromEntries(entries)
+        return Core.ObjectTerm(objectMap, {})
+      }
+      case 'LambdaValue': {
+        const args = value.args
+        const body: Core.Term<unknown> = value.body as Core.Term<unknown>
+        return Core.LambdaTerm(args, body, {})
+      }
+      case 'ErrorValue':
+        return Core.ErrorTerm(value.err, {})
+    }
   }
 }

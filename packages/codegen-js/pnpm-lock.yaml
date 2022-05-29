@@ -1,0 +1,13 @@
+lockfileVersion: 5.3
+
+specifiers:
+  '@coolscript/syntax-concrete': ^0.1.0
+
+devDependencies:
+  '@coolscript/syntax-concrete': 0.1.0
+
+packages:
+
+  /@coolscript/syntax-concrete/0.1.0:
+    resolution: {integrity: sha512-fSNmdIUNRbRWsDYjXM+W3475RU3Kt0A97u84EwHG8u9/oKZgl4zwSSzHSwm0K/poexulULS8NFSmA8IPoXit8g==}
+    dev: true
