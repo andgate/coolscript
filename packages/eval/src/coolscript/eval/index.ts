@@ -52,7 +52,8 @@ function standardEvalCS(source: string): EvalResult {
   const js = jsResult.source
   let result = null
   try {
-    result = eval(js)
+    // use indirect eval https://esbuild.github.io/content-types/#direct-eval
+    result = (0, eval)(js)
   } catch (error) {
     return EvalFail(error)
   }

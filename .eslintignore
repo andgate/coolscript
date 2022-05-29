@@ -7,3 +7,4 @@ jest.config.js
 jest.config.base.js
 build.js
 node_modules/**/*
+webpack.config.js

@@ -32,7 +32,7 @@ export function evalCS(textCS: string): EvalJSResult {
   const sourceJS = codegenResult.source
   let value: any = null
   try {
-    // don't use direct eval https://esbuild.github.io/content-types/#direct-eval
+    // use indirect eval https://esbuild.github.io/content-types/#direct-eval
     value = (0, eval)(sourceJS)
   } catch (e) {
     return EvalJSFail(EvalJSFailedError(e))

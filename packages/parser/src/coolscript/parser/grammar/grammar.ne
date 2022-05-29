@@ -1,6 +1,7 @@
 @{%
 const moo = require("moo");
-const { Token, Span, Merge } = require("@coolscript/syntax");
+const { Span, Merge } = require("@coolscript/syntax");
+const { Token } = require("../token");
 const {
   NullValue,
   NumberValue,
@@ -141,7 +142,7 @@ assignment_term ->
 
 lambda_term ->
     "(" _ lambda_arguments _ ("," _):* ")" _ "=>" _ term
-      {% ([t1,,args,,,,,,,body]) => LambdaTerm(args, body, Merge(Token(t1).span, body.ann.span)) %}
+      {% ([t1,,args,,,,,,,body]) => LambdaTerm(args, body, Merge(Token(t1).span, body.span)) %}
 
 lambda_arguments ->
     identifier_token lambda_arguments_tail:*
@@ -153,7 +154,7 @@ lambda_arguments_tail ->
 
 call_term ->
     bterm _ "(" _ call_arguments _ ("," _):* ")"
-      {% (d) => CallTerm(d[0], d[4], Merge(d[0].ann.span, Token(d[7]).span)) %}
+      {% (d) => CallTerm(d[0], d[4], Merge(d[0].span, Token(d[7]).span)) %}
 
 call_arguments ->
     bterm call_arguments_tail:*
@@ -204,11 +205,11 @@ member_access_term ->
 
 index_access_term ->
     bterm _ "[" _ bterm _ "]"
-      {% ([a,,,,i,,t]) => IndexAccessTerm(a, i, Merge(a.ann.span, Token(t).span)) %}
+      {% ([a,,,,i,,t]) => IndexAccessTerm(a, i, Merge(a.span, Token(t).span)) %}
 
 let_term ->
     "let" _ let_declarations _ (";" _):* "in" _ term
-      {% ([t1,,ds,,,,,body]) => LetTerm(ds, body, Merge(Token(t1).span, body.ann.span)) %}
+      {% ([t1,,ds,,,,,body]) => LetTerm(ds, body, Merge(Token(t1).span, body.span)) %}
 
 let_declarations ->
     declaration let_declarations_tail:*
@@ -227,17 +228,17 @@ variable_declaration ->
 
 do_term ->
     "do" _ block_statement
-      {% ([t1,,block]) => DoTerm(block, Merge(Token(t1).span, block.ann.span)) %}
+      {% ([t1,,block]) => DoTerm(block, Merge(Token(t1).span, block.span)) %}
 
 conditional_term ->
     "if" _ "(" _ term _ ")" _ term _ branch_term
-      {% ([t1,,,,condition,,,,body,,branch]) => ConditionalTerm(condition, body, branch, Merge(Token(t1).span, branch.ann.span)) %}
+      {% ([t1,,,,condition,,,,body,,branch]) => ConditionalTerm(condition, body, branch, Merge(Token(t1).span, branch.span)) %}
 
 branch_term ->
     "elif" _ "(" _ term _ ")" _ term _ branch_term
-      {% ([t1,,,,condition,,,,body,,branch]) => ElifTerm(condition, body, branch, Merge(Token(t1).span, branch.ann.span)) %}
+      {% ([t1,,,,condition,,,,body,,branch]) => ElifTerm(condition, body, branch, Merge(Token(t1).span, branch.span)) %}
   | "else" _ term
-      {% ([t,,body]) => ElseTerm(body, Merge(Token(t).span, body.ann.span)) %}
+      {% ([t,,body]) => ElseTerm(body, Merge(Token(t).span, body.span)) %}
 
 statement ->
     assignment_statement  {% id %}
@@ -255,11 +256,11 @@ assignment_statement ->
 
 call_statement ->
     aterm _ "(" _ call_arguments _ ("," _):* ")"
-      {% ([f,,,,args,,,t]) => CallStatement(f, args, Merge(f.ann.span, Token(t).span)) %}
+      {% ([f,,,,args,,,t]) => CallStatement(f, args, Merge(f.span, Token(t).span)) %}
 
 return_statement ->
     "return" _ term
-      {% ([t,,result]) => ReturnStatement(result, Merge(Token(t).span, result.ann.span)) %}
+      {% ([t,,result]) => ReturnStatement(result, Merge(Token(t).span, result.span)) %}
 
 block_statement ->
     "{" _ statement_list:? _ (";" _):* "}"
@@ -275,17 +276,17 @@ statement_list_tail ->
 
 if_statement ->
     "if" _ "(" _ term _ ")" _ statement _ branch_statement:?
-      {% (r) => IfStatement(r[4], r[8], r[10], Merge(Token(r[0]).span, r[10] ? r[10].ann.span : r[8].ann.span)) %}
+      {% (r) => IfStatement(r[4], r[8], r[10], Merge(Token(r[0]).span, r[10] ? r[10].span : r[8].span)) %}
 
 branch_statement ->
     "elif" _ "(" _ term _ ")" _ statement _ branch_statement:?
-    {% (r) => ElifStatement(r[4], r[8], r[10], Merge(Token(r[0]).span, r[10] ? r[10].ann.span : r[8].ann.span)) %}
+    {% (r) => ElifStatement(r[4], r[8], r[10], Merge(Token(r[0]).span, r[10] ? r[10].span : r[8].span)) %}
   | "else" _ term
-    {% (r) => ElseStatement(r[2], Merge(Token(r[0]).span, r[2].ann.span)) %}
+    {% (r) => ElseStatement(r[2], Merge(Token(r[0]).span, r[2].span)) %}
 
 while_statement ->
   "while" _ "(" _ term _ ")" _ statement
-    {% (r) => WhileStatement(r[4], r[8], Merge(Token(r[0]).span, r[8].ann.span)) %}
+    {% (r) => WhileStatement(r[4], r[8], Merge(Token(r[0]).span, r[8].span)) %}
 
 do_while_statement ->
    "do" _ statement _ "while" _ "(" _ term _ ")"
@@ -293,4 +294,4 @@ do_while_statement ->
 
 for_statement ->
   "for" _ "(" _ term _ ";" _ term _ ";" _ term _ ")" _ statement
-    {% (r) => ForStatement(r[4], r[8], r[12], r[16], Merge(Token(r[0]).span, r[16].ann.span)) %}
+    {% (r) => ForStatement(r[4], r[8], r[12], r[16], Merge(Token(r[0]).span, r[16].span)) %}

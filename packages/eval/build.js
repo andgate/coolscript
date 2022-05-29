@@ -19,7 +19,7 @@ const shared = {
   target: 'es6',
   sourcemap: true,
   bundle: true,
-  minify: true,
+  minify: false,
   tsconfig: 'tsconfig.build.json',
   external,
   watch
