@@ -42,7 +42,7 @@
     "source-map": "^0.7.3"
   },
   "dependencies": {
-    "@coolscript/syntax": "^0.1.0",
-    "@coolscript/syntax-concrete": "^0.1.0"
+    "@coolscript/syntax": "workspace:*",
+    "@coolscript/parser": "workspace:*"
   }
 }

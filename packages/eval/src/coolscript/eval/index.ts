@@ -2,8 +2,7 @@
 import { generateJS } from '@coolscript/backend-js'
 import * as JS from '@coolscript/eval-js'
 import * as Standard from '@coolscript/eval-standard'
-import * as Core from '@coolscript/syntax'
-import * as Concrete from '@coolscript/syntax-concrete'
+import { Term, ValueTerm } from '@coolscript/syntax'
 
 export type EvalResult = {
   value: any | null
@@ -44,16 +43,17 @@ function standardEvalCS(source: string): EvalResult {
   if (evalResult.errors || !evalResult.value) {
     return EvalFail(...evalResult.errors)
   }
-  const value: Standard.Value = evalResult.value
-  const tm: Core.Term<unknown> = Standard.ValueToTerm(value)
-  const jsResult = generateJS(tm as Concrete.Term)
+  const value: Standard.HeapValue = evalResult.value
+  const tm: Term = Standard.ValueToTerm(value)
+  const jsResult = generateJS(tm)
   if (jsResult.errors || !jsResult.source) {
     return EvalFail(...jsResult.errors)
   }
   const js = jsResult.source
   let result = null
   try {
-    result = eval(js)
+    // use indirect eval https://esbuild.github.io/content-types/#direct-eval
+    result = (0, eval)(js)
   } catch (error) {
     return EvalFail(error)
   }

@@ -1,1 +1,1 @@
-export * from './coolscript/parse'
+export * from './coolscript/parser'

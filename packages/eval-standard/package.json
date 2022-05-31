@@ -37,10 +37,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@coolscript/examples": "^0.1.0",
-    "@coolscript/parser": "^0.1.0",
-    "@coolscript/syntax": "^0.1.0",
-    "@coolscript/syntax-concrete": "^0.1.0",
-    "@coolscript/syntax-scoped": "^0.1.0"
+    "@coolscript/examples": "workspace:*",
+    "@coolscript/parser": "workspace:*",
+    "@coolscript/syntax": "workspace:*"
   }
 }

@@ -27,8 +27,7 @@ import {
   DoWhileStatement,
   ForStatement,
   VariableDeclaration
-} from '@coolscript/syntax-concrete'
-import * as Core from '@coolscript/syntax'
+} from '@coolscript/syntax'
 import { BlockBuilder } from './BlockBuilder'
 import * as ES from 'estree'
 import * as e from '../../../estree/constructors'
@@ -213,14 +212,15 @@ export class ScriptBuilder {
 
   visitBranchTerm(br: BranchTerm): ES.Expression {
     switch (br.tag) {
-      case 'ElifTerm':
-        const conditional = Core.ConditionalTerm(
+      case 'ElifTerm': {
+        const conditional = ConditionalTerm(
           br.condition,
           br.body,
           br.branch,
-          br.ann
+          br.span
         )
         return this.visitConditionalTerm(conditional)
+      }
       case 'ElseTerm':
         return this.visitTerm(br.body)
     }
@@ -312,9 +312,10 @@ export class ScriptBuilder {
 
   visitBranchStatement(s: BranchStatement): ES.Statement {
     switch (s.tag) {
-      case 'ElifStatement':
-        const sif = Core.IfStatement(s.condition, s.body, s.branch, s.ann)
+      case 'ElifStatement': {
+        const sif = IfStatement(s.condition, s.body, s.branch, s.span)
         return this.visitIfStatement(sif)
+      }
       case 'ElseStatement':
         this.enter()
         this.visitStatement(s.body)

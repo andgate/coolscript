@@ -7,8 +7,6 @@
       "@coolscript/cli": ["cli/src"],
       "@coolscript/codegen-js": ["codegen-js/src"],
       "@coolscript/syntax": ["syntax/src"],
-      "@coolscript/syntax-concrete": ["syntax-concrete/src"],
-      "@coolscript/syntax-scoped": ["syntax-scoped/src"],
       "@coolscript/parser": ["parser/src"],
       "@coolscript/eval": ["eval/src"],
       "@coolscript/eval-js": ["eval-js/src"],

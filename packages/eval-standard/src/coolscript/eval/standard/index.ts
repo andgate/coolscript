@@ -1,12 +1,12 @@
-export * from './Value'
+export * from './heap/HeapValue'
 
 import { parse } from '@coolscript/parser'
-import { Term } from '@coolscript/syntax-concrete'
-import { Value } from './Value'
+import { Term } from '@coolscript/syntax'
+import { HeapValue } from './heap/HeapValue'
 import { Interpreter } from './Interpreter'
 
 export type EvalResult = {
-  value: Value | null
+  value: HeapValue | null
   errors?: Error[]
 }
 
@@ -14,7 +14,7 @@ function EvalFail(...errors: Error[]): EvalResult {
   return { value: null, errors }
 }
 
-function EvalSuccess(value: Value): EvalResult {
+function EvalSuccess(value: HeapValue): EvalResult {
   return { value }
 }
 
@@ -38,7 +38,7 @@ export function evaluate(source: string): EvalResult {
 
 export function evaluateTerm(tm: Term): EvalResult {
   const interpreter = new Interpreter()
-  let value: Value
+  let value: HeapValue
   try {
     value = interpreter.interpret(tm)
   } catch (e) {
