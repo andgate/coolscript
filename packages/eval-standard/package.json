@@ -1,6 +1,6 @@
 {
   "name": "@coolscript/eval-standard",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "The gold-standard CoolScript programming language evaluator.",
   "author": "Gabriel Anderson",
   "license": "MIT",
