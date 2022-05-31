@@ -14,15 +14,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Check out gh-pages and merge changes from main
+      - name: Setup git
         run: |
-          git checkout gh-pages
-          git merge main
-      - name: Setup git config
-        run: |
-          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
+          git checkout gh-pages
+          git merge main
       - name: Setup node 
         uses: actions/setup-node@v1
         with:
