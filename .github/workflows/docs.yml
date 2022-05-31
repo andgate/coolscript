@@ -19,7 +19,6 @@ jobs:
           # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
-          git checkout gh-pages
       - name: Setup node 
         uses: actions/setup-node@v1
         with:
