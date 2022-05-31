@@ -1,6 +1,6 @@
 {
   "name": "@coolscript/examples",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Coolscript programming language examples.",
   "main": "./lib/index.cjs",
   "module": "./lib/index.js",

@@ -1,5 +1,14 @@
 # @coolscript/cli
 
+## 0.1.2
+
+### Patch Changes
+
+- 6349a12: Testing changeset workflow
+- Updated dependencies [6349a12]
+  - @coolscript/parser@0.1.2
+  - @coolscript/syntax@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
