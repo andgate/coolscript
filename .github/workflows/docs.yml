@@ -1,0 +1,40 @@
+name: Deploy Docs
+on:
+  push:
+    branches:  
+      - main
+env:
+  CI: true
+  PNPM_CACHE_FOLDER: .pnpm-store
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup git config
+        run: |
+          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git checkout gh-pages
+      - name: Setup node 
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - name: Install pnpm
+        run: npm i pnpm@latest -g
+      - name: setup pnpm config
+        run: pnpm config set store-dir $PNPM_CACHE_FOLDER
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build docs
+        run: pnpm ci:docs
+      - name: commit
+        run: |
+          # Stage the file, commit and push
+          git add .
+          git commit -m "docs updated"
+          git push origin gh-pages
