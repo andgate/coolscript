@@ -1,7 +1,7 @@
 {
   "name": "coolscript-web",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Website for coolscript",
   "main": "docs/index.js",
   "source": "src/index.tsx",

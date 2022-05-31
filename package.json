@@ -23,7 +23,7 @@
     "ci:test": "pnpm build && pnpm test",
     "ci:docs": "pnpm clean:docs && pnpm -r build && pnpm nojekyll",
     "ci:version": "changeset version",
-    "ci:publish": "changeset publish",
+    "ci:publish": "changeset publish && pnpm -r publish",
     "clean": "pnpm clean:build && pnpm clean:etc && pnpm clean:node_modules",
     "clean:all": "pnpm run clean && rimraf node_modules",
     "clean:docs": "rimraf docs/",
