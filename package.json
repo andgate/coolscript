@@ -21,6 +21,7 @@
     "build:plugin": "pnpm -r build:plugin",
     "test": "jest",
     "test:update": "jest -u",
+    "ci:test": "pnpm build && pnpm test",
     "ci:version": "changeset version",
     "ci:publish": "changeset publish",
     "clean": "pnpm clean:build && pnpm clean:etc && pnpm clean:node_modules",
