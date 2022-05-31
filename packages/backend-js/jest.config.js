@@ -1,7 +1,7 @@
 const base = require('../../jest.config.base.js')
+const { name: packageName } = require('./package.json')
 
 module.exports = {
   ...base,
-  name: '@coolscript/backend-js',
-  displayName: 'backend-js'
+  displayName: packageName
 }
