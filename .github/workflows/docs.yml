@@ -10,14 +10,14 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out master
+      - name: Check out main
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Check out gh-pages
-        run: git checkout gh-pages
-      - name: Merge changes from master into gh-pages
-        run: git merge master
+      - name: Check out gh-pages and merge changes from main
+        run: |
+          git checkout gh-pages
+          git merge main
       - name: Setup git config
         run: |
           # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
