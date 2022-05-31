@@ -1,6 +1,6 @@
 {
   "name": "@coolscript/eval",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "CoolScript evaluator for javascript.",
   "author": "Gabriel Anderson",
   "license": "MIT",
