@@ -1,6 +1,6 @@
 {
   "name": "coolscript",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Coolscript programming language.",
   "main": "./bin/coolscript.js",
   "publishConfig": {
@@ -29,6 +29,6 @@
   "author": "Gabriel Anderson",
   "license": "MIT",
   "devDependencies": {
-    "@coolscript/cli": "^0.1.1"
+    "@coolscript/cli": "^0.1.2"
   }
 }
