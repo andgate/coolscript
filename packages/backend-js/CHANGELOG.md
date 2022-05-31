@@ -1,5 +1,14 @@
 # @coolscript/backend-js
 
+## 0.1.3
+
+### Patch Changes
+
+- 1e6130e: Minor version bump, automating publishing workflow
+- Updated dependencies [1e6130e]
+  - @coolscript/parser@0.1.3
+  - @coolscript/syntax@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes

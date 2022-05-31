@@ -1,5 +1,11 @@
 # esbuild-plugin-coolscript
 
+## 0.1.3
+
+### Patch Changes
+
+- 1e6130e: Minor version bump, automating publishing workflow
+
 ## 0.1.2
 
 ### Patch Changes
