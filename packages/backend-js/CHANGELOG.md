@@ -1,5 +1,14 @@
 # @coolscript/backend-js
 
+## 0.1.4
+
+### Patch Changes
+
+- edbb9cc: patch bump, still trying to get automated version bumping working
+- Updated dependencies [edbb9cc]
+  - @coolscript/parser@0.1.4
+  - @coolscript/syntax@0.1.4
+
 ## 0.1.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @coolscript/parser
 
+## 0.1.4
+
+### Patch Changes
+
+- edbb9cc: patch bump, still trying to get automated version bumping working
+
 ## 0.1.3
 
 ### Patch Changes
