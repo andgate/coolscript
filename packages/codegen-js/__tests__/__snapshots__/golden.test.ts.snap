@@ -1,0 +1,173 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "bool1": bool1 1`] = `
+Object {
+  "source": "true;
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "bool2": bool2 1`] = `
+Object {
+  "source": "false;
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "call1": call1 1`] = `
+Object {
+  "source": "(function () {
+  const f = function (x) {
+    return x;
+  };
+  return f(1);
+})();
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "example1": example1 1`] = `
+Object {
+  "source": "(function () {
+  const id = function (x) {
+    return x;
+  };
+  const constant = function (a, b) {
+    return a;
+  };
+  const createFoo = function (x) {
+    return {
+      name: [\\"F\\", \\"o\\", \\"o\\", \\"b\\", \\"a\\", \\"r\\"],
+      value: x
+    };
+  };
+  const bar = 999;
+  return (function () {
+    let baz = id(bar);
+    let clientName = createFoo(baz).name;
+    constant(baz, bar);
+    return clientName;
+  })();
+})();
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "lambda1": lambda1 1`] = `
+Object {
+  "source": "(function (x) {
+  return x;
+});
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "let1": let1 1`] = `
+Object {
+  "source": "(function () {
+  const x = 1;
+  return x;
+})();
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "let2": let2 1`] = `
+Object {
+  "source": "(function () {
+  const x = 1;
+  return x;
+})();
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "let3": let3 1`] = `
+Object {
+  "source": "(function () {
+  const x = 1;
+  const y = 2;
+  return [x, y];
+})();
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "null1": null1 1`] = `
+Object {
+  "errors": Array [
+    [Error: No parse results were recovered.],
+  ],
+  "source": null,
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "null2": null2 1`] = `
+Object {
+  "source": "null;
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "number1": number1 1`] = `
+Object {
+  "source": "0;
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "number2": number2 1`] = `
+Object {
+  "source": "1234567890;
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "number3": number3 1`] = `
+Object {
+  "source": "1234567890.0123458;
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "string1": string1 1`] = `
+Object {
+  "source": "\\"\\";
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "string2": string2 1`] = `
+Object {
+  "source": "\\"\\";
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "string3": string3 1`] = `
+Object {
+  "source": "\\"Hello world!\\";
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "string4": string4 1`] = `
+Object {
+  "source": "\\"Hello World!\\";
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "string5": string5 1`] = `
+Object {
+  "source": "\\"The quick brown fox jumps over the lazy dog.\\";
+",
+}
+`;
+
+exports[`CoolScript JS Codegen Golden Test Suite Generating example "string6": string6 1`] = `
+Object {
+  "source": "\\"The quick brown fox jumps over the lazy dog.\\";
+",
+}
+`;

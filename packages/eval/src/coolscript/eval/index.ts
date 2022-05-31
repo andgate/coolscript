@@ -2,7 +2,7 @@
 import { generateJS } from '@coolscript/backend-js'
 import * as JS from '@coolscript/eval-js'
 import * as Standard from '@coolscript/eval-standard'
-import { Term, ValueTerm } from '@coolscript/syntax'
+import { Term } from '@coolscript/syntax'
 
 export type EvalResult = {
   value: any | null

@@ -1,0 +1,476 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "bool1": bool1 1`] = `
+Object {
+  "value": Object {
+    "bool": true,
+    "span": Object {
+      "column": Object {
+        "end": 5,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "tag": "BooleanValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "bool2": bool2 1`] = `
+Object {
+  "value": Object {
+    "bool": false,
+    "span": Object {
+      "column": Object {
+        "end": 6,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "tag": "BooleanValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "call1": call1 1`] = `
+Object {
+  "value": Object {
+    "num": 1,
+    "span": Object {
+      "column": Object {
+        "end": 24,
+        "start": 23,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "tag": "NumberValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "example1": example1 1`] = `
+Object {
+  "value": Object {
+    "elements": Array [
+      Object {
+        "span": Object {
+          "column": Object {
+            "end": 15,
+            "start": 12,
+          },
+          "line": Object {
+            "end": 6,
+            "start": 6,
+          },
+          "type": "Span",
+        },
+        "str": "F",
+        "tag": "StringValue",
+      },
+      Object {
+        "span": Object {
+          "column": Object {
+            "end": 20,
+            "start": 17,
+          },
+          "line": Object {
+            "end": 6,
+            "start": 6,
+          },
+          "type": "Span",
+        },
+        "str": "o",
+        "tag": "StringValue",
+      },
+      Object {
+        "span": Object {
+          "column": Object {
+            "end": 25,
+            "start": 22,
+          },
+          "line": Object {
+            "end": 6,
+            "start": 6,
+          },
+          "type": "Span",
+        },
+        "str": "o",
+        "tag": "StringValue",
+      },
+      Object {
+        "span": Object {
+          "column": Object {
+            "end": 30,
+            "start": 27,
+          },
+          "line": Object {
+            "end": 6,
+            "start": 6,
+          },
+          "type": "Span",
+        },
+        "str": "b",
+        "tag": "StringValue",
+      },
+      Object {
+        "span": Object {
+          "column": Object {
+            "end": 35,
+            "start": 32,
+          },
+          "line": Object {
+            "end": 6,
+            "start": 6,
+          },
+          "type": "Span",
+        },
+        "str": "a",
+        "tag": "StringValue",
+      },
+      Object {
+        "span": Object {
+          "column": Object {
+            "end": 40,
+            "start": 37,
+          },
+          "line": Object {
+            "end": 6,
+            "start": 6,
+          },
+          "type": "Span",
+        },
+        "str": "r",
+        "tag": "StringValue",
+      },
+    ],
+    "tag": "ArrayValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "lambda1": lambda1 1`] = `
+Object {
+  "value": Object {
+    "args": Array [
+      "x",
+    ],
+    "body": Object {
+      "span": Object {
+        "column": Object {
+          "end": 9,
+          "start": 8,
+        },
+        "line": Object {
+          "end": 1,
+          "start": 1,
+        },
+        "type": "Span",
+      },
+      "tag": "VariableTerm",
+      "variable": "x",
+    },
+    "closure": Array [],
+    "tag": "LambdaValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "let1": let1 1`] = `
+Object {
+  "value": Object {
+    "num": 1,
+    "span": Object {
+      "column": Object {
+        "end": 10,
+        "start": 9,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "tag": "NumberValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "let2": let2 1`] = `
+Object {
+  "value": Object {
+    "num": 1,
+    "span": Object {
+      "column": Object {
+        "end": 10,
+        "start": 9,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "tag": "NumberValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "let3": let3 1`] = `
+Object {
+  "value": Object {
+    "elements": Array [
+      Object {
+        "num": 1,
+        "span": Object {
+          "column": Object {
+            "end": 10,
+            "start": 9,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+        "tag": "NumberValue",
+      },
+      Object {
+        "num": 2,
+        "span": Object {
+          "column": Object {
+            "end": 17,
+            "start": 16,
+          },
+          "line": Object {
+            "end": 1,
+            "start": 1,
+          },
+          "type": "Span",
+        },
+        "tag": "NumberValue",
+      },
+    ],
+    "tag": "ArrayValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "null1": null1 1`] = `
+Object {
+  "errors": Array [
+    [Error: No parse results were recovered.],
+  ],
+  "value": null,
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "null2": null2 1`] = `
+Object {
+  "value": Object {
+    "span": Object {
+      "column": Object {
+        "end": 5,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "tag": "NullValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "number1": number1 1`] = `
+Object {
+  "value": Object {
+    "num": 0,
+    "span": Object {
+      "column": Object {
+        "end": 2,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "tag": "NumberValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "number2": number2 1`] = `
+Object {
+  "value": Object {
+    "num": 1234567890,
+    "span": Object {
+      "column": Object {
+        "end": 11,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "tag": "NumberValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "number3": number3 1`] = `
+Object {
+  "value": Object {
+    "num": 1234567890.0123458,
+    "span": Object {
+      "column": Object {
+        "end": 22,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "tag": "NumberValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "string1": string1 1`] = `
+Object {
+  "value": Object {
+    "span": Object {
+      "column": Object {
+        "end": 3,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "str": "",
+    "tag": "StringValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "string2": string2 1`] = `
+Object {
+  "value": Object {
+    "span": Object {
+      "column": Object {
+        "end": 3,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "str": "",
+    "tag": "StringValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "string3": string3 1`] = `
+Object {
+  "value": Object {
+    "span": Object {
+      "column": Object {
+        "end": 15,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "str": "Hello world!",
+    "tag": "StringValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "string4": string4 1`] = `
+Object {
+  "value": Object {
+    "span": Object {
+      "column": Object {
+        "end": 15,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "str": "Hello World!",
+    "tag": "StringValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "string5": string5 1`] = `
+Object {
+  "value": Object {
+    "span": Object {
+      "column": Object {
+        "end": 47,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "str": "The quick brown fox jumps over the lazy dog.",
+    "tag": "StringValue",
+  },
+}
+`;
+
+exports[`CoolScript Standard Evaluator Golden Test Suite Evaluating example "string6": string6 1`] = `
+Object {
+  "value": Object {
+    "span": Object {
+      "column": Object {
+        "end": 47,
+        "start": 1,
+      },
+      "line": Object {
+        "end": 1,
+        "start": 1,
+      },
+      "type": "Span",
+    },
+    "str": "The quick brown fox jumps over the lazy dog.",
+    "tag": "StringValue",
+  },
+}
+`;

@@ -1,0 +1,128 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "bool1": bool1 1`] = `
+Object {
+  "value": true,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "bool2": bool2 1`] = `
+Object {
+  "value": false,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "call1": call1 1`] = `
+Object {
+  "value": 1,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "example1": example1 1`] = `
+Object {
+  "value": Array [
+    "F",
+    "o",
+    "o",
+    "b",
+    "a",
+    "r",
+  ],
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "lambda1": lambda1 1`] = `
+Object {
+  "value": [Function],
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "let1": let1 1`] = `
+Object {
+  "value": 1,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "let2": let2 1`] = `
+Object {
+  "value": 1,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "let3": let3 1`] = `
+Object {
+  "value": Array [
+    1,
+    2,
+  ],
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "null1": null1 1`] = `
+Object {
+  "errors": Array [
+    [Error: No parse results were recovered.],
+  ],
+  "value": null,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "null2": null2 1`] = `
+Object {
+  "value": null,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "number1": number1 1`] = `
+Object {
+  "value": 0,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "number2": number2 1`] = `
+Object {
+  "value": 1234567890,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "number3": number3 1`] = `
+Object {
+  "value": 1234567890.0123458,
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "string1": string1 1`] = `
+Object {
+  "value": "",
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "string2": string2 1`] = `
+Object {
+  "value": "",
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "string3": string3 1`] = `
+Object {
+  "value": "Hello world!",
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "string4": string4 1`] = `
+Object {
+  "value": "Hello World!",
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "string5": string5 1`] = `
+Object {
+  "value": "The quick brown fox jumps over the lazy dog.",
+}
+`;
+
+exports[`CoolScript JS Evaluator Golden Test Suite Evaluating example "string6": string6 1`] = `
+Object {
+  "value": "The quick brown fox jumps over the lazy dog.",
+}
+`;

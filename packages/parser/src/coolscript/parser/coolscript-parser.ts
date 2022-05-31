@@ -22,7 +22,6 @@ export function parse(src: string): ParseResult {
   try {
     parser.feed(src)
   } catch (error) {
-    console.error(error)
     let errorMsg = ''
     if (error && error.stack && error.message) {
       errorMsg = ` Error message: ${error.message}`
