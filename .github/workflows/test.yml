@@ -1,0 +1,26 @@
+name: Test
+on:
+  pull_request:
+    branches:  
+      - main
+env:
+  CI: true
+  PNPM_CACHE_FOLDER: .pnpm-store
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code repository
+      - uses: actions/checkout@v2
+      - name: Setup node 
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - name: Install pnpm
+        run: npm i pnpm@latest -g
+      - name: setup pnpm config
+        run: pnpm config set store-dir $PNPM_CACHE_FOLDER
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run tests
+        run: pnpm test
