@@ -24,3 +24,6 @@ node_modules
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
+
+# need to ignore .pnpm store on ci-server
+.pnpm-store
