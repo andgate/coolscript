@@ -1,6 +1,6 @@
 export * from './heap/HeapValue'
 
-import { parse } from '@coolscript/parser'
+import { parse, ParseResult } from '@coolscript/parser'
 import { Term } from '@coolscript/syntax'
 import { HeapValue } from './heap/HeapValue'
 import { Interpreter } from './Interpreter'
@@ -28,7 +28,12 @@ function EvalFailedError(error: any): Error {
 }
 
 export function evaluate(source: string): EvalResult {
-  const parseResult = parse(source)
+  let parseResult: ParseResult
+  try {
+    parseResult = parse(source)
+  } catch (error) {
+    return EvalFail(error)
+  }
   if (parseResult.errors || !parseResult.term) {
     return EvalFail(...parseResult.errors)
   }

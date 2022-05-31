@@ -44,6 +44,7 @@
     "esbuild": "^0.14.42",
     "esbuild-plugin-nearley": "^1.0.3",
     "jest-transform-nearley": "^2.0.0",
+    "fast-check": "^3.0.0",
     "moo": "^0.5.1",
     "nearley": "^2.20.1"
   },
