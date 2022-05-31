@@ -103,7 +103,7 @@ importers:
 
   packages/coolscript:
     specifiers:
-      '@coolscript/cli': ^0.1.1
+      '@coolscript/cli': ^0.1.2
     devDependencies:
       '@coolscript/cli': link:../cli
 
