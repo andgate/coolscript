@@ -1,7 +1,7 @@
 {
   "name": "esbuild-plugin-coolscript",
   "description": "Esbuild plugin for transforming CoolScript expressions into js.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "Gabriel Anderson",
   "license": "MIT",
   "repository": {
