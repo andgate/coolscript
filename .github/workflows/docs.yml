@@ -10,10 +10,14 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code repository
+      - name: Check out master
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Check out gh-pages
+        run: git checkout gh-pages
+      - name: Merge changes from master into gh-pages
+        run: git merge master
       - name: Setup git config
         run: |
           # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
@@ -33,7 +37,6 @@ jobs:
         run: pnpm ci:docs
       - name: commit
         run: |
-          # Stage the file, commit and push
           git add .
           git commit -m "docs updated"
           git push origin gh-pages
